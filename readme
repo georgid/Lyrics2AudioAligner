@@ -1,0 +1,71 @@
+I. create model: 
+
+on data: s1000
+
+1) create all prompts
+./myScripts/combineAllPrompts.sh /Users/joro/Documents/Phd/UPF/voxforge/auto/train/wav/ /Users/joro/Documents/Phd/UPF/voxforge/auto/train/s1000.prompts
+
+2) create dict file: 
+
+/Users/joro/Documents/Phd/UPF/voxforge/myScripts/2phoneDict.sh  /Users/joro/Documents/Phd/UPF/METUdata/alignments/s1000/
+
+Then HTK_Script
+with MFCC_0_D_N_Z
+
+
+step 4: grapheme2phoneme conversion:
+with HLEd . Result is ./interim_files/phones1.mlf
+
+step 7 - DONE because HVIte requires sp models
+
+
+step 8 - will be not done at all. in turkish there only one possible pronunciation per word.
+
+
+only monophone models are used. No triphone models needed because in singing only vocals are bearing tones. The consonants in context do not influence vocals. The diphtongues do not exist in turkish language.   
+
+reached: sil models are done. 
+
+
+II. ADAPTATION: 
+(input and output are in folder /Users/joro/Documents/Phd/UPF/voxforge/auto
+/adaptation)
+
+-1) extract mfccs
+HCopy -A -D -T 1 -C /Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/input_files/wav_config -S /Users/joro/Documents/Phd/UPF/voxforge/auto/adaptation/codetrain_test.scp
+
+0) prepare prompts: 
+-Like step 1) of I. 
+/Users/joro/Documents/Phd/UPF/voxforge/myScripts/combineAllPrompts.sh /Users/joro/Documents/Phd/UPF/voxforge/auto/adaptation/ /Users/joro/Documents/Phd/UPF/voxforge/auto/adaptation/test.prompts
+
+- prompts2mlf
+ perl /Users/joro/Documents/Phd/UPF/voxforge/HTK_scripts/prompts2mlf /Users/joro/Documents/Phd/UPF/voxforge/auto/adaptation/test.mlf  /Users/joro/Documents/Phd/UPF/voxforge/auto/adaptation/test.prompts
+
+
+- like step of 2) of 1
+
+- combine two dicts
+HDMan -A -D -T 1 -m  -e ./input_files -n ./interim_files/monophones1 -i -l logs/Step2_HDMan_log ./interim_files/dict.adapted.test /Users/joro/Documents/Phd/UPF/METUdata/alignments/s1000/all.lexicon /Users/joro/Documents/Phd/UPF/voxforge/auto/adaptation/test.lexicon 
+
+# here manually check how sil looks like
+
+instead of annotating the adaptation singing data, we
+1)  manually divide into vocal segments
+
+2) run forced alignment with the given words transcription for each vocal segment 
+script $UPF/voxforge/myScripts/buildAdaptedModel.sh 
+
+$UPF/voxforge/myScripts/buildAdaptedModel.sh /Users/joro/Documents/Phd/UPF/Turkey-makam/all.mlf /Users/joro/Documents/Phd/UPF/Turkey-makam/codetrain_mfc.scp /Users/joro/Documents/Phd/UPF/Turkey-makam/lexicon.adapted ~/Downloads/test.output  /Users/joro/Documents/Phd/UPF/Turkey-makam/adaptation/ 
+
+result: 
+/Users/joro/Documents/Phd/UPF/voxforge/auto/adaptation/phone-level.adapted 
+
+
+3) refine transcript manually
+
+4) run forced alignment step  only: with HVite: 
+
+Users/joro/Documents/Fhg/htk3.4.BUILT/bin/HVite -l * -A -D -T 1 -b sil -C /Users/joro/Documents/Phd/UPF/voxforge/auto/scripts//input_files/config -a -H /Users/joro/Documents/Phd/UPF/voxforge/auto/scripts//interim_files/hmm6/hmmdefs -i /Users/joro/Downloads/phonemeLevel.mlf -m -I /Users/joro/Documents/Phd/UPF/Turkey-makam/all.mlf -y lab -S /Users/joro/Documents/Phd/UPF/Turkey-makam/codetrain_mfc.scp /Users/joro/Documents/Phd/UPF/Turkey-makam/lexicon.adapted /Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/interim_files/monophones1
+
+NOTE: For output file phonemeLevel.mlf -o suppresses probability (S), words (W)
+TODO: noise background models
