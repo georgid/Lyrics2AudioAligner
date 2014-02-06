@@ -6,6 +6,8 @@ Created on Feb 6, 2014
 '''
 
 import unidecode
+import re
+# import nltk
 
 # load lyrics file  
 def lyrics2mlf(lyricsFileName ):
@@ -22,7 +24,7 @@ def lyrics2mlf(lyricsFileName ):
 
 # converts non-unicode chars into METU-defined chars. 
 # here METU paper    
-def turkishScript2METU(turkishWord):
+def turkishScriptWord2METUScriptWord(turkishWord):
 
     lookupTable = {
     # g
@@ -66,9 +68,23 @@ def turkishScript2METU(turkishWord):
     
     return "".join(s)
 
+# convert to METU script a string of words
+def turkishScriptLyrics2METUScriptLyrics(lyrics):
+#     wordList = re.findall(r'\w+', lyrics)
+    list = lyrics.split()
+#     wordSequence =  wordList.split()
+    for i in range(len(list)):
+        list[i] = turkishScriptWord2METUScriptWord(list[i])
+    return " ".join(list).strip()
+
+     
+
 def grapheme2Phoneme(METUword):
     arrayPhonemes = 'blah' 
     return arrayPhonemes 
+
+
+
 
 if __name__ == '__main__':
 #     arg parse 
@@ -76,9 +92,7 @@ if __name__ == '__main__':
 # call 
 # lyrics2mlf(lyricsFileName ):
 
-    word = u"Kapına"
-    
-    
-
-    print turkishScript2METU(word)
+    wordList = u'Kapına Kapına'   
+    convertedList =  turkishScriptLyrics2METUScriptLyrics(wordList)
+    print convertedList
     
