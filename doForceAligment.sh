@@ -30,10 +30,10 @@ DATA="/Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/"
 # HMMDefs model
 
 #origninal speech HMM models 
-#HMM=$DATA/interim_files/hmm6/hmmdefs
+HMM=$DATA/interim_files/hmm6/hmmdefs
 
 # adapted to singing voice
-HMM=/Users/joro/Documents/Phd/UPF/Turkey-makam/adaptation/hmmdefs.gmllrmean
+#HMM=/Users/joro/Documents/Phd/UPF/Turkey-makam/adaptation/hmmdefs.gmllrmean
 
 
 

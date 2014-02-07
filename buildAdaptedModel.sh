@@ -69,4 +69,5 @@ HMMLIST=/Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/interim_files/monoph
 # apply transform
 $VOXFORGE/myScripts/transform.pl $OUTPUT_ADAPTATION/mfc.gmllrmean $HMM $OUTPUT_ADAPTATION/hmmdefs.gmllrmean
 
-
+echo "adapted model is" 
+echo $OUTPUT_ADAPTATION/hmmdefs.gmllrmean
