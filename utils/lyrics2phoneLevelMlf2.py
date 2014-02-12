@@ -9,6 +9,7 @@ import unidecode
 import re
 import os
 import codecs
+import sys
 
 # converts non-unicode chars into METU-defined chars. 
 # here METU paper    
@@ -134,8 +135,11 @@ def grapheme2Phoneme(METUword):
     
     
     
+    
+    
+    
 # convert turkish scritp to METU script. used in word-level annotation of lyrics in audio
-# @param: inputFileName - one-line file with lyrics
+# @param: string with lyrics in turkish 
 def turkishScriptLyrics2METUScriptLyrics(lyrics):
 #     wordList = re.findall(r'\w+', lyrics)
     list = lyrics.split()
@@ -144,11 +148,32 @@ def turkishScriptLyrics2METUScriptLyrics(lyrics):
         list[i] = turkishScriptWord2METUScriptWord(list[i])
     return " ".join(list).strip()
     
+    # same as turkishScriptLyrics2METUScriptLyrics. but takes as input file and print into file 
+    #  @param: inputFileName - one-line file with lyrics
+def turkishScriptLyrics2METUScriptLyricsFile(inputFileName, outputFileName):
+
+    inputFileHandle = codecs.open(inputFileName,'r','utf-8')
+    outputFileHandle = open(outputFileName,  'w')
+    
+    lyrics = inputFileHandle.read()
+    lyrics = lyrics.replace('\n',' ')
+    
+    processedLyrics = turkishScriptLyrics2METUScriptLyrics(lyrics)
+#     list = lyrics.split()
+# #     wordSequence =  wordList.split()
+#     for i in range(len(list)):
+#         list[i] = turkishScriptWord2METUScriptWord(list[i])
+#     return " ".join(list).strip()
+    outputFileHandle.write(processedLyrics)
+    inputFileHandle.close()
+    outputFileHandle.close()  
+    return
     
     
-# converts turkish script lyrics to phoneme-level 
+# converts turkish script lyrics to phonetic dictinary 
 # @param: inputFileName - one-line file with lyrics
-def turkishScriptLyrics2METUphonemes(inputFileName, outputFileName):
+
+def turkishScriptLyrics2phoneticDict(inputFileName, outputFileName):
     
     inputFileHandle = codecs.open(inputFileName,'r','utf-8')
     outputFileHandle = open(outputFileName,  'w')
@@ -160,6 +185,10 @@ def turkishScriptLyrics2METUphonemes(inputFileName, outputFileName):
     for i in range(len(words)):
         words[i] = turkishScriptWord2METUScriptWord(words[i])
        
+       # write the word
+        outputFileHandle.write( words[i])
+        outputFileHandle.write("\t")
+        
         # list of METU phonemes for current word
         phonemeList = grapheme2Phoneme(words[i])
         for phoneme in phonemeList:
@@ -198,11 +227,14 @@ if __name__ == '__main__':
 # call 
 # lyrics2mlf(lyricsFileName ):
 
-    wordList = u'Kapına Kapına'   
+    wordList = u'Kudûmün rahmet-i zevk u safâdır yâ Resûl Allah Zuhûrun derd-i uşşâkâ devâdır yâ Resûl Allah Hüdâî\'ye şefaat kıl, eer zâhir eer bâtın Kapına intisâb etmiş gedâdır yâ Resûl Allah'
+
     convertedList =  turkishScriptLyrics2METUScriptLyrics(wordList)
     print convertedList
+#     
+#     print grapheme2Phoneme('kapIna')
+#     
+    turkishScriptLyrics2phoneticDict(sys.argv[1], sys.argv[2])
     
-    print grapheme2Phoneme('kapIna')
-    
-    turkishScriptLyrics2METUphonemes('/Users/joro/Downloads/test1.txt','/Users/joro/Downloads/test1.blah')
+#     turkishScriptLyrics2METUScriptLyricsFile('/Users/joro/Documents/Phd/UPF/Turkey-makam/kani_karaca-hicaz-durak.phn','/Users/joro/Documents/Phd/UPF/Turkey-makam/kani_karaca-hicaz-durak.phn.out' )
     
