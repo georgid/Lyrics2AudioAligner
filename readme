@@ -7,7 +7,10 @@ on data: s1000
 
 2) create dict file: 
 
-/Users/joro/Documents/Phd/UPF/voxforge/myScripts/2phoneDict.sh  /Users/joro/Documents/Phd/UPF/METUdata/alignments/s1000/
+TRAIN_DIR_WITH_PHN_AND_WRD_FILES=/Users/joro/Documents/Phd/UPF/METUdata/alignments/s1000/
+
+/Users/joro/Documents/Phd/UPF/voxforge/myScripts/2phoneDict.sh  $DIR_WITH_PHN_AND_WRD_FILES 0 blah blah
+NOTE: output is DIR_WITH_PHN_AND_WRD_FILES/all.lexicon
 
 Then HTK_Script
 with MFCC_0_D_N_Z
@@ -31,49 +34,58 @@ II. ADAPTATION:
 (input and output are in folder /Users/joro/Documents/Phd/UPF/voxforge/auto
 /adaptation)
 
-
-0) prepare prompts: 
--Like step 1) of I. 
-/Users/joro/Documents/Phd/UPF/voxforge/myScripts/combineAllPrompts.sh /Users/joro/Documents/Phd/UPF/voxforge/auto/adaptation/ /Users/joro/Documents/Phd/UPF/voxforge/auto/adaptation/test.prompts
-
-- prompts2mlf
- perl /Users/joro/Documents/Phd/UPF/voxforge/HTK_scripts/prompts2mlf /Users/joro/Documents/Phd/UPF/voxforge/auto/adaptation/test.mlf  /Users/joro/Documents/Phd/UPF/voxforge/auto/adaptation/test.prompts
+-1) 
+# dir should have .wav .txt and files with for each file to be adapted 
+# prepare .txt just all words in METUbet script,
+ADAPTATION_DIR_WITH_PHN_AND_WRD_FILES=/Users/joro/Documents/Phd/UPF/Turkey-makam/
 
 
-- create dict file: 
-
-/Users/joro/Documents/Phd/UPF/voxforge/myScripts/2phoneDict.sh  /Users/joro/Documents/Phd/UPF/METUdata/alignments/s1000/
 
 
-- combine old and new dict
-HDMan -A -D -T 1 -m  -e ./input_files -n ./interim_files/monophones1 -i -l logs/Step2_HDMan_log ./interim_files/dict.adapted.test /Users/joro/Documents/Phd/UPF/METUdata/alignments/s1000/all.lexicon /Users/joro/Documents/Phd/UPF/voxforge/auto/adaptation/test.lexicon 
+1) create dict file. mix speech dict and adaptation dict: 
 
-# here manually check how sil looks like
+TRAIN_DIR_WITH_PHN_AND_WRD_FILES=/Users/joro/Documents/Phd/UPF/METUdata/alignments/s1000/
+
+/Users/joro/Documents/Phd/UPF/voxforge/myScripts/turkishLyrics2phoneDict.sh  $ADAPTATION_DIR_WITH_PHN_AND_WRD_FILES 1  ${TRAIN_DIR_WITH_PHN_AND_WRD_FILES}/all.lexicon ${ADAPTATION_DIR_WITH_PHN_AND_WRD_FILES}/lexicon.adapted
+
+# do manually: delete SIL (with capital letters) and SILSIL from /Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/interim_files/monophones1
+
+2) prepare phoneme-level mlf
+python /Users/joro/Documents/Phd/UPF/voxforge/myScripts/utils/sonicVisTextPhnDir2mlf.py $ADAPTATION_DIR_WITH_PHN_AND_WRD_FILES ${ADAPTATION_DIR_WITH_PHN_AND_WRD_FILES}/all.phn.mlf
 
 
-1) extract mfccs
-HCopy -A -D -T 1 -C /Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/input_files/wav_config -S /Users/joro/Documents/Phd/UPF/voxforge/auto/adaptation/codetrain_test.scp
+3) adapt
+$UPF/voxforge/myScripts/buildAdaptedModel.sh  ${ADAPTATION_DIR_WITH_PHN_AND_WRD_FILES}  ${ADAPTATION_DIR_WITH_PHN_AND_WRD_FILES}/lexicon.adapted ${ADAPTATION_DIR_WITH_PHN_AND_WRD_FILES}/all.phn.mlf  ${ADAPTATION_DIR_WITH_PHN_AND_WRD_FILES}/adaptedModel 
 
-
-2) adapt
-$UPF/voxforge/myScripts/buildAdaptedModel.sh /Users/joro/Documents/Phd/UPF/Turkey-makam/all.mlf /Users/joro/Documents/Phd/UPF/Turkey-makam/codetrain_mfc.scp /Users/joro/Documents/Phd/UPF/Turkey-makam/lexicon.adapted ~/Downloads/test.output  /Users/joro/Documents/Phd/UPF/Turkey-makam/adaptation/ 
 
 resulting new model: 
-/Users/joro/Documents/Phd/UPF/Turkey-makam/adaptation/model
+${ADAPTATION_DIR_WITH_PHN_AND_WRD_FILES}/adaptedModel/hmmdefs.gmllrmean
+
 
 
 
 
 III. ALIGNMENT: 
 
+1) prepare annoatation: 
+
+ conver  turkish to METUBET
+for i in `ls *.txtTur`; do a=`basename $i .txtTur` ;   python /Users/joro/Documents/Phd/UPF/voxforge/myScripts/utils/turkishLyrics2METULyrics.py $i ${a}.txt ; done
+
+TODO: script for evaluation
+
+------------------------------------------------------------
+
+
+
 4) run forced alignment step  only: with HVite: 
 
-doForceAligment.sh 
-
-Users/joro/Documents/Fhg/htk3.4.BUILT/bin/HVite -l * -A -D -T 1 -b sil -C /Users/joro/Documents/Phd/UPF/voxforge/auto/scripts//input_files/config -a -H /Users/joro/Documents/Phd/UPF/voxforge/auto/scripts//interim_files/hmm6/hmmdefs -i /Users/joro/Downloads/phonemeLevel.mlf -m -I /Users/joro/Documents/Phd/UPF/Turkey-makam/all.mlf -y lab -S /Users/joro/Documents/Phd/UPF/Turkey-makam/codetrain_mfc.scp /Users/joro/Documents/Phd/UPF/Turkey-makam/lexicon.adapted /Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/interim_files/monophones1
+ /Users/joro/Documents/Phd/UPF/voxforge/myScripts/doForceAligment.sh <FILENAME_NOEXT> /tmp/lexicon2  ~/Downloads/phoneme-level.out.mlf
 
 NOTE: For output file phonemeLevel.mlf -o suppresses probability (S), words (W)
 
+
 TODO: 
 1) add noise background models
-2) add optional silence models 
+2) Are they optional now? add optional silence models between words. how? 
+3) instead of GMMs see tutorial for DBN (Rolf). first see jeff hintons video.
