@@ -1,0 +1,24 @@
+III. ALIGNMENT: 
+
+1) prepare annoatation: 
+
+ conver  turkish to METUBET
+for i in `ls *.txtTur`; do a=`basename $i .txtTur` ;   python /Users/joro/Documents/Phd/UPF/voxforge/myScripts/utils/turkishLyrics2METULyrics.py $i ${a}.txt ; done
+
+TODO: script for evaluation
+
+------------------------------------------------------------
+
+
+
+4) run forced alignment step  only: with HVite: 
+
+ /Users/joro/Documents/Phd/UPF/voxforge/myScripts/doForceAligment.sh <FILENAME_NOEXT>  ~/Downloads/phoneme-level.out.mlf
+
+NOTE: For output file phonemeLevel.mlf -o suppresses probability (S), words (W)
+
+
+TODO: 
+1) add noise background models
+2) Are they optional now? add optional silence models between words. how? 
+3) instead of GMMs see tutorial for DBN (Rolf). first see jeff hintons video.

@@ -1,0 +1,47 @@
+I. create model: 
+
+on data: s1000
+
+1) create all prompts
+
+MAIN_TRAIN_DIR=/Users/joro/Documents/Phd/UPF/METUdata/
+TRAIN_DIR_WAV=$MAIN_TRAIN_DIR/speech-text-all-georgi
+TRAIN_DIR_WITH_PHN_AND_WRD_FILES=$MAIN_TRAIN_DIR/alignments-all-georgi
+TRAIN_OUTPUT=$MAIN_TRAIN_DIR/model_output
+
+/Users/joro/Documents/Phd/UPF/voxforge/myScripts/combineAllPrompts.sh $TRAIN_DIR_WAV $TRAIN_OUTPUT/word-level.prompts
+python TrainingStep/combineTxtIntoPrompts.py$TRAIN_DIR_WAV $TRAIN_OUTPUT/word-level.prompts
+
+## this was used for one speaker only ./myScripts/combineAllPrompts.sh /Users/joro/Documents/Phd/UPF/voxforge/auto/train/wav/ /Users/joro/Documents/Phd/UPF/voxforge/auto/train/s1000.prompts
+
+2) build phonetic dict file from alignment transcriptions: 
+
+### this was used for one speaker only TRAIN_DIR_WITH_PHN_AND_WRD_FILES=/Users/joro/Documents/Phd/UPF/METUdata/alignments/s1000/
+
+
+python /Users/joro/Documents/Phd/UPF/voxforge/myScripts/TrainingStep/2phoneDict.py  $TRAIN_DIR_WITH_PHN_AND_WRD_FILES $TRAIN_DIR_WITH_PHN_AND_WRD_FILES/all.pronunciation-dict
+
+
+
+NOTE: output is
+
+
+
+Then HTK_Script
+with MFCC_0_D_N_Z
+
+
+step 4: grapheme2phoneme conversion:
+with HLEd . Result is ./interim_files/phones1.mlf
+
+step 7 - DONE because HVIte requires sp models
+
+
+step 8 - will be not done at all. in turkish there only one possible pronunciation per word.
+
+-----------------	
+
+only monophone models are used. No triphone models needed because in singing only vocals are bearing tones. The consonants in context do not influence vocals. The diphtongues do not exist in turkish language (expect for yu, ya).   
+
+reached: sil models are done. 
+
