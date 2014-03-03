@@ -1,5 +1,5 @@
-III. ALIGNMENT: 
 
+ANNOTATION:
 1) prepare annoatation: 
 
  conver  turkish to METUBET
@@ -9,9 +9,9 @@ TODO: script for evaluation
 
 ------------------------------------------------------------
 
+III. ALIGNMENT: 
 
-
-4) run forced alignment step  only: with HVite: 
+1) run forced alignment step  only: with HVite: 
 
  /Users/joro/Documents/Phd/UPF/voxforge/myScripts/doForceAligment.sh <FILENAME_NOEXT>  ~/Downloads/phoneme-level.out.mlf
 

@@ -5,20 +5,29 @@
 
 #@param: path_to_file_no_ext - adds extension to wav
 #@param HMM - adapted model- hard coded
+# 
+# graphem2phoneme is done by rules. 
+# Note: the original dictionary is not extended but only the words in the transcript are used.
+# TODO: before creating new word check if it is in dictionary
+# 
 #############################
 
 
 ###
+# 	
+# 	
 # example run: 
 # /Users/joro/Documents/Phd/UPF/voxforge/myScripts/doForceAligment.sh /Users/joro/Documents/Phd/UPF/Turkey-makam/all.mlf /Users/joro/Documents/Phd/UPF/Turkey-makam/codetrain_mfc.scp /Users/joro/Documents/Phd/UPF/Turkey-makam/lexicon.adapted  /Users/joro/Documents/Phd/UPF/Turkey-makam/adaptation/phoneme-level.out.mlf
+#	
+#
 ###
 
 
 # STEP 0: Parse command-line
 if [ $# -ne 3 ]; then
-    echo "Tool to run forced alignment. Input: 1) word-level mlf; 2) dictionary with at least all words in the word-level mlf. 3) mfc features. "
+    echo "Tool to run forced alignment. Input: audio and text in turkish."
     echo ""
-    echo "USAGE: $0 path_to_file_no_ext lyrics.txtTur PHONE_LEVEL_ALIGNED.output.mlf "
+    echo "USAGE: $0 path_to_audio_file_no_ext lyrics.txtTur PHONE_LEVEL_ALIGNED.output.mlf "
     echo ""
     echo ""
     exit 0
@@ -33,10 +42,11 @@ DATA="/Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/"
 # HMMDefs model
 
 #origninal speech HMM models 
-# HMM=$DATA/interim_files/hmm6/hmmdefs
+# HMM=$DATA/interim_files/hmm7/hmmdefs
 
 # adapted to singing voice
-HMM=/Users/joro/Documents/Phd/UPF/Turkey-makam/adaptedModel/hmmdefs.gmllrmean
+#HMM=/Users/joro/Documents/Phd/UPF/Turkey-makam/adaptedModel/hmmdefs.gmllrmean
+HMM=/Users/joro/Documents/Phd/UPF/METUdata//model_output/hmmdefs.gmllrmean
 
 
 
@@ -71,18 +81,20 @@ then
 ffmpeg -i ${1}.mp3 ${1}.wav
 fi
 
-# done because  I need the .txt file
+# conver to METU txtx. done because  I need the .txt file
 python /Users/joro/Documents/Phd/UPF/voxforge/myScripts/utils/turkishLyrics2METULyrics.py $TXTTUR /tmp/${1}.txt
 
+# TXT=/tmp/${1}.txt
+TXT=${1}.txt
 
 # create word-level mlf
      
-a=`basename /tmp/${1}.txt .txt` ;   printf "$a "> /tmp/mlf; cat /tmp/${1}.txt >> /tmp/mlf
+a=`basename $TXT .txt` ;   printf "$a "> /tmp/mlf; cat $TXT >> /tmp/mlf
 perl /Users/joro/Documents/Phd/UPF/voxforge/HTK_scripts/prompts2mlf $WORD_LEVEL_MLF  /tmp/mlf
 
 
 # put new words in dictionary
-python /Users/joro/Documents/Phd/UPF/voxforge/myScripts/utils/METULyrics2phoneticDict.py /tmp/${1}.txt  /tmp/lexicon1
+python /Users/joro/Documents/Phd/UPF/voxforge/myScripts/utils/METULyrics2phoneticDict.py $TXT  /tmp/lexicon1
 cat /tmp/lexicon1 | sort | uniq > /tmp/lexicon2
 printf "sil\tsil\n" >>/tmp/lexicon2
 
@@ -101,8 +113,6 @@ $HTK_34_PATH/HVite -l '*' -o SW -A -D -T 1  -b sil -C $DATA/input_files/config  
 # visualize alignment in seconds
  echo "phone-level alignment writen to file $PHONE_LEVEL_ALIGNMENT"
  echo
- awk '{start = $1 / 10000000; end= $2 / 10000000;  print start, end,  $3}' $PHONE_LEVEL_ALIGNMENT |  #> $PHONE_LEVEL_ALIGNMENT.noMLF
- #cat $PHONE_LEVEL_ALIGNMENT.noMLF
-
-
+ awk '{start = $1 / 10000000; end= $2 / 10000000;  print start, end,  $3}' $PHONE_LEVEL_ALIGNMENT  | sed '1,2d' | sed '$d'   > $PHONE_LEVEL_ALIGNMENT.noMLF
+ cat $PHONE_LEVEL_ALIGNMENT.noMLF
 
