@@ -6,7 +6,7 @@ Created on Feb 5, 2014
 
 import os
 import sys
-pathToTools = '/Users/joro/Documents/workspace/Tools'
+pathToTools = os.path.abspath(".")
 if pathToTools not in sys.path:
     sys.path.insert(0,pathToTools)
 from Tools import walklevel
@@ -15,23 +15,7 @@ from Tools import walklevel
 
 
 
-# TODO: change automatically extension from txt to mlf
-def mlf2sonicVisText(inputFileName, outputFileName):
-    inputFileHandle = open(inputFileName)
-    outputFileHandle = open(outputFileName,  'w')
-    
-    # when reading lines from MLF, skip first 2 and last
-    allLines = inputFileHandle.readlines()
 
-    for line in allLines:
-        
-        tokens =  line.split("\t")
-        output = str(float(tokens[0])/10000000) + "\t" + tokens[1]
-        outputFileHandle.write(output)
-        
-    inputFileHandle.close()
-    outputFileHandle.close()
-        
 # convert from
 # SV text format:
 #  0.000000000    sil

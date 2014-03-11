@@ -5,35 +5,41 @@ Created on Feb 6, 2014
 @author: joro
 '''
 
-import unidecode
+# import unidecode
 import re
 import os
 import codecs
 import sys
+import unicodedata
 
-# converts non-unicode chars into METU-defined chars. 
-# here METU paper    
-def turkishScriptWord2METUScriptWord(turkishWord):
+# lookupTable for conversion deom turkish to METU
 
-    lookupTable = {
-    # g
+lookupTable = {
+    # soft g
          u'\u011f' : 'G',
     # Ğ
         u'\u011e' : 'G',
     # ı 
         u'\u0131' : 'I',
+        'I':'I',
      
-    #İ 
-        u'\u0130' : 'I',
+    # İ 
+        u'\u0130' : 'i',
     # ö
         u'\u00f6' : 'O',
+        u'o\u0308' : 'O',
+        
    #  Ö  
         u'\u00d6' : 'O',
+        u'O\u0308' : 'O',
     
     # ü 
         u'\u00fc' : 'U',
+        u'u\u0308' : 'U',
+        
     # Ü 
         u'\u00dc' : 'U',
+        u'U\u0308' : 'U',
     # ş 
         u'\u015f' : 'S',
     
@@ -63,33 +69,16 @@ def turkishScriptWord2METUScriptWord(turkishWord):
       u'\u00db': 'u',
       
       '-' : '',
-      "\'": ''
-        
+      "\'": '',
+      "\," : ''
      
     }
-    
-    s = list(turkishWord)
+       
 
-    for i in range(len(s)):
-        if s[i] in lookupTable:
-            s[i] = lookupTable[s[i]]
-        else:
-            s[i] = s[i].lower()
-            
-    
-    return "".join(s)
-
-# convert to METU script a string of words
-
-     
-
-def grapheme2Phoneme(METUword):
-
-    
-    # table 1 from Oe. Salor - Turkish speech corpora and recognition tools developed by porting SONIC: Towards multilingual speech recognition
+# table 1 from Oe. Salor - Turkish speech corpora and recognition tools developed by porting SONIC: Towards multilingual speech recognition
     
     # TODO: More carefull distinction between variants. e. g. # disctinction between G and GG
-    METUlookupTable = {
+METUlookupTable = {
                        'a': 'AA',
                        'e': 'EE',
                        'i': 'IY',
@@ -121,6 +110,59 @@ def grapheme2Phoneme(METUword):
                        'j': 'J'
                        }
     
+
+
+
+# converts non-unicode chars into METU-defined chars. 
+# here METU paper    
+def turkishScriptWord2METUScriptWord(turkishWord): 
+        
+    
+    s = list(turkishWord)
+
+    # combine two-char Diaresis
+    combinedList = combineDiaresisChars(s)
+         
+    
+    # convert to METU
+    for i in range(len(combinedList)):
+        if combinedList[i] in lookupTable:
+            combinedList[i] = lookupTable[combinedList[i]]
+        else:
+            combinedList[i] = combinedList[i].lower()
+            
+    
+    return "".join(combinedList)
+
+# convert to METU script a string of words
+
+    
+    
+   # if there are diaresis expressed as two chars in utf, combines them together
+   # @param - listA - list with letters of a word
+   # @return listWithCombined  
+def combineDiaresisChars(listA):
+    diaresisIndeces = []
+    for i, j in enumerate(listA): 
+        if j == u'\u0308':
+           diaresisIndeces.append(i)
+    
+    # transform diaresis
+    for indexL in diaresisIndeces:
+        diaresisLetter = listA.pop(indexL - 1)
+        newLetter = diaresisLetter + u'\u0308'
+        listA.insert(indexL - 1, newLetter)
+
+    # remove diaresis    
+    counter = 0
+    for indexL in diaresisIndeces:
+         indexL = indexL - counter;  listA.pop(indexL); counter = counter + 1
+    return  listA
+
+def grapheme2Phoneme(METUword):
+
+    
+    
     
     
     s = list(METUword)
@@ -137,84 +179,48 @@ def grapheme2Phoneme(METUword):
     
     
     
+    '''
+     convert turkish scritp to METU script. used in word-level annotation of lyrics in audio
+# @param: string with lyrics in turkish
+    Optionally this function can be called with lyrics instead of turkishScriptLyrics2METUScriptLyricsFile  
+'''
+
+def turkishScriptLyrics2METUScriptLyrics(lyrics, outputFileName):
     
-# convert turkish scritp to METU script. used in word-level annotation of lyrics in audio
-# @param: string with lyrics in turkish 
-def turkishScriptLyrics2METUScriptLyrics(lyrics):
-#     wordList = re.findall(r'\w+', lyrics)
+#     lyrics = unicode(lyrics,'utf-8')
+    
+    lyrics = lyrics.replace('\n', ' ')
     list = lyrics.split()
 #     wordSequence =  wordList.split()
     for i in range(len(list)):
         list[i] = turkishScriptWord2METUScriptWord(list[i])
-    return " ".join(list).strip()
     
-    # same as turkishScriptLyrics2METUScriptLyrics. but takes as input file and print into file 
+
+    processedLyrics = " ".join(list).strip()
+
+    outputFileHandle = open(outputFileName, 'w')
+    outputFileHandle.write(processedLyrics)
+    outputFileHandle.close() 
+
+   
+    
+    # same as turkishScriptLyrics2METUScriptLyrics. but takes as input file
     #  @param: inputFileName - one-line file with lyrics
 def turkishScriptLyrics2METUScriptLyricsFile(inputFileName, outputFileName):
 
-    inputFileHandle = codecs.open(inputFileName,'r','utf-8')
-    outputFileHandle = open(outputFileName,  'w')
+    inputFileHandle = codecs.open(inputFileName, 'r', 'utf-8')
+    
     
     lyrics = inputFileHandle.read()
-    lyrics = lyrics.replace('\n',' ')
+    lyrics = lyrics.replace('\n', ' ')
     
-    processedLyrics = turkishScriptLyrics2METUScriptLyrics(lyrics)
-#     list = lyrics.split()
-# #     wordSequence =  wordList.split()
-#     for i in range(len(list)):
-#         list[i] = turkishScriptWord2METUScriptWord(list[i])
-#     return " ".join(list).strip()
-    outputFileHandle.write(processedLyrics)
+    turkishScriptLyrics2METUScriptLyrics(lyrics, outputFileName)
+
     inputFileHandle.close()
-    outputFileHandle.close()  
+    
+     
     return
     
-    
-# converts turkish script lyrics to phonetic dictinary 
-# @param: inputFileName - one-line file with lyrics
-
-def turkishScriptLyrics2phoneticDict(inputFileName, outputFileName):
-    
-    inputFileHandle = codecs.open(inputFileName,'r','utf-8')
-    outputFileHandle = open(outputFileName,  'w')
-    
-    lyrics = inputFileHandle.read()
-    lyrics = lyrics.replace('\n',' ')    
-    
-    words = lyrics.split()
-    for i in range(len(words)):
-        words[i] = turkishScriptWord2METUScriptWord(words[i])
-       
-       # write the word
-        outputFileHandle.write( words[i])
-        outputFileHandle.write("\t")
-        
-        # list of METU phonemes for current word
-        phonemeList = grapheme2Phoneme(words[i])
-        for phoneme in phonemeList:
-            outputFileHandle.write(phoneme)
-            outputFileHandle.write(" ")
-        # new line for new word
-        outputFileHandle.write('\n')
-    
-            
-    inputFileHandle.close()
-    outputFileHandle.close()  
-    return
-
-
-def lyrics2mlf(lyricsFileName ):
-    # lyrics to METU 
-    
-    # generate phone level 
-    
-    
-    # return dictionary
-    
-    # return phoneme-level mlfFile
-
-    return
-
 
 
 
@@ -227,15 +233,22 @@ if __name__ == '__main__':
 # call 
 # lyrics2mlf(lyricsFileName ):
 
-    wordList = u'Kudûmün rahmet-i zevk u safâdır yâ Resûl Allah Zuhûrun derd-i uşşâkâ devâdır yâ Resûl Allah Hüdâî\'ye şefaat kıl, eer zâhir eer bâtın Kapına intisâb etmiş gedâdır yâ Resûl Allah'
-
-    convertedList =  turkishScriptLyrics2METUScriptLyrics(wordList)
+#     wordList = u'Kudûmün rahmet-i zevk u safâdır yâ Resûl Allah Zuhûrun derd-i uşşâkâ devâdır yâ Resûl Allah Hüdâî\'ye şefaat kıl, eer zâhir eer bâtın Kapına intisâb etmiş gedâdır yâ Resûl Allah'
+# 
+#     convertedList =  turkishScriptLyrics2METUScriptLyrics(wordList)
 #     print convertedList
 #     
 #     print grapheme2Phoneme('kapIna')
 #     
 #     turkishScriptLyrics2phoneticDict(sys.argv[1], sys.argv[2])
+    
+        turkishScriptLyrics2METUScriptLyricsFile(sys.argv[1], sys.argv[2])
 
-    turkishScriptLyrics2METUScriptLyricsFile(sys.argv[1], sys.argv[2] )
+
+#         turkishScriptLyrics2METUScriptLyrics(u"Rüzgâr söylüyor şimdi o yerlerde bizim eski şarkımızı", '/Users/joro/Downloads/phoneme-level.out.mlf')
+
+#         turkishScriptLyrics2METUScriptLyrics(sys.argv[1], sys.argv[2])
+        
+    
     
     

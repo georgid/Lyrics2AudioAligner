@@ -28,7 +28,7 @@ def toPhoneDict(pathToDirWithTxt, pathForOutput):
                 # derive name of  pronunciation_dict file 
                 pronunciation_dictFileName  = os.path.join(root, baseFileName) + ".pronunciation_dict"
                 
-                pipe = subprocess.Popen(["perl", "/Users/joro/Documents/Phd/UPF/voxforge/myScripts/createPhoneDict.pl", phnFileName, wrdFileName, pronunciation_dictFileName   ])
+                pipe = subprocess.Popen(["perl", os.path.abspath("createPhoneDict.pl"), phnFileName, wrdFileName, pronunciation_dictFileName   ])
                 
                 pronunciation_dictHandle = open(pronunciation_dictFileName, 'r')
                 dictContent = pronunciation_dictHandle.read()

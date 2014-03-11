@@ -13,8 +13,8 @@ tableName$ = selected$("Table")
 selectObject("Table " + tableName$)
 numInervals = do("Get number of rows")
 
-
-for i=2 to numInervals
+# boundary at 0 and end exist by default in praat
+for i from 2 to numInervals
 	selectObject("Table " + tableName$)
 
 	startTs=do("Get value...", i,"startTs")
@@ -23,7 +23,7 @@ for i=2 to numInervals
 	selectObject("TextGrid " + textGridName$)
 
 	do("Insert boundary...", 1, startTs)
-	do("Insert boundary...", 1, endTs)
+	#do("Insert boundary...", 1, endTs)
 
 endfor
 

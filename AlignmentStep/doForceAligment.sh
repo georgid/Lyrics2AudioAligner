@@ -37,12 +37,12 @@ fi
 #### parameters.
 HTK_34_PATH="/Users/joro/Documents/Fhg/htk3.4.BUILT/bin" 
 
-DATA="/Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/"
+PARENT_OF_INTERIM_AND_INPUT_FILES="/Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/"
 
 # HMMDefs model
 
 #origninal speech HMM models 
-# HMM=$DATA/interim_files/hmm7/hmmdefs
+# HMM=$PARENT_OF_INTERIM_AND_INPUT_FILES/interim_files/hmm7/hmmdefs
 
 # adapted to singing voice
 #HMM=/Users/joro/Documents/Phd/UPF/Turkey-makam/adaptedModel/hmmdefs.gmllrmean
@@ -78,18 +78,19 @@ HMMLIST=/Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/interim_files/monoph
 
 if [ ! -f ${1}.wav ]
 then 
-ffmpeg -i ${1}.mp3 ${1}.wav
+/usr/local/bin/ffmpeg -i ${1}.mp3 ${1}.wav
 fi
 
-# conver to METU txtx. done because  I need the .txt file
-python /Users/joro/Documents/Phd/UPF/voxforge/myScripts/utils/turkishLyrics2METULyrics.py $TXTTUR /tmp/${1}.txt
-
 # TXT=/tmp/${1}.txt
-TXT=${1}.txt
+TXT=${1}.txtMETU
+
+# conver to METU txtx. done because  I need the .txt file
+python /Users/joro/Documents/Phd/UPF/voxforge/myScripts/utils/turkishLyrics2METULyrics.py "$TXTTUR" $TXT
+
 
 # create word-level mlf
      
-a=`basename $TXT .txt` ;   printf "$a "> /tmp/mlf; cat $TXT >> /tmp/mlf
+a=`basename $TXT .txtMETU` ;   printf "$a "> /tmp/mlf; cat $TXT >> /tmp/mlf
 perl /Users/joro/Documents/Phd/UPF/voxforge/HTK_scripts/prompts2mlf $WORD_LEVEL_MLF  /tmp/mlf
 
 
@@ -99,20 +100,26 @@ cat /tmp/lexicon1 | sort | uniq > /tmp/lexicon2
 printf "sil\tsil\n" >>/tmp/lexicon2
 
 # here feature extraction
- echo "${1}.wav ${1}.mfc" > /tmp/alignment_codetrain_mfc.scp
-  echo "${1}.mfc" > /tmp/only_mfc.scp
+ #echo "${1}.wav ${1}.mfc" > /tmp/alignment_codetrain_mfc.scp
+  #echo "${1}.mfc" > /tmp/only_mfc.scp
 
 # extract mfccs
-HCopy -A -D -T 1 -C /Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/input_files/wav_config -S /tmp/alignment_codetrain_mfc.scp
+#/usr/local/bin/HCopy -A -D -T 1 -C /Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/input_files/wav_config -S /tmp/alignment_codetrain_mfc.scp
+/usr/local/bin/HCopy -A -D -T 1 -C $PARENT_OF_INTERIM_AND_INPUT_FILES/input_files/wav_config ${1}.wav ${1}.mfc
 
 
 
 # run forced alignment 
-$HTK_34_PATH/HVite -l '*' -o SW -A -D -T 1  -b sil -C $DATA/input_files/config  -a -H $HMM -i $PHONE_LEVEL_ALIGNMENT -m -I $WORD_LEVEL_MLF -y lab -S /tmp/only_mfc.scp /tmp/lexicon2 $HMMLIST
+# make sure argiment to -i is less than 248 chars. Otherwise abort trap error comes.
+$HTK_34_PATH/HVite -l "'*'" -o SW -A -D -T 1  -b sil -C $PARENT_OF_INTERIM_AND_INPUT_FILES/input_files/config  -a -H $HMM -i /tmp/phoneme-level.output -m -I $WORD_LEVEL_MLF -y lab /tmp/lexicon2 $HMMLIST ${1}.mfc
+mv  /tmp/phoneme-level.output $PHONE_LEVEL_ALIGNMENT 
 
 # visualize alignment in seconds
  echo "phone-level alignment writen to file $PHONE_LEVEL_ALIGNMENT"
  echo
- awk '{start = $1 / 10000000; end= $2 / 10000000;  print start, end,  $3}' $PHONE_LEVEL_ALIGNMENT  | sed '1,2d' | sed '$d'   > $PHONE_LEVEL_ALIGNMENT.noMLF
- cat $PHONE_LEVEL_ALIGNMENT.noMLF
+
+rm $PHONE_LEVEL_ALIGNMENT.noMLF
+ echo "startTs endTs phoneme"> $PHONE_LEVEL_ALIGNMENT.noMLF
+ awk '{start = $1 / 10000000; end= $2 / 10000000;  print start, end,  $3, $4}' $PHONE_LEVEL_ALIGNMENT  | sed '1,2d' | sed '$d'   >> $PHONE_LEVEL_ALIGNMENT.noMLF
+ # cat $PHONE_LEVEL_ALIGNMENT.noMLF
 

@@ -29,9 +29,9 @@ echo "Starting training HMM models..."
 ALL_PRON_DICT=$1
 WORD_LEVEL_MLF=$2
 TRAIN_DIR_WAV=$3
+PARENT_OF_INTERIM_AND_INPUT_FILES=$4
 
-
-PARENT_OF_INTERIM_AND_INPUT_FILES=/Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/
+# PARENT_OF_INTERIM_AND_INPUT_FILES=/Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/
 GITDIR=/Users/joro/Documents/Phd/UPF/voxforge/myScripts
 
 
@@ -152,7 +152,8 @@ print_heading "init"
 cd $PARENT_OF_INTERIM_AND_INPUT_FILES
 htk_init
 print_heading "Step 4 - create Phoneme-level alignemnt in format understandable for HTK. 
-Replace each word with its phonemes, and put the result in a new Phone Level Master Label File"
+Replace each word with its phonemes, and put the result in a new Phone Level Master Label File.
+phones0 is without sp model. phones1 is absolutely same but with sp at end of each word "
 	HLEd -A -D -T 1 -l '*' -d $ALL_PRON_DICT -i ./interim_files/phones0.mlf ./input_files/mkphones0.led $WORD_LEVEL_MLF > logs/Step4_HLEd_phones0.log
 	HLEd -A -D -T 1 -l '*' -d $ALL_PRON_DICT -i ./interim_files/phones1.mlf ./input_files/mkphones1.led $WORD_LEVEL_MLF > logs/Step4_HLEd_phones1.log
 
@@ -166,7 +167,7 @@ python $GITDIR/TrainingStep/listWavFiles.py ${TRAIN_DIR_WAV} /tmp/codetrain.scp 
 	
 
 print_heading "Step 6 - Creating Monophones"
-    echo -e 'making hmm0\n'
+    echo -e 'making hmm0\n. HCompV computes the global mean and variance'
 	HCompV -A -D -T 1 -C ./input_files/config -f 0.01 -m -S /tmp/train.scp -M ./interim_files/hmm0 input_files/proto > logs/Step6_HCompV_hmm0.log
 	make_hmmdefs
 	make_macros

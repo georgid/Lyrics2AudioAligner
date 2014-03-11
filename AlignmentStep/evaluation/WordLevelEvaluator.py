@@ -5,6 +5,7 @@ Created on Mar 5, 2014
 '''
 
 from evaluation.TextGrid_Parsing import TextGrid2Dict, TextGrid2WordList
+from evaluation.textgrid import TextGrid
 
 
 '''
@@ -69,10 +70,11 @@ if __name__ == '__main__':
   
 # TODO: error in parsing of sertan's textGrid
 # TODO: think about sil. Discard in counting
-#     textGrid = '/Users/joro/Documents/Phd/UPF/turkish-makam-lyrics-2-audio-test-data/muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_ozisik/1-05_Ruzgar_Soyluyor_Simdi_O_Yerlerde/1-05_Ruzgar_Soyluyor_Simdi_O_Yerlerde.TextGrid'
-    textGrid='/Volumes/IZOTOPE/adaptation_data/kani_karaca-cargah_tevsih.TextGrid'
+    textGridFile = '/Users/joro/Documents/Phd/UPF/turkish-makam-lyrics-2-audio-test-data/muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_ozisik/1-05_Ruzgar_Soyluyor_Simdi_O_Yerlerde/1-05_Ruzgar_Soyluyor_Simdi_O_Yerlerde.TextGrid'
+#     textGridFile='/Volumes/IZOTOPE/adaptation_data/kani_karaca-cargah_tevsih.TextGrid'
+#     textGridFile = '/Users/joro/Documents/Phd/UPF/Example_words_phonemes.TextGrid'
     
-    listWordsAndTsAnnot = TextGrid2WordList(textGrid)
+    listWordsAndTsAnnot = TextGrid2WordList(textGridFile)
     listWordsAndTs = mlf2List(tmpMLF)
     
     annotationWordList = [[0.01, 'sil'], [0.05, 'rUzgar'], [0.9,'Simdi']]
