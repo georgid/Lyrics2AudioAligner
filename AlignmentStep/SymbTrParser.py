@@ -30,7 +30,6 @@ class SymbTrParser(object):
     load syllables from symbTr file. parse syllables
     '''
     def _loadSyllables(self, pathToSymbTrFile):
- 
     
     
         allLines = self._loadTextFile(pathToSymbTrFile)
