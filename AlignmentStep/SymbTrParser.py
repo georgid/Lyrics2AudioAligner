@@ -31,7 +31,8 @@ class SymbTrParser(object):
     '''
     def _loadSyllables(self, pathToSymbTrFile):
  
-       
+    
+    
         allLines = self._loadTextFile(pathToSymbTrFile)
         
         # skip first line
