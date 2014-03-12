@@ -27,7 +27,7 @@
 if [ $# -ne 3 ]; then
     echo "Tool to run forced alignment. Input: audio and text in turkish."
     echo ""
-    echo "USAGE: $0 path_to_audio_file_no_ext lyrics.txtTur PHONE_LEVEL_ALIGNED.output.mlf "
+    echo "USAGE: $0 path_to_audio_file_no_ext lyrics PHONE_LEVEL_ALIGNED.output.mlf "
     echo ""
     echo ""
     exit 0
@@ -111,7 +111,7 @@ printf "sil\tsil\n" >>/tmp/lexicon2
 
 # run forced alignment 
 # make sure argiment to -i is less than 248 chars. Otherwise abort trap error comes.
-$HTK_34_PATH/HVite -l "'*'" -o SW -A -D -T 1  -b sil -C $PARENT_OF_INTERIM_AND_INPUT_FILES/input_files/config  -a -H $HMM -i /tmp/phoneme-level.output -m -I $WORD_LEVEL_MLF -y lab /tmp/lexicon2 $HMMLIST ${1}.mfc
+$HTK_34_PATH/HVite -l "'*'" -o S -A -D -T 1  -b sil -C $PARENT_OF_INTERIM_AND_INPUT_FILES/input_files/config  -a -H $HMM -i /tmp/phoneme-level.output -m -I $WORD_LEVEL_MLF -y lab /tmp/lexicon2 $HMMLIST ${1}.mfc
 mv  /tmp/phoneme-level.output $PHONE_LEVEL_ALIGNMENT 
 
 # visualize alignment in seconds

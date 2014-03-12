@@ -70,7 +70,8 @@ lookupTable = {
       
       '-' : '',
       "\'": '',
-      "\," : ''
+      "\," : '',
+      "_":''
      
     }
        
@@ -187,7 +188,7 @@ def grapheme2Phoneme(METUword):
 
 def turkishScriptLyrics2METUScriptLyrics(lyrics, outputFileName):
     
-#     lyrics = unicode(lyrics,'utf-8')
+    lyrics = unicode(lyrics,'utf-8')
     
     lyrics = lyrics.replace('\n', ' ')
     list = lyrics.split()
@@ -242,12 +243,12 @@ if __name__ == '__main__':
 #     
 #     turkishScriptLyrics2phoneticDict(sys.argv[1], sys.argv[2])
     
-        turkishScriptLyrics2METUScriptLyricsFile(sys.argv[1], sys.argv[2])
+#         turkishScriptLyrics2METUScriptLyricsFile(sys.argv[1], sys.argv[2])
 
 
 #         turkishScriptLyrics2METUScriptLyrics(u"Rüzgâr söylüyor şimdi o yerlerde bizim eski şarkımızı", '/Users/joro/Downloads/phoneme-level.out.mlf')
 
-#         turkishScriptLyrics2METUScriptLyrics(sys.argv[1], sys.argv[2])
+        turkishScriptLyrics2METUScriptLyrics(sys.argv[1], sys.argv[2])
         
     
     

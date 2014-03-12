@@ -37,12 +37,13 @@ class MakamScore():
         
         # lyrics divided by sections
         
-        self.sectionNames = []
+        self.sectionToLyricsMap = []
         self._loadSectionsAndLyricsFromSymbTr(pathToSymbTrFile, pathToSectionTsvFile)
         
         
-        self.sectionLyrics = self.symbTrParser.sectionLyrics
-        # dict
+        '''
+        @deprecated: 
+        '''
         self.sectionLyricsDict = {MakamScore.sectionNamesSequence[0]:"", MakamScore.sectionNamesSequence[1]:"", MakamScore.sectionNamesSequence[2]:"", MakamScore.sectionNamesSequence[3]:""}
         
         #self.loadLyricsForSections(pathToSymbTrFile)
@@ -53,22 +54,21 @@ class MakamScore():
       
       
     def _loadSectionsAndLyricsFromSymbTr(self, pathToSymbTrFile, pathToSectionTsvFile):
-        self.symbTrParser = SymbTrParser(pathToSymbTrFile, pathToSectionTsvFile)
+        symbTrParser = SymbTrParser(pathToSymbTrFile, pathToSectionTsvFile)
        
-        self.symbTrParser.syllablesToWords()
+        symbTrParser.syllablesToWords()
        
-        for sectionBoundary in self.symbTrParser.sectionboundaries:
-            self.sectionNames.append(sectionBoundary[0])  
-
+        for currSectionBoundary,currSectionLyrics in zip(symbTrParser.sectionboundaries, symbTrParser.sectionLyrics):
+            tupleSectionNameAndLyrics =  currSectionBoundary[0], currSectionLyrics  
+            self.sectionToLyricsMap.append(tupleSectionNameAndLyrics)
         
     '''    
-    # @deprecated 
+    @deprecated with old self.sectionLyricsDict
              # NOTE: Each section shoud be in a new line. Ideally copy paste from score.pdf to a textFile.
     # assigns strophes(lyrical lines) to sections:  
     # assumes strophes are 4 in pathTo.txtdivided file. Checks repeating labels in pathToLinkedSectionsFile   
     '''
     def loadLyricsForSections(self, pathToTxtTurFile):
-            
             txtTurFileHandle =  codecs.open(pathToTxtTurFile, 'r', 'utf-8')
 
             lyrics = txtTurFileHandle.readlines()
@@ -81,12 +81,9 @@ class MakamScore():
                     self.sectionLyricsDict[MakamScore.sectionNamesSequence[i]]=lyrics[i]
                 
              
-#                 self.sectionLyricsDict.append(lyrics[0])
-#                 self.sectionLyricsDict.append(lyrics[1])
-#                 self.sectionLyricsDict.append(lyrics[2])
-#                 self.sectionLyricsDict.append(lyrics[3])
             
     '''
+    @deprecated:  with old self.sectionLyricsDict. TODO: rewrite
     put each section in a separate .txtTur file
     An optional method. Now doit.alignOneRecroding() does not need to print lyrics txtTur for each section 
     '''        
@@ -101,14 +98,15 @@ class MakamScore():
             outputFileHandle = codecs.open(pathTolyricSectionFile, 'w', 'utf-8')
             outputFileHandle.write(value)
             outputFileHandle.close()
+
             print "file %s written", (pathTolyricSectionFile)
    
     def printSectionsAndLyrics(self):
-        for i in range(len(self.sectionNames)):
+        for currSection in self.sectionToLyricsMap:
 
-            print str(self.sectionNames[i]) + ': \n' 
+            print str(currSection[0]) + ': \n' 
 
-            string_for_output = self.sectionLyrics[i].encode('utf-8','replace')
+            string_for_output = currSection[1].encode('utf-8','replace')
             print  string_for_output + '  \n\n'
         
         

@@ -1,9 +1,11 @@
+# -*- coding: utf-8 -*-
 '''
 Created on Mar 10, 2014
 
 @author: joro
 '''
 import codecs
+import os
 
 class SymbTrParser(object):
     '''
@@ -37,14 +39,17 @@ class SymbTrParser(object):
         # skip first line
         
         for line in allLines[1:]:
+            line = line.replace(os.linesep,'')
             
-            tokens = line.strip().split("\t")
-            if len(tokens) == 12 and tokens[11] != '.' and tokens[11] != 'SAZ':
-    #           note number and syllable
-                tupleSyllable = int(tokens[0]), tokens[11]
-                
-                self.listSyllables.append(tupleSyllable)
-        
+            tokens = line.split("\t")
+            
+            if len(tokens) == 12:
+                if tokens[11] != '.' and tokens[11] != 'SAZ' and tokens[11] != u'ARANAĞME':
+        #           note number and syllable
+                    tupleSyllable = int(tokens[0]), tokens[11]
+                    
+                    self.listSyllables.append(tupleSyllable)
+            
      
    
     def _loadSectionBoundaries(self, pathToTsvFile):
@@ -60,8 +65,8 @@ class SymbTrParser(object):
        
         
     '''
-    converts syllables to words using dasshes 
-    at the same time divides them into given sections   
+    converts syllables to words using " " at end of syllable from SymbTr 
+    at the same time divides them into given sections.
     '''  
     def syllablesToWords(self):
         
@@ -77,9 +82,10 @@ class SymbTrParser(object):
                         currSectionLyrics = currSectionLyrics + self.listSyllables[indexSyllable][1]
                         indexSyllable += 1
             
+            # double empty space marks section end, but we dont use it for now             
+            currSectionLyrics = currSectionLyrics.strip()
             # record lyrics
             self.sectionLyrics.append(currSectionLyrics)
-            print 't'
         
     
      ## TODO: callback function to load code. Put it in a different folder

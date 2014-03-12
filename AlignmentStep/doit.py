@@ -22,10 +22,10 @@ COMPOSITION_NAME = 'muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_oz
 Loads all lyrics , divides them line-wise and writes new files
 
 '''
-def dividebyLineAllLyrics(pathTotxtTur):
+def loadMakamScore(pathTotxt, pathToSectionTsv):
     
  # initialize makam lyrics
-        makamScore = MakamScore(pathTotxtTur)
+        makamScore = MakamScore(pathTotxt, pathToSectionTsv)
         
         # individual lyrics line written to separate files. 
         # then these files loaded fro each segment
@@ -42,21 +42,27 @@ def alignOneRecording(makamScore, pathToAudio, pathToSectionAnnotations):
         makamRecording = MakamRecording(makamScore, pathToAudio, pathToSectionAnnotations)
         
         # divide into segments
-        makamRecording.assignSectionLyrics()
         makamRecording.divideAudio()
         
-        lyrics = makamRecording.sectionLyricsMap[0]
-        
-        # run alignment
-        baneNameAudioFile = os.path.splitext(makamRecording.pathToDividedAudioFiles[0])[0]
-        pathTolyricSectionFile= makamRecording.makamScore.compositionName + "_" +  makamRecording.sectionNamesSequence[0]  + ".txtTur"
-         
-        commandWithArgs = [pathToAlignmentTool, baneNameAudioFile, pathTolyricSectionFile, baneNameAudioFile + ".phone-level.output"  ]    
-        pipe = subprocess.Popen(commandWithArgs)
-#         pipe = subprocess.Popen([pathToAlignmentTool, baneNameAudioFile, lyrics, baneNameAudioFile + ".phone-level.output"  ])
-        
-#         print "executing command: ", commandWithArgs
-        
+        for whichChunk in range(len(makamRecording.sectionIndices)):
+            sectionIndex =  makamRecording.sectionIndices[whichChunk]
+            lyrics = makamRecording.makamScore.sectionToLyricsMap[sectionIndex-1][1]
+            
+            # skip non-vocal sections
+            if lyrics == "":
+                continue 
+            
+            # run alignment
+            baneNameAudioFile = os.path.splitext(makamRecording.pathToDividedAudioFiles[whichChunk])[0]
+    #         pathTolyricSectionFile= makamRecording.makamScore.compositionName + "_" +  makamRecording.sectionNamesSequence[0]  + ".txtTur"
+             
+    #         commandWithArgs = [pathToAlignmentTool, baneNameAudioFile, lyrics, baneNameAudioFile + ".phone-level.output"  ]    
+    #         pipe = subprocess.Popen(commandWithArgs)
+    #         print "executing command: ", commandWithArgs
+    
+            pipe = subprocess.Popen([pathToAlignmentTool, baneNameAudioFile, lyrics, baneNameAudioFile + ".phone-level.output"  ])
+            
+            
         
     
     
@@ -66,9 +72,10 @@ def alignOneRecording(makamScore, pathToAudio, pathToSectionAnnotations):
 if __name__ == '__main__':
         pathToComposition = os.path.join(PATH_TEST_DATASET, COMPOSITION_NAME)
         os.chdir(pathToComposition)
-        pathTotxtTur = os.path.join(pathToComposition, glob.glob("*.txtTur")[0])
+        pathToTxt = os.path.join(pathToComposition, glob.glob("*.txt")[0])
+        pathToSectionTsv = os.path.join(pathToComposition, glob.glob("*.sections.tsv")[0])
         
-        makamScore =  dividebyLineAllLyrics(pathTotxtTur)
+        makamScore =  loadMakamScore(pathToTxt, pathToSectionTsv)
         
 #         ----
         
@@ -77,8 +84,9 @@ if __name__ == '__main__':
         
         for recordingDir in recrodingDirs:
             pathToRecording = os.path.join(pathToComposition, recordingDir)
+            os.chdir(pathToRecording)
+            pathToSectionAnnotations = os.path.join( pathToRecording, glob.glob('*.sectionAnno.txt')[0])
+#             pathToAudio =  os.path.join(pathToRecording, glob.glob('*.wav')[0])
             
-            pathToSectionAnnotations = os.path.join(pathToRecording,  recordingDir + '.sectionAnno.txt')
-            pathToAudio =   os.path.join(pathToRecording,  recordingDir  + '.wav')
-    
+            pathToAudio = '/Users/joro/Documents/Phd/UPF/turkish-makam-lyrics-2-audio-test-data/muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_ozisik/1-05_Ruzgar_Soyluyor_Simdi_O_Yerlerde/1-05_Ruzgar_Soyluyor_Simdi_O_Yerlerde.wav'
             alignOneRecording(makamScore, pathToAudio, pathToSectionAnnotations )

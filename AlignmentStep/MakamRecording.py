@@ -16,7 +16,7 @@ class MakamRecording:
     classdocs
     '''
     '''
-    The size of self.sectionNames, self.beginTs, self.endTs, self.sectionLyricsMap should be same
+    The size of self.sectionNames, self.beginTs, self.endTs, self.sectionIndices should be same
     
     '''
 
@@ -36,17 +36,21 @@ class MakamRecording:
         
         self.sectionNamesSequence = []
         
+        self.sectionIndices = []
         
-        self.loadsectionTimeStamps( pathToLinkedSectionsFile)
+        self._loadsectionTimeStamps( pathToLinkedSectionsFile)
 
-        # all section lyrics
-        self.sectionLyricsMap = list(self.sectionNamesSequence)
+        '''
+        assigns a pointer (number) to each section Name from score
+        '''
         
     
         return
     
+
     
     ''' 
+    @deprecated: 
     Handles the Division into sections. If 4 section names given for MakamScore, assumes the forth (nakarat) is melodic repetition of second but with different lyrics (2nakarat)  
     
     '''
@@ -69,12 +73,12 @@ class MakamRecording:
                 currSectionName='2' + currSectionName    
                 
             if currSectionName in MakamScore.sectionNamesSequence:
-                self.sectionLyricsMap[index] =   self.makamScore.sectionLyricsDict[currSectionName]
+                self.sectionIndices[index] =   self.makamScore.sectionLyricsDict[currSectionName]
                 if currSectionName == MakamScore.sectionNamesSequence[2]:
                     flagMeyan = True
             else:
                 print "unknown section name: %s " ,  (currSectionName)
-                self.sectionLyricsMap[index] = ""
+                self.sectionIndices[index] = ""
                 
             
         return
@@ -83,7 +87,7 @@ class MakamRecording:
         
              
     ## loads timestamps from file .sectionAnno
-    def loadsectionTimeStamps(self, pathToLinkedSectionsFile):
+    def _loadsectionTimeStamps(self, pathToLinkedSectionsFile):
         
         # U means cross-platform  end-line character
         sectionsFileHandle = open(pathToLinkedSectionsFile, 'rU')
@@ -97,11 +101,11 @@ class MakamRecording:
             self.beginTs.append(tokens[0])
             self.endTs.append(tokens[1])
             self.sectionNamesSequence.append(tokens[2])
-        
+            
+            # WORKAROUND for section mapping. read mapping index from 4th field in .annotations file
+            self.sectionIndices.append(int(tokens[3]))
             
         # divide into columns
-        
-        
         
         sectionsFileHandle.close()
         
@@ -118,7 +122,9 @@ class MakamRecording:
                 
                 self.pathToDividedAudioFiles.append(filePathDividedAudio)
                 # make sure  sox (sox.sourceforge.net) is installed and call it  here with subprocess
-                pipe = subprocess.Popen([pathToSox, self.pathToAudiofile, filePathDividedAudio, 'trim', self.beginTs[i], self.endTs[i]   ])
+                sectionDuration = float(self.endTs[i])-float(self.beginTs[i])
+                self.pathToAudiofile = '/Users/joro/Documents/Phd/UPF/turkish-makam-lyrics-2-audio-test-data/muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_ozisik/1-05_Ruzgar_Soyluyor_Simdi_O_Yerlerde/1-05_Ruzgar_Soyluyor_Simdi_O_Yerlerde.wav'
+                pipe = subprocess.Popen([pathToSox, self.pathToAudiofile, filePathDividedAudio, 'trim', self.beginTs[i], str(sectionDuration)   ])
                
             return
     
