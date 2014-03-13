@@ -1,11 +1,14 @@
 # to run select 1)empty TextGrid with one tier
-# 2) Table with phoneme-level.noMLF as table with whitespaces
+# 2) Table with phoneme-level.noMLF as table with tabs from file : .alignedTsAndWord
 
 textGridName$ = selected$ ("TextGrid")
 tableName$ = selected$("Table")
+stringsName$ = selected$("Strings")
 
- # tiers = do("Get number of tiers")
 
+selectObject("TextGrid " + textGridName$)
+lastTierNumber = do("Get number of tiers")
+do("Insert interval tier...",lastTierNumber+1,"aligned")
  #lastTier$ = do$("Get tier name...", tiers)
 
 
@@ -13,17 +16,31 @@ tableName$ = selected$("Table")
 selectObject("Table " + tableName$)
 numInervals = do("Get number of rows")
 
+
+
 # boundary at 0 and end exist by default in praat
 for i from 2 to numInervals
+	
 	selectObject("Table " + tableName$)
 
 	startTs=do("Get value...", i,"startTs")
-	endTs=do("Get value...", i,"endTs")
+	#endTs=do("Get value...", i,"endTs")
+	#word$=do("Get value...",i,"word")
+	# conversion does not work: word$="'word'"
+	#print 'word$'
 	
+	selectObject("Strings " + stringsName$)
+	word$=Get string... i
+	
+
 	selectObject("TextGrid " + textGridName$)
 
-	do("Insert boundary...", 1, startTs)
-	#do("Insert boundary...", 1, endTs)
+	do("Insert boundary...", lastTierNumber+1, startTs)
+	#do("Insert boundary...", lastTierNumber+1, endTs)
+	do("Set interval text...",lastTierNumber+1,i,word$)
+
+	
+
 
 endfor
 

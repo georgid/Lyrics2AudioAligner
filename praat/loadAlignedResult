@@ -1,0 +1,15 @@
+form Specify .phraseAnno.TextGrid and .wordAligned
+
+comment specify filename .phraseAnno.TextGrid. No path. File should be in current dir 
+word pathTofiles /Users/joro/Documents/Phd/UPF/turkish-makam-lyrics-2-audio-test-data/muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_ozisik/1-05_Ruzgar_Soyluyor_Simdi_O_Yerlerde
+word phraseAnno 1-05_Ruzgar_Soyluyor_Simdi_O_Yerlerde.phraseAnno.textGrid
+comment specify filename.wordAligned  No path. File should be in current dir 
+word wordAligned  1-05_Ruzgar_Soyluyor_Simdi_O_Yerlerde_zemin_from_38.756510_to_77.630188.wordAligned
+
+endform
+
+Read Strings from raw text file... 'pathTofiles$'/'wordAligned$'
+
+Read Table from whitespace-separated file... 'pathTofiles$'/'wordAligned$'
+
+Read from file... 'pathTofiles$'/'phraseAnno$'
