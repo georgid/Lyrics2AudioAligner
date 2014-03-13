@@ -6,40 +6,13 @@ Created on Mar 5, 2014
 
 from evaluation.TextGrid_Parsing import TextGrid2Dict, TextGrid2WordList
 from evaluation.textgrid import TextGrid
+from SymbTrParser import loadTextFile
+from utils.Utils import writeListToTextFile, mlf2WordAndTsList
 
 
-'''
-parse output of alignment in mlf format ( with words) 
-output: words with begin and end ts 
-
-# TODO: change automatically extension from txt to mlf
-
-''' 
-
-
-def mlf2List(inputFileName):
-    inputFileHandle = open(inputFileName)
-    
-    listWordsAndTs = []
-        
-    # when reading lines from MLF, skip first 2 and last
-    allLines = inputFileHandle.readlines()
-    
-    
-    # skip first two and last
-    for line in allLines:
-        
-        tokens =  line.split(" ")
-        if len(tokens) != 4:
-            continue
-        startTime = float(tokens[0])/10000000
-        wordMETU = tokens[3].strip()
-        listWordsAndTs.append([startTime, wordMETU])
-         
-    inputFileHandle.close()
-    return listWordsAndTs
 
 '''
+calculate evaluation metric
 For now works only with begin ts
 '''
 def wordsList2avrgTxt(annotationWordList, detectedWordList):
@@ -66,7 +39,11 @@ def wordsList2avrgTxt(annotationWordList, detectedWordList):
 
 
 if __name__ == '__main__':
-    tmpMLF= '/tmp/phone-level.output'
+    tmpMLF= '/Users/joro/Documents/Phd/UPF/turkish-makam-lyrics-2-audio-test-data/muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_ozisik/1-05_Ruzgar_Soyluyor_Simdi_O_Yerlerde/1-05_Ruzgar_Soyluyor_Simdi_O_Yerlerde_nakarat2_from_192.962376_to_225.170507.phone-level.output'
+    listWordsAndTs = mlf2WordAndTsList(tmpMLF)
+  
+    
+    
   
 # TODO: error in parsing of sertan's textGrid
 # TODO: think about sil. Discard in counting
@@ -75,7 +52,7 @@ if __name__ == '__main__':
 #     textGridFile = '/Users/joro/Documents/Phd/UPF/Example_words_phonemes.TextGrid'
     
     listWordsAndTsAnnot = TextGrid2WordList(textGridFile)
-    listWordsAndTs = mlf2List(tmpMLF)
+    
     
     annotationWordList = [[0.01, 'sil'], [0.05, 'rUzgar'], [0.9,'Simdi']]
     avrgDiff = wordsList2avrgTxt(annotationWordList,listWordsAndTs)

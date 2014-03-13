@@ -6,6 +6,7 @@ Created on Mar 10, 2014
 '''
 import codecs
 import os
+from utils.Utils import loadTextFile
 
 class SymbTrParser(object):
     '''
@@ -34,7 +35,7 @@ class SymbTrParser(object):
     def _loadSyllables(self, pathToSymbTrFile):
     
     
-        allLines = self._loadTextFile(pathToSymbTrFile)
+        allLines = loadTextFile(pathToSymbTrFile)
         
         # skip first line
         
@@ -54,7 +55,7 @@ class SymbTrParser(object):
    
     def _loadSectionBoundaries(self, pathToTsvFile):
             
-            allLines = self._loadTextFile(pathToTsvFile)
+            allLines = loadTextFile(pathToTsvFile)
 
             for line in allLines[1:]:
                 #  triples of sectin name, start note number, end note number 
@@ -88,21 +89,7 @@ class SymbTrParser(object):
             self.sectionLyrics.append(currSectionLyrics)
         
     
-     ## TODO: callback function to load code. Put it in a different folder
-    def _loadTextFile(self, pathToFile):
-        
-        # U means cross-platform  end-line character
-        inputFileHandle = codecs.open(pathToFile, 'rU', 'utf-8')
-        
-        allLines = inputFileHandle.readlines()
 
-        
-        inputFileHandle.close()
-        
-        return allLines
-    
-    
-    
         
 if __name__ == "__main__":
     path1=  '/Volumes/IZOTOPE/sertan_sarki/muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_ozisik/muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_ozisik.txt'
