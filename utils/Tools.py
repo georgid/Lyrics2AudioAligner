@@ -17,7 +17,7 @@ targetDir = '/Volumes/IZOTOPE/sertan_sarki/'
 
 checkedDir = '/Volumes/IZOTOPE/researchCorpus_SymbTr/symbtr_cc_489'
 
-checkedDir = '/Volumes/IZOTOPE/researchCorpus_SymbTr/txt/'
+# checkedDir = '/Volumes/IZOTOPE/researchCorpus_SymbTr/txt/'
 
 
 ''' go through all files in checkedDir with given extension 
@@ -120,10 +120,11 @@ def checkIfNameInListFromTargetDir2( pathTofileName, targetDir ):
     
     for i in range(len(dirNames)):
         if nameNoExt == dirNames[i]:
-            print "copying: ",
             
             targetPath = os.path.join(targetDir, dirNames[i])
             print pathTofileName
+
+#             print "copying: ",
 #             shutil.copy(pathTofileName, targetPath)
             
     
@@ -138,13 +139,18 @@ if __name__ == "__main__":
 #     browseDirs(checkedDir, targetDir, fileExtension)
     
    
-    
+    print ' files which have symbTrV2.0 match'
+#   
     for fileName in glob.glob(checkedDir + "/*.txt"):
         pathName = os.path.join(checkedDir,fileName)
         checkIfNameInListFromTargetDir2 (pathName, targetDir )
    
-   
-   
-#      browseDirNames(sys.argv[1])
+    print "all .txt files"
+   # find .txt files in 2nd level of given dir
+    dirsWithRecordings, fullDirNames = browseDirNames(targetDir)
+    for dir in fullDirNames:
+         for fileName in glob.glob(dir + "/*.txt"):
+             print fileName 
+        
 #     array = loadFileWithColumns('/Users/joro/Documents/compositions/like_atiltudes.sonicVis.txt', 2)
 #     print array

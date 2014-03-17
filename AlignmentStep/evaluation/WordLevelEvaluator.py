@@ -10,6 +10,7 @@ from SymbTrParser import loadTextFile
 from utils.Utils import writeListToTextFile, mlf2WordAndTsList
 
 
+##################################################################################
 
 '''
 calculate evaluation metric
@@ -37,6 +38,7 @@ def wordsList2avrgTxt(annotationWordList, detectedWordList):
     return
 
 
+##################################################################################
 
 if __name__ == '__main__':
     tmpMLF= '/Users/joro/Documents/Phd/UPF/turkish-makam-lyrics-2-audio-test-data/muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_ozisik/1-05_Ruzgar_Soyluyor_Simdi_O_Yerlerde/1-05_Ruzgar_Soyluyor_Simdi_O_Yerlerde_nakarat2_from_192.962376_to_225.170507.phone-level.output'

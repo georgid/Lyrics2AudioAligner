@@ -48,7 +48,8 @@ class MakamRecording:
         return
     
 
-    
+    ##################################################################################
+
     ''' 
     @deprecated: 
     Handles the Division into sections. If 4 section names given for MakamScore, assumes the forth (nakarat) is melodic repetition of second but with different lyrics (2nakarat)  
@@ -85,7 +86,8 @@ class MakamRecording:
             
         
         
-             
+       ##################################################################################
+      
     ## loads timestamps from file .sectionAnno
     def _loadsectionTimeStamps(self, pathToLinkedSectionsFile):
         
@@ -111,7 +113,8 @@ class MakamRecording:
         
         return
     
-       
+       ##################################################################################
+
         # for given audio and ts divide audio into audio segments
     def divideAudio(self):
             

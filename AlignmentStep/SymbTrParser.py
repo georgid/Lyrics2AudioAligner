@@ -28,7 +28,9 @@ class SymbTrParser(object):
         
         # list of  section names and their lyrics
         self.sectionLyrics = []
-        
+   
+   ##################################################################################
+     
     '''
     load syllables from symbTr file. parse syllables
     '''
@@ -52,7 +54,8 @@ class SymbTrParser(object):
                     self.listSyllables.append(tupleSyllable)
             
      
-   
+   ##################################################################################
+
     def _loadSectionBoundaries(self, pathToTsvFile):
             
             allLines = loadTextFile(pathToTsvFile)
@@ -64,7 +67,8 @@ class SymbTrParser(object):
                 self.sectionboundaries.append(tmpTriplet)
        
        
-        
+     ##################################################################################
+   
     '''
     converts syllables to words using " " at end of syllable from SymbTr 
     at the same time divides them into given sections.
@@ -90,11 +94,11 @@ class SymbTrParser(object):
         
     
 
-        
+ ##################################################################################
+
 if __name__ == "__main__":
     path1=  '/Volumes/IZOTOPE/sertan_sarki/muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_ozisik/muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_ozisik.txt'
     path2= '/Volumes/IZOTOPE/sertan_sarki/muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_ozisik/muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_ozisik.sections.tsv'    
     
     symbTrParser = SymbTrParser(path1, path2)
     symbTrParser.syllablesToWords()
-    print 'blah'

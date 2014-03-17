@@ -27,6 +27,7 @@ class MakamScore():
 
 
 
+##################################################################################
 
     def __init__(self, pathToSymbTrFile, pathToSectionTsvFile):
         '''
@@ -52,7 +53,8 @@ class MakamScore():
         self.pathsTolyricSectionFiles = []
         
       
-      
+  ##################################################################################
+    
     def _loadSectionsAndLyricsFromSymbTr(self, pathToSymbTrFile, pathToSectionTsvFile):
         symbTrParser = SymbTrParser(pathToSymbTrFile, pathToSectionTsvFile)
        
@@ -61,7 +63,9 @@ class MakamScore():
         for currSectionBoundary,currSectionLyrics in zip(symbTrParser.sectionboundaries, symbTrParser.sectionLyrics):
             tupleSectionNameAndLyrics =  currSectionBoundary[0], currSectionLyrics  
             self.sectionToLyricsMap.append(tupleSectionNameAndLyrics)
-        
+ 
+    ##################################################################################
+    
     '''    
     @deprecated with old self.sectionLyricsDict
              # NOTE: Each section shoud be in a new line. Ideally copy paste from score.pdf to a textFile.
@@ -81,7 +85,8 @@ class MakamScore():
                     self.sectionLyricsDict[MakamScore.sectionNamesSequence[i]]=lyrics[i]
                 
              
-            
+     ##################################################################################
+       
     '''
     @deprecated:  with old self.sectionLyricsDict. TODO: rewrite
     put each section in a separate .txtTur file
@@ -100,7 +105,11 @@ class MakamScore():
             outputFileHandle.close()
 
             print "file %s written", (pathTolyricSectionFile)
-   
+
+   ##################################################################################
+    '''
+    utility method to print class fields
+    '''
     def printSectionsAndLyrics(self):
         for currSection in self.sectionToLyricsMap:
 
@@ -110,7 +119,8 @@ class MakamScore():
             print  string_for_output + '  \n\n'
         
         
-            
+     ##################################################################################
+       
 if __name__ == '__main__':
 
         # only for unit testing purposes
