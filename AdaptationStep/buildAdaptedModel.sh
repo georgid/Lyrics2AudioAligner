@@ -14,10 +14,10 @@
 
 
 # STEP 0: Parse command-line
-if [ $# -ne 4 ]; then
+if [ $# -ne 5 ]; then
     echo "Tool for creating an adapted acoustic model. The adaptation transmorfmation form is in dir OUTPUT_ADAPTATION_DIR.output "
     echo ""
-    echo "USAGE: $0 ADAPTATION_DIR_WITH_Wav dict.adapted PHONE_LEVEL_ALIGNED.mlf OUTPUT_ADAPTATION_DIR.output "
+    echo "USAGE: $0 ADAPTATION_DIR_WITH_Wav dict.adapted PHONE_LEVEL_ALIGNED.mlf OUTPUT_ADAPTATION_DIR.output ADAPTED_MODEL.output"
     echo ""
     echo ""
     exit 0
@@ -41,7 +41,7 @@ HTK_34_PATH="/Users/joro/Documents/Fhg/htk3.4.BUILT/bin"
 DATA="/Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/"
 
 # trained HMM models 
-HMM=$DATA/interim_files/hmm6/hmmdefs
+HMM=$DATA/interim_files/hmm7/hmmdefs
 
 # word-level transcription. optional as input for forced-alignement step
 
@@ -66,6 +66,8 @@ HMMLIST=/Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/interim_files/monoph
 
 ADAPTATION=/Users/joro/Documents/Phd/UPF/voxforge/auto/adaptation
 
+ADAPTED_MODEL_OUTPUT=$5
+
 # OUTPUT_ADAPTATION=$ADAPTATION/output
 # mkdir $OUTPUT_ADAPTATION
 
@@ -76,10 +78,13 @@ ADAPTATION=/Users/joro/Documents/Phd/UPF/voxforge/auto/adaptation
 # awk '{start = $1 / 10000000; end= $2 / 10000000;  print start, end,  $3}' alignment.output
 
 # -S is path to mfcs. -I is phoneme-level annotation of audio. Could be given by the forced alignment in previous step.
- HERest -T 1 -C $DATA/input_files/config -C $ADAPTATION/configs/gmllr.config.global -J $ADAPTATION/configs/ -K $OUTPUT_ADAPTATION gmllrmean -S /tmp/codetrain_mfc.scp -I $PHONE_LEVEL_ALIGNMENT -H $HMM -u a $HMMLIST 
+ HERest -T 1 -C $DATA/input_files/config -C $ADAPTATION/configs/gmllr.config.global -J $ADAPTATION/configs/ -K $OUTPUT_ADAPTATION gmllrmean -S /tmp/codetrain_mfc.scp -I $PHONE_LEVEL_ALIGNMENT -H $HMM -u a $HMMLIST > $OUTPUT_ADAPTATION/log
+cat $OUTPUT_ADAPTATION/log
+echo "HERest output is stored in $OUTPUT_ADAPTATION/log" 
 
 # apply transform
-$VOXFORGE/myScripts/transform.pl $OUTPUT_ADAPTATION/mfc.gmllrmean $HMM $OUTPUT_ADAPTATION/hmmdefs.gmllrmean
+$VOXFORGE/myScripts/AdaptationStep/transform.pl $OUTPUT_ADAPTATION/mfc.gmllrmean $HMM $ADAPTED_MODEL_OUTPUT
 
-echo "adapted model is" 
+
+echo "adapted model is " 
 echo $OUTPUT_ADAPTATION/hmmdefs.gmllrmean
