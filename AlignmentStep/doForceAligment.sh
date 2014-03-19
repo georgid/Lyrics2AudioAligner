@@ -2,7 +2,8 @@
 
 #############################
 # script to run forced alignment. See HTK book page 44. 
-
+# For analysis of output of HVite see section 13.5 on page 207.
+#
 #@param: path_to_file_no_ext - adds extension to wav
 #@param HMM - adapted model- hard coded
 # 
@@ -110,6 +111,9 @@ printf "sil\tsil\n" >>/tmp/lexicon2
 
 
 # run forced alignment 
+# option -a tells to do forced alignemnt and not recognition
+# option -b tells to insert sil at begining and end of phoneme network
+# -o S suppres states. -m give log likelihood for each model
 # make sure argiment to -i is less than 248 chars. Otherwise abort trap error comes.
 $HTK_34_PATH/HVite -l "'*'" -o S -A -D -T 1  -b sil -C $PARENT_OF_INTERIM_AND_INPUT_FILES/input_files/config  -a -H $HMM -i /tmp/phoneme-level.output -m -I $WORD_LEVEL_MLF -y lab /tmp/lexicon2 $HMMLIST ${1}.mfc
 mv  /tmp/phoneme-level.output $PHONE_LEVEL_ALIGNMENT 
