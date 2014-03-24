@@ -1,17 +1,21 @@
 # -*- coding: utf-8 -*-
 '''
 Created on Mar 10, 2014
-
+ contains a class 
+ 
 @author: joro
 '''
 import codecs
 import os
 from utils.Utils import loadTextFile
 
+
+'''
+Parses lyrics from symbTr v 1.0. Sections from tsv file
+TODO: take only section names from tsv file. parse sections from symbTr double spaces 
+'''
 class SymbTrParser(object):
-    '''
-    classdocs
-    '''
+  
     
     def __init__(self, pathToSymbTrFile, pathToTsvFile):
         '''

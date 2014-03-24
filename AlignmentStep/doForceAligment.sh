@@ -25,10 +25,10 @@
 
 
 # STEP 0: Parse command-line
-if [ $# -ne 3 ]; then
+if [ $# -ne 4 ]; then
     echo "Tool to run forced alignment. Input: audio and text in turkish."
     echo ""
-    echo "USAGE: $0 path_to_audio_file_no_ext lyrics PHONE_LEVEL_ALIGNED.output.mlf "
+    echo "USAGE: $0  path_to_audio_file_no_ext lyrics PHONE_LEVEL_ALIGNED.output.mlf pathToHtkModel "
     echo ""
     echo ""
     exit 0
@@ -43,12 +43,12 @@ PARENT_OF_INTERIM_AND_INPUT_FILES="/Users/joro/Documents/Phd/UPF/voxforge/auto/s
 # HMMDefs model
 
 #origninal speech HMM models 
-# HMM=$PARENT_OF_INTERIM_AND_INPUT_FILES/interim_files/hmm7/hmmdefs
+# HMM=/Users/joro/Documents/Phd/UPF/METUdata/model_output/hmmdefs
 
 # adapted to singing voice
 #HMM=/Users/joro/Documents/Phd/UPF/Turkey-makam/adaptedModel/hmmdefs.gmllrmean
-HMM=/Users/joro/Documents/Phd/UPF/METUdata//model_output/hmmdefs.gmllrmean
-
+# HMM=/Users/joro/Documents/Phd/UPF/METUdata//model_output/hmmdefs.gmllrmean_4
+HMM=$4
 
 
 # word-level transcriptions
@@ -77,6 +77,7 @@ HMMLIST=/Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/interim_files/monoph
 
 ##############################################################################################
 
+# TODO: this one 
 if [ ! -f ${1}.wav ]
 then 
 /usr/local/bin/ffmpeg -i ${1}.mp3 ${1}.wav
@@ -86,19 +87,19 @@ fi
 TXT=${1}.txtMETU
 
 # conver to METU txtx. done because  I need the .txt file
-python /Users/joro/Documents/Phd/UPF/voxforge/myScripts/utils/turkishLyrics2METULyrics.py "$TXTTUR" $TXT
+#python /Users/joro/Documents/Phd/UPF/voxforge/myScripts/AlignmentStep/utils/turkishLyrics2METULyrics.py "$TXTTUR" $TXT
 
 
 # create word-level mlf
      
-a=`basename $TXT .txtMETU` ;   printf "$a "> /tmp/mlf; cat $TXT >> /tmp/mlf
-perl /Users/joro/Documents/Phd/UPF/voxforge/HTK_scripts/prompts2mlf $WORD_LEVEL_MLF  /tmp/mlf
+#a=`basename $TXT .txtMETU` ;   printf "$a "> /tmp/mlf; cat $TXT >> /tmp/mlf
+#perl /Users/joro/Documents/Phd/UPF/voxforge/HTK_scripts/prompts2mlf $WORD_LEVEL_MLF  /tmp/mlf
 
 
 # put new words in dictionary
-python /Users/joro/Documents/Phd/UPF/voxforge/myScripts/utils/METULyrics2phoneticDict.py $TXT  /tmp/lexicon1
-cat /tmp/lexicon1 | sort | uniq > /tmp/lexicon2
-printf "sil\tsil\n" >>/tmp/lexicon2
+#python /Users/joro/Documents/Phd/UPF/voxforge/myScripts/AlignmentStep/utils/METULyrics2phoneticDict.py $TXT  /tmp/lexicon1
+# cat /tmp/lexicon1 | sort | uniq > /tmp/lexicon2
+# printf "sil\tsil\n" >>/tmp/lexicon2
 
 # here feature extraction
  #echo "${1}.wav ${1}.mfc" > /tmp/alignment_codetrain_mfc.scp

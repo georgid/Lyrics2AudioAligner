@@ -21,10 +21,11 @@ def loadTextFile( pathToFile):
         return allLines
 
 ##################################################################################
-def writeListToTextFile(listOfList,headerLine, pathToOutputFile):    
+def writeListOfListToTextFile(listOfList,headerLine, pathToOutputFile):    
     outputFileHandle = codecs.open(pathToOutputFile, 'w', 'utf-8')
     
-    outputFileHandle.write(headerLine)
+    if not headerLine == None:
+        outputFileHandle.write(headerLine)
     
     for listLine in listOfList:
         
@@ -37,6 +38,19 @@ def writeListToTextFile(listOfList,headerLine, pathToOutputFile):
     
     outputFileHandle.close()
 
+
+
+##################################################################################
+def writeListToTextFile(inputList,headerLine, pathToOutputFile):    
+    outputFileHandle = codecs.open(pathToOutputFile, 'w', 'utf-8')
+    
+    if not headerLine == None:
+        outputFileHandle.write(headerLine)
+    
+    for listLine in inputList:
+        outputFileHandle.write(listLine)
+    
+    outputFileHandle.close()
 
 ##################################################################################
         

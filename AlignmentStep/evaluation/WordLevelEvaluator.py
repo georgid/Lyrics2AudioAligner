@@ -7,7 +7,7 @@ Created on Mar 5, 2014
 from evaluation.TextGrid_Parsing import TextGrid2Dict, TextGrid2WordList
 from evaluation.textgrid import TextGrid
 from SymbTrParser import loadTextFile
-from utils.Utils import writeListToTextFile, mlf2WordAndTsList
+from utils.Utils import writeListOfListToTextFile, mlf2WordAndTsList
 
 
 ##################################################################################

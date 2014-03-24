@@ -8,15 +8,23 @@ from Aligner import Aligner
 
 if __name__ == '__main__':
 
-        pathToAudioFile ='/Volumes/IZOTOPE/adaptation_data/kani_karaca-cargah_tevsih_11.wav'
-#         outputHTKPhoneAligned = '/Volumes/IZOTOPE/adaptation_data/kani_karaca-cargah_tevsih_12_noAdapted.phonemeAligned'
+
+        pathToHtkModel = '/Users/joro/Documents/Phd/UPF/METUdata//model_output/hmmdefs.gmllrmean_gmmlr_4_map_2' 
         
-        outputHTKPhoneAligned = '/Volumes/IZOTOPE/adaptation_data/kani_karaca-cargah_tevsih_11.phonemeAligned'
+        pathToAudioFile ='/Volumes/IZOTOPE/adaptation_data_NOT_CLEAN/kani_karaca-cargah_tevsih_11.wav'
         
-        lyrics = u'kudumün ra rahmet-i zevk u zevk u'
+#         pathToAudioFile ='/Volumes/IZOTOPE/adaptation_data_NOT_CLEAN/kani_karaca-cargah_tevsih_12.wav'
+        
+        
+        outputHTKPhoneAligned = '/Volumes/IZOTOPE/adaptation_data_NOT_CLEAN/kani_karaca-cargah_tevsih_12_model_4_map_1.phonemeAligned'
+
+#         outputHTKPhoneAligned = '/Volumes/IZOTOPE/adaptation_data_NOT_CLEAN/kani_karaca-cargah_tevsih_12_model_4_map_2.phonemeAligned'
+
+        
+        lyrics = u'kudumün ra rahmet-i zevk u Zevk u'
 #         lyrics = u'safadır ya ya Resul Allah Allah'
  
-        aligner = Aligner(pathToAudioFile, lyrics) 
+        aligner = Aligner(pathToHtkModel, pathToAudioFile, lyrics) 
 
         aligner.alignAudio(  0, outputHTKPhoneAligned)
 #         aligner.alignAudio( 35.81, outputHTKPhoneAligned)

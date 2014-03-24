@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
+contains a class
 Created on Mar 3, 2014
 
 @author: joro

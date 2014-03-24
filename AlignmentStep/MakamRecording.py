@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
+contains a Class 
 Created on Mar 3, 2014
 
 @author: joro
@@ -26,6 +27,7 @@ class MakamRecording:
        # the score of the piece
         self.makamScore = makamScore
         
+        # wav file
         self.pathToAudiofile = pathToAudioFile
         self.pathToDividedAudioFiles= []
         
@@ -130,6 +132,16 @@ class MakamRecording:
                 pipe = subprocess.Popen([pathToSox, self.pathToAudiofile, filePathDividedAudio, 'trim', self.beginTs[i], str(sectionDuration)   ])
                
             return
+    '''
+    if given wav file does not exists, assumes same file with .mp3 ext exists and converts it to wav
+    '''    
+    def mp3ToWav(self):
+           # todo: convert to mp3 if not with Essentia
+        baseNameAudioFile = os.path.splitext(self.pathToAudioFile)[0]
+        
+        if not os.path.isfile(self.pathToAudiofile):
+             pipe = subprocess.Popen(['/usr/local/bin/ffmpeg', '-i', baseNameAudioFile,  '.mp3', self.pathToAudioFile])
+             pipe.wait() 
     
     
 if __name__ == '__main__':
