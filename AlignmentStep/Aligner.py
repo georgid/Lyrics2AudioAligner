@@ -19,6 +19,10 @@ PATH_TO_HVITE= '/Users/joro/Documents/Fhg/htk3.4.BUILT/bin/HVite'
 PATH_TO_CONFIG_FILES= '/Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/input_files/'
 PATH_TO_HMMLIST='/Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/interim_files/monophones1'
 
+PATH_TO_PRAAT = '/Applications/Praat.app/Contents/MacOS/Praat'
+PATH_TO_PRAAT_SCRIPT= '/Users/joro/Documents/Phd/UPF/voxforge/myScripts/praat/loadAlignedResult'
+
+
 class Aligner():
     '''
     classdocs
@@ -87,14 +91,12 @@ class Aligner():
         if os.path.exists('/tmp/phoneme-level.output'):
             shutil.move('/tmp/phoneme-level.output', outputHTKPhoneAligned)
             
-                
-        baseNameOutput = os.path.splitext(outputHTKPhoneAligned)[0]
-        prepareOutputForPraat(baseNameOutput, timeShift)
+       
     
 # END OF CLASS
 
     
-    '''
+'''
 parse output in HTK's mlf output format ; load into list; 
 convert from phoneme to word level alignment
 serialize into table format easy to load from praat   
@@ -109,6 +111,42 @@ def prepareOutputForPraat(baneNameAudioFile, timeShift):
     for index in range(len(listTsAndWords)):
         listTsAndWords[index][0] = listTsAndWords[index][0] + timeShift
         
-    writeListOfListToTextFile(listTsAndWords, 'startTs word\n', baneNameAudioFile + WORD_ALIGNED_SUFFIX)
-    print 'word level alignment written to file:  baneNameAudioFile + WORD_ALIGNED_SUFFIX'
+    wordAlignedfileName = baneNameAudioFile + WORD_ALIGNED_SUFFIX    
+    writeListOfListToTextFile(listTsAndWords, 'startTs word\n', wordAlignedfileName)
+    print 'word level alignment written to file: ',  wordAlignedfileName
+    return wordAlignedfileName
+
     
+    '''
+    call Praat script to: 
+    -open phoneLevel.annotation file  .TextGrid
+    -open the result alignemnt  
+    -add the result as tier in the TextGrid
+    -save the new file as .comparison.TextGrid
+    
+    open Praat to visualize it 
+    '''
+def openAlignmentInPraat(wordAnnoURI, outputHTKPhoneAlignedURI, timeShift):
+    
+    # prepare
+    outputHTKPhoneAlignedNoExt = os.path.splitext(outputHTKPhoneAlignedURI)[0]
+    wordAlignedfileName = prepareOutputForPraat(outputHTKPhoneAlignedNoExt, timeShift)
+     
+     
+    # call praat script 
+  #  path = '/Volumes/IZOTOPE/adaptation_data_soloVoice/kani_karaca-cargah-tevsih/'
+    wordAlignedPath = os.path.dirname(wordAlignedfileName)
+    wordAlignedFileName = os.path.splitext(os.path.basename(wordAlignedfileName))[0]
+    
+    
+    pathTowordAnno = os.path.dirname(wordAnnoURI)
+    fileNameWordAnno = os.path.splitext(os.path.basename(wordAnnoURI))[0]
+    
+    pipe =subprocess.Popen( [ PATH_TO_PRAAT, PATH_TO_PRAAT_SCRIPT, pathTowordAnno, fileNameWordAnno, wordAlignedPath, wordAlignedFileName ])
+    pipe.wait()
+    
+    
+    # open comparison.TextGrid in  praat. optional
+    comparisonTextGridURI =  os.path.join(wordAlignedPath, fileNameWordAnno)  + '.comparison.TextGrid'
+    pipe = subprocess.Popen(["open", '-a', PATH_TO_PRAAT, comparisonTextGridURI])
+    pipe.wait()

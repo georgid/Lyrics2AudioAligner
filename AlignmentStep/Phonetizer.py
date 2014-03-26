@@ -251,6 +251,7 @@ class Phonetizer(object):
                     wordAndPronunciation += " "
                 
                 # TODO: here add sp
+                wordAndPronunciation += 'sp'
                 wordAndPronunciation =  wordAndPronunciation.rstrip()
                 wordAndPronunciation +='\n'
                 
