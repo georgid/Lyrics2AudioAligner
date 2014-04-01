@@ -217,7 +217,26 @@ class Phonetizer(object):
             outputFileHandle.write(processedLyrics)
             outputFileHandle.close()
             return processedLyrics
-
+        
+        
+            # same as turkishScriptLyrics2METUScriptLyrics. but takes as input file
+            #  @param: inputFileName - one-line file with lyrics
+        @staticmethod
+        def turkishScriptLyrics2METUScriptLyricsFile(inputFileName, outputFileName):
+        
+            inputFileHandle = codecs.open(inputFileName, 'r', 'utf-8')
+            
+            
+            lyrics = inputFileHandle.read()
+            lyrics = lyrics.replace('\n', ' ')
+            
+            METUlyrics = Phonetizer.turkishScriptLyrics2METUScriptLyrics(lyrics, outputFileName)
+        
+            inputFileHandle.close()
+            
+             
+            return METUlyrics
+        
 
                 # converts METU lyrics to phonetic dictinary 
         # @param: inputFileName - one-line file with lyrics

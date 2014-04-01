@@ -100,12 +100,12 @@ if __name__ == '__main__':
         
         pathToComposition = os.path.join(PATH_TEST_DATASET, COMPOSITION_NAME)
         os.chdir(pathToComposition)
-        pathToTxt = os.path.join(pathToComposition, glob.glob("*.txt")[0])
+        pathToSymbTrTxt = os.path.join(pathToComposition, glob.glob("*.txt")[0])
         pathToSectionTsv = os.path.join(pathToComposition, glob.glob("*.sections.tsv")[0])
         
                     # TODO: issue 14
         recordingSegmenter = RecordingSegmenter()
-        makamScore =  recordingSegmenter.loadMakamScore(pathToTxt, pathToSectionTsv)
+        makamScore =  recordingSegmenter.loadMakamScore(pathToSymbTrTxt, pathToSectionTsv)
         
 #         ----
         

@@ -40,6 +40,7 @@ HTK_34_PATH="/Users/joro/Documents/Fhg/htk3.4.BUILT/bin"
 
 PARENT_OF_INTERIM_AND_INPUT_FILES="/Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/"
 
+
 # HMMDefs model
 
 #origninal speech HMM models 
