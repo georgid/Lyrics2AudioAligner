@@ -8,10 +8,10 @@ from Aligner import Aligner, openAlignmentInPraat, HTK_MLF_ALIGNED_SUFFIX
 
 
 PATH_TO_SYLLABLING = '/Users/joro/Documents/Phd/UPF/adaptation_data_NOT_CLEAN/syllablingDB/'
-
+PATH_TO_SYLLABLING = '/Users/joro/Documents/Phd/UPF/adaptation_data_NOT_CLEAN/HTS_japan_female/'
         
 #         pathToHtkModel = '/Volumes/IZOTOPE/adaptation_data_NOT_CLEAN/syllablingDB/hmmdefs.gmmlrmean_map_2'
-pathToHtkModel = '/Users/joro/Documents/Phd/UPF/adaptation_data_NOT_CLEAN/syllablingDB/hmmdefs.gmmlrmean_map_2'
+pathToHtkModel = '/Users/joro/Documents/Phd/UPF/adaptation_data_NOT_CLEAN/HTS_japan_female/hmmdefs.gmmlrmean_map_2'
 #         pathToHtkModel = '/Users/joro/Documents/Phd/UPF/METUdata/model_output/hmmdefs'
 
 
@@ -44,15 +44,20 @@ def doitForSyllablingFile(audioName):
         
         doit(pathToHtkModel, pathToAudio , pathToOutput, wordAnnoURI ) 
 
+
+
+
+
+
 if __name__ == '__main__':
         
-        audioName = 'alf_3_slow1'
-        audioName = 'este_3_slow1'
-        audioName = 'amaury_3_slow1'
+#         audioName = 'alf_3_slow1'
+#         audioName = 'este_3_slow1'
+#         audioName = 'amaury_3_slow1'
 
+    audioName = 'nitech_jp_song070_f001_070'        
         
-        
-        doitForSyllablingFile(audioName)
+    doitForSyllablingFile(audioName)
                 
 #         pathToHtkModel = '/Users/joro/Documents/Phd/UPF/METUdata//model_output/hmmdefs'
 # 

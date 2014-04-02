@@ -28,6 +28,7 @@ PATH_TO_PRAAT = '/Applications/Praat.app/Contents/MacOS/Praat'
 PATH_TO_PRAAT_SCRIPT= '/Users/joro/Documents/Phd/UPF/voxforge/myScripts/praat/loadAlignedResultAndTextGrid'
 
 LYRICS_TXT_EXT = '.txtTur'
+PHRASE_ANNOTATION_EXT = '.TextGrid'
 
 class Aligner():
     '''
@@ -184,6 +185,6 @@ def openAlignmentInPraat(wordAnnoURI, outputHTKPhoneAlignedURI, timeShift):
     pipe.wait()
     
     # open comparison.TextGrid in  praat. OPTIONAL
-    comparisonTextGridURI =  os.path.join(alignedResultPath, fileNameWordAnno)  + '.TextGrid'
+    comparisonTextGridURI =  os.path.join(alignedResultPath, fileNameWordAnno)  + PHRASE_ANNOTATION_EXT
     pipe = subprocess.Popen(["open", '-a', PATH_TO_PRAAT, comparisonTextGridURI])
     pipe.wait()

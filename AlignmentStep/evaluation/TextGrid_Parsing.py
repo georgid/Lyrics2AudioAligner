@@ -9,7 +9,8 @@ sys.path.append(os.path.realpath('../Batch_Processing/'))
 # code from Sankalp
 
 # tier_name = "phonemes"
-tier_name = "words"
+# tier_name = "words"
+tier_name = "phrases"
 
 '''
 textGrid to column file 
