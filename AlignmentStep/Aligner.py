@@ -51,8 +51,11 @@ class Aligner():
     '''
     
 
-    def _createWordMLFandDict(self, baseNameAudioFile):
+    def _createWordMLFandDict(self):
         #txtTur to METU. txtMETU as persistent file not really needed. For reference stored
+        
+        baseNameAudioFile = os.path.splitext(self.pathToAudioFile)[0]
+
         if (self.loadLyricsFromFile == 1):
             METULyrics = Phonetizer.turkishScriptLyrics2METUScriptLyricsFile(baseNameAudioFile + LYRICS_TXT_EXT, baseNameAudioFile + '.txtMETU')
         else:
@@ -74,8 +77,9 @@ class Aligner():
         return (dictName, mlfName )
 
 
-    def _extractFeatures(self, baseNameAudioFile):
-     
+    def _extractFeatures(self):
+        baseNameAudioFile = os.path.splitext(self.pathToAudioFile)[0]
+
         mfcFileName = baseNameAudioFile + '.mfc' 
         pipe= subprocess.Popen([PATH_TO_HCOPY, '-A', '-D', '-T', '1', '-C', PATH_TO_CONFIG_FILES + 'wav_config', self.pathToAudioFile, mfcFileName])
         pipe.wait()
@@ -83,16 +87,16 @@ class Aligner():
         
     def alignAudio(self, timeShift, outputHTKPhoneAligned =''):
     
-        baseNameAudioFile = os.path.splitext(self.pathToAudioFile)[0]
+
         
-        
-        (dictName, mlfName )  = self._createWordMLFandDict(baseNameAudioFile)
+        (dictName, mlfName )  = self._createWordMLFandDict()
         
         # extract featuues
         
-        mfcFileName = self._extractFeatures(baseNameAudioFile)
+        mfcFileName = self._extractFeatures()
         
         if outputHTKPhoneAligned =='':
+            baseNameAudioFile = os.path.splitext(self.pathToAudioFile)[0]
             outputHTKPhoneAligned = baseNameAudioFile + HTK_MLF_ALIGNED_SUFFIX
         
         # Align with hHVite

@@ -10,12 +10,12 @@ import codecs
 
 import glob
 from SymbTrParser import SymbTrParser
-
-COMPOSITION_NAME = 'muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_ozisik'
-COMPOSITION_NAME = 'huseyni--sarki--turkaksagi--hicran_oku--sevki_bey'
-
-PATH_TEST_DATASET='/Users/joro/Documents/Phd/UPF/turkish-makam-lyrics-2-audio-test-data/'
-PATH_TEST_DATASET = '/Volumes/IZOTOPE/sertan_sarki/'
+# 
+# COMPOSITION_NAME = 'muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_ozisik'
+# COMPOSITION_NAME = 'huseyni--sarki--turkaksagi--hicran_oku--sevki_bey'
+# 
+# PATH_TEST_DATASET='/Users/joro/Documents/Phd/UPF/turkish-makam-lyrics-2-audio-test-data/'
+# PATH_TEST_DATASET = '/Volumes/IZOTOPE/sertan_sarki/'
 
 class MakamScore():
     '''
@@ -24,7 +24,6 @@ class MakamScore():
 
     #class const variable. order is important
     # assumes the forth is melodic repetition of second but with different melody
-    sectionNamesSequence = ["zemin","nakarat", "meyan","2nakarat"]
 
 
 
@@ -46,7 +45,7 @@ class MakamScore():
         '''
         @deprecated: 
         '''
-        self.sectionLyricsDict = {MakamScore.sectionNamesSequence[0]:"", MakamScore.sectionNamesSequence[1]:"", MakamScore.sectionNamesSequence[2]:"", MakamScore.sectionNamesSequence[3]:""}
+#         self.sectionLyricsDict = {MakamScore.sectionNamesSequence[0]:"", MakamScore.sectionNamesSequence[1]:"", MakamScore.sectionNamesSequence[2]:"", MakamScore.sectionNamesSequence[3]:""}
         
         #self.loadLyricsForSections(pathToSymbTrFile)
         
@@ -55,12 +54,17 @@ class MakamScore():
         
       
   ##################################################################################
-    
+    '''
+    parses symbTr file. Reads lyrics, 
+    reads section names
+    groups together section names and lyrics 
+    '''
     def _loadSectionsAndLyricsFromSymbTr(self, pathToSymbTrFile, pathToSectionTsvFile):
         symbTrParser = SymbTrParser(pathToSymbTrFile, pathToSectionTsvFile)
        
         symbTrParser.syllablesToWords()
-       
+        
+        # for each section part
         for currSectionBoundary,currSectionLyrics in zip(symbTrParser.sectionboundaries, symbTrParser.sectionLyrics):
             tupleSectionNameAndLyrics =  currSectionBoundary[0], currSectionLyrics  
             self.sectionToLyricsMap.append(tupleSectionNameAndLyrics)
@@ -128,13 +132,13 @@ if __name__ == '__main__':
         
         print "in Makam Score"
         
-        pathToComposition = os.path.join(PATH_TEST_DATASET, COMPOSITION_NAME)
-        os.chdir(pathToComposition)
-        pathTotxt = os.path.join(pathToComposition, glob.glob("*.txt")[0])
-        pathToSectionTsv =  os.path.join(pathToComposition, glob.glob("*.tsv")[0])
-        makamScore = MakamScore(pathTotxt,pathToSectionTsv )
-        
-        makamScore.printSectionsAndLyrics()
+#         pathToComposition = os.path.join(PATH_TEST_DATASET, COMPOSITION_NAME)
+#         os.chdir(pathToComposition)
+#         pathTotxt = os.path.join(pathToComposition, glob.glob("*.txt")[0])
+#         pathToSectionTsv =  os.path.join(pathToComposition, glob.glob("*.tsv")[0])
+#         makamScore = MakamScore(pathTotxt,pathToSectionTsv )
+#         
+#         makamScore.printSectionsAndLyrics()
         
 #         makamScore.serializeLyricsToFile()
         

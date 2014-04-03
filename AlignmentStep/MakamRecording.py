@@ -56,35 +56,35 @@ class MakamRecording:
     @deprecated: 
     Handles the Division into sections. If 4 section names given for MakamScore, assumes the forth (nakarat) is melodic repetition of second but with different lyrics (2nakarat)  
     
-    '''
-    def assignSectionLyrics(self):
-        
-       # TODO: write cheker for score 
-        
-        flagMeyan = False
-
-       # check section names and get lyrics from score. use index to map to Ts index
-        for index in range(len(self.sectionNamesSequence)):
-            
-            
-            currSectionName = self.sectionNamesSequence[index]
-            # remove 2 or 3 suffix
-            if str(currSectionName).endswith('2') or str(currSectionName).endswith('3'):
-                currSectionName = currSectionName[0:-1]
-            # if meyan is gone, put 2 to signify  it is second nakarat (with different lyrics). Assumption: there is no third verse and third nakarat
-            if flagMeyan and currSectionName==MakamScore.sectionNamesSequence[1] and len(MakamScore.sectionNamesSequence)==4 :
-                currSectionName='2' + currSectionName    
-                
-            if currSectionName in MakamScore.sectionNamesSequence:
-                self.sectionIndices[index] =   self.makamScore.sectionLyricsDict[currSectionName]
-                if currSectionName == MakamScore.sectionNamesSequence[2]:
-                    flagMeyan = True
-            else:
-                print "unknown section name: %s " ,  (currSectionName)
-                self.sectionIndices[index] = ""
-                
-            
-        return
+#     '''
+#     def assignSectionLyrics(self):
+#         
+#        # TODO: write cheker for score 
+#         
+#         flagMeyan = False
+# 
+#        # check section names and get lyrics from score. use index to map to Ts index
+#         for index in range(len(self.sectionNamesSequence)):
+#             
+#             
+#             currSectionName = self.sectionNamesSequence[index]
+#             # remove 2 or 3 suffix
+#             if str(currSectionName).endswith('2') or str(currSectionName).endswith('3'):
+#                 currSectionName = currSectionName[0:-1]
+#             # if meyan is gone, put 2 to signify  it is second nakarat (with different lyrics). Assumption: there is no third verse and third nakarat
+#             if flagMeyan and currSectionName==MakamScore.sectionNamesSequence[1] and len(MakamScore.sectionNamesSequence)==4 :
+#                 currSectionName='2' + currSectionName    
+#                 
+#             if currSectionName in MakamScore.sectionNamesSequence:
+#                 self.sectionIndices[index] =   self.makamScore.sectionLyricsDict[currSectionName]
+#                 if currSectionName == MakamScore.sectionNamesSequence[2]:
+#                     flagMeyan = True
+#             else:
+#                 print "unknown section name: %s " ,  (currSectionName)
+#                 self.sectionIndices[index] = ""
+#                 
+#             
+#         return
             
         
         
@@ -128,7 +128,6 @@ class MakamRecording:
                 self.pathToDividedAudioFiles.append(filePathDividedAudio)
                 # make sure  sox (sox.sourceforge.net) is installed and call it  here with subprocess
                 sectionDuration = float(self.endTs[i])-float(self.beginTs[i])
-                self.pathToAudiofile = '/Users/joro/Documents/Phd/UPF/turkish-makam-lyrics-2-audio-test-data/muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_ozisik/1-05_Ruzgar_Soyluyor_Simdi_O_Yerlerde/1-05_Ruzgar_Soyluyor_Simdi_O_Yerlerde.wav'
                 pipe = subprocess.Popen([pathToSox, self.pathToAudiofile, filePathDividedAudio, 'trim', self.beginTs[i], str(sectionDuration)   ])
                
             return
@@ -137,10 +136,10 @@ class MakamRecording:
     '''    
     def mp3ToWav(self):
            # todo: convert to mp3 if not with Essentia
-        baseNameAudioFile = os.path.splitext(self.pathToAudioFile)[0]
+        baseNameAudioFile = os.path.splitext(self.pathToAudiofile)[0]
         
         if not os.path.isfile(self.pathToAudiofile):
-             pipe = subprocess.Popen(['/usr/local/bin/ffmpeg', '-i', baseNameAudioFile,  '.mp3', self.pathToAudioFile])
+             pipe = subprocess.Popen(['/usr/local/bin/ffmpeg', '-i', baseNameAudioFile + '.mp3', self.pathToAudiofile])
              pipe.wait() 
     
     

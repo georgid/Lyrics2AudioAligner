@@ -46,16 +46,18 @@ class SymbTrParser(object):
         # skip first line
         
         for line in allLines[1:]:
-            line = line.replace(os.linesep,'')
+            line = line.replace(os.linesep,'') # remove end line in a os-independent way 
+            line = line.replace('\r','') 
             
             tokens = line.split("\t")
             
             if len(tokens) == 12:
-                if tokens[11] != '.' and tokens[11] != 'SAZ' and tokens[11] != u'ARANAĞME':
+                    # this CHECK DOES NOT WORK:
+                    if tokens[11] != '.' and tokens[11] != '. ' and tokens[11] != '.  ' and tokens[11] != 'SAZ' and tokens[11] != u'ARANA\u011eME' and tokens[11] != u'ARANA\u011eME ' and  tokens[11] != u'ARANA\u011eME  ' and  tokens[11] != u'ARANA\\\\u011eME' and  tokens[11] != u'ARANAGME'   :   
         #           note number and syllable
-                    tupleSyllable = int(tokens[0]), tokens[11]
+                        tupleSyllable = int(tokens[0]), tokens[11]
                     
-                    self.listSyllables.append(tupleSyllable)
+                        self.listSyllables.append(tupleSyllable)
             
      
    ##################################################################################
@@ -85,9 +87,10 @@ class SymbTrParser(object):
             currEndNoteNumber = currSectionBoundary[2]
             currSectionLyrics = ""
             
+        
             while (indexSyllable <= len(self.listSyllables)-1 # sanity check
                     and 
-                    self.listSyllables[indexSyllable][0] <= currEndNoteNumber ):
+                    self.listSyllables[indexSyllable][0] <= currEndNoteNumber ): # while note number associated with syllable is less than last note number in section 
                         currSectionLyrics = currSectionLyrics + self.listSyllables[indexSyllable][1]
                         indexSyllable += 1
             
