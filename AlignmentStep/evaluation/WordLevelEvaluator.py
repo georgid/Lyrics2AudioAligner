@@ -42,17 +42,21 @@ def wordsList2avrgTxt(annotationWordList, detectedWordList):
 
 '''
 averg error for begin Ts of phrase. 
-averg error for end Ts of phrase
-combine both
+TODO: averg error for end Ts of phrase (not done yet)
+TODO: combine both
 '''
-def evalPhraseLevelError(baseNameAudioFile ):
+def evalPhraseLevelError(phraseLevelAnno, htkAlignedFile  ):
     
     sumDifferences = 0;
-    matchedWordCounter = 0;
+    matchedWordCounter = 0.0;
     
     # load both files 
-    annotationPhraseList = TextGrid2WordList(baseNameAudioFile + PHRASE_ANNOTATION_EXT)
-    detectedWordList= mlf2WordAndTsList(baseNameAudioFile + HTK_MLF_ALIGNED_SUFFIX)
+    annotationPhraseList = TextGrid2WordList(phraseLevelAnno)
+    detectedWordList= mlf2WordAndTsList(htkAlignedFile)
+    if len(detectedWordList) == 0:
+        print htkAlignedFile + 'is empty!'
+        exit
+    
     
     # remove sp and sil entries from word detectedWordList
     
@@ -68,6 +72,7 @@ def evalPhraseLevelError(baseNameAudioFile ):
     for tsAndPhrase in annotationPhraseList:
         if tsAndPhrase[1] == "": # skip empy words
             continue
+        tsAndPhrase[1] = tsAndPhrase[1].strip()
         words = tsAndPhrase[1].split(" ")
         numWordsInPhrase = len(words)
         
@@ -76,7 +81,7 @@ def evalPhraseLevelError(baseNameAudioFile ):
         detectedPhraseBeginTs = detectedWordListNoPauses[currentWordNumber][0]
         
         currdifference = abs(float(annotatedPhraseBEginTs) - float(detectedPhraseBeginTs))
-        matchedWordCounter +=1
+        matchedWordCounter +=1.0
         sumDifferences = sumDifferences + currdifference
         
         

@@ -14,29 +14,27 @@ import subprocess
 import os
 import glob
 from utils.Utils import mlf2WordAndTsList, writeListOfListToTextFile, loadTextFile
-from Aligner import Aligner
-from Cython.Compiler.Scanning import Method
-
-PATH_TEST_DATASET='/Users/joro/Documents/Phd/UPF/turkish-makam-lyrics-2-audio-test-data/'
-
-# COMPOSITION_NAME = 'muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_ozisik'
-# RECORDING_DIR = '1-05_Ruzgar_Soyluyor_Simdi_O_Yerlerde'
+from Aligner import Aligner, HTK_MLF_ALIGNED_SUFFIX, PHRASE_ANNOTATION_EXT,\
+    openAlignmentInPraat
+from evaluation.WordLevelEvaluator import evalPhraseLevelError
 
 
-COMPOSITION_NAME = 'nihavent--sarki--aksak--koklasam_saclarini--artaki_candan'
-RECORDING_DIR = '20_Koklasam_Saclarini'
-  
-COMPOSITION_NAME = 'nihavent--sarki--curcuna--kimseye_etmem--kemani_sarkis_efendi'
-RECORDING_DIR = '03_Bekir_Unluataer_-_Kimseye_Etmem_Sikayet_Aglarim_Ben_Halime'
+
 # 
-# 
-COMPOSITION_NAME = 'segah--sarki--curcuna--olmaz_ilac--haci_arif_bey'
-RECORDING_DIR = '21_Recep_Birgit_-_Olmaz_Ilac_Sine-i_Sad_Pareme'
-# 
-COMPOSITION_NAME = 'nihavent--sarki--turkaksagi--nerelerde_kaldin--ismail_hakki_efendi'
-RECORDING_DIR = '3-12_Nerelerde_Kaldin'
+# COMPOSITION_NAME = 'nihavent--sarki--aksak--koklasam_saclarini--artaki_candan'
+# RECORDING_DIR = '20_Koklasam_Saclarini'
+#   
+# COMPOSITION_NAME = 'nihavent--sarki--curcuna--kimseye_etmem--kemani_sarkis_efendi'
+# RECORDING_DIR = '03_Bekir_Unluataer_-_Kimseye_Etmem_Sikayet_Aglarim_Ben_Halime'
+# # 
+# # 
+# COMPOSITION_NAME = 'segah--sarki--curcuna--olmaz_ilac--haci_arif_bey'
+# RECORDING_DIR = '21_Recep_Birgit_-_Olmaz_Ilac_Sine-i_Sad_Pareme'
+# # 
+# COMPOSITION_NAME = 'nihavent--sarki--turkaksagi--nerelerde_kaldin--ismail_hakki_efendi'
+# RECORDING_DIR = '3-12_Nerelerde_Kaldin'
 
-
+OUTPUT_PATH = '/tmp/testAudio'
 
 class RecordingSegmenter(object):
    
@@ -65,25 +63,30 @@ class RecordingSegmenter(object):
 
 
 
+
+
+
 ##################################################################################
 
-    
-    ''' align whole recording
+        
+    ''' align one recording from symbTr
+        split into chunk and align each  
     
     '''
+    def alignOneRecording(self, pathToHtkModel, makamScore, pathToAudioFile, pathToSectionAnnotations, path_TO_OUTPUT):
 
-    def alignOneRecording(self, makamScore, pathToAudio, pathToSectionAnnotations):
         
-           
-            
-            
-            makamRecording = MakamRecording(makamScore, pathToAudio, pathToSectionAnnotations)
+            makamRecording = MakamRecording(makamScore, pathToAudioFile, pathToSectionAnnotations)
             
             # convert to wav 
             makamRecording.mp3ToWav()
             
             # divide into segments
             makamRecording.divideAudio()
+            
+            # prepare eval metric:
+            totalError = 0; 
+            numParts = 0;
             
             for whichChunk in range(len(makamRecording.sectionIndices)):
                 sectionIndex =  makamRecording.sectionIndices[whichChunk]
@@ -93,56 +96,59 @@ class RecordingSegmenter(object):
                 if lyrics == "" or "." in lyrics:
                     continue 
                 
+                ####=================================
                 # run alignment
-                baneNameAudioFile = os.path.splitext(makamRecording.pathToDividedAudioFiles[whichChunk])[0]
+                currPathToAudioFile = makamRecording.pathToDividedAudioFiles[whichChunk]
                 
-                chunkAligner = Aligner(pathToHtkModel, makamRecording.pathToDividedAudioFiles[whichChunk], lyrics)
-                # no output recording name
-                chunkAligner.alignAudio( 0)                
-        
-        
-            return 
-
-   
                 
+                
+                outputHTKPhoneAlignedURI = RecordingSegmenter.alignOneChunk(pathToHtkModel, path_TO_OUTPUT, lyrics, currPathToAudioFile, 0)
+                basenAudioFile = os.path.splitext(currPathToAudioFile)[0]
+                phraseAnnoURI = basenAudioFile  + PHRASE_ANNOTATION_EXT
+                
+                diff = 0
+                diff = evalPhraseLevelError(phraseAnnoURI, outputHTKPhoneAlignedURI)
+                print( "error is {1} for {0} ".format(currPathToAudioFile,diff))  
+                
+                ### OPTIONAL : open in praat
+                praseAnno = os.path.splitext(currPathToAudioFile)[0] + PHRASE_ANNOTATION_EXT
+                openAlignmentInPraat(praseAnno, outputHTKPhoneAlignedURI, 0)
+                
+                totalError += diff
+                numParts +=1
+                
+            return totalError / numParts
 
-    ################################################################
-    ''' convenience Method
-        prepare recording and audio paths
+
+    
+    ''' align one audio chunk 
+    @param lyricsFromFile - option to load lyrics from file, or from @param lyrics
     '''
-            
-            
-    def alignRecording(self, recordingDir, makamScore ):
-        
-        pathToComposition = os.path.join(PATH_TEST_DATASET, COMPOSITION_NAME)
-    
-        pathToRecording = os.path.join(pathToComposition, recordingDir)
-    
-        os.chdir(pathToRecording)
-        pathToSectionAnnotations = os.path.join(pathToRecording, glob.glob('*.sectionAnno.txt')[0]) #             pathToAudio =  os.path.join(pathToRecording, glob.glob('*.wav')[0])
-        pathToAudio = os.path.join(pathToRecording, recordingDir) + '.wav'
-    # TODO: issue 14
-        self.alignOneRecording(makamScore, pathToAudio, pathToSectionAnnotations)
 
+    @staticmethod
+    def alignOneChunk( pathToHtkModel, path_TO_OUTPUT, lyrics, currPathToAudioFile, lyricsFromFile):
+        
+        chunkAligner = Aligner(pathToHtkModel, currPathToAudioFile, lyrics, lyricsFromFile)
+    
+
+        baseNameAudioFile = os.path.splitext(os.path.basename(chunkAligner.pathToAudioFile))[0]
+        
+        
+        outputHTKPhoneAlignedURI = os.path.join(path_TO_OUTPUT, baseNameAudioFile) + HTK_MLF_ALIGNED_SUFFIX
+#         if (not(os.path.isfile(outputHTKPhoneAlignedURI)) ):
+        chunkAligner.alignAudio(0, path_TO_OUTPUT, outputHTKPhoneAlignedURI)
+        
+     
+        
+        
+        return outputHTKPhoneAlignedURI
+        
 
 
 if __name__ == '__main__':
        
       
-        pathToHtkModel = '/Users/joro/Documents/Phd/UPF/METUdata//model_output/hmmdefs.gmllrmean_gmmlr_4' 
-            
-        pathToComposition = os.path.join(PATH_TEST_DATASET, COMPOSITION_NAME)
-        os.chdir(pathToComposition)
-        pathToSymbTrTxt = os.path.join(pathToComposition, glob.glob("*.txt")[0])
-        pathToSectionTsv = os.path.join(pathToComposition, glob.glob("*.sections.tsv")[0])
-        
-                    # TODO: issue 14
-        recordingSegmenter = RecordingSegmenter()
-        makamScore =  recordingSegmenter.loadMakamScore(pathToSymbTrTxt, pathToSectionTsv)
-        
-#        ----- align one rec:  
-        recordingSegmenter.alignRecording(RECORDING_DIR, makamScore)
-        
+       print 'blah'
 #         ----
         
 #         # align all recrodings

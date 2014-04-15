@@ -90,7 +90,7 @@ class Phonetizer(object):
     # TODO: More carefull distinction between variants. e. g. # disctinction between G and GG
         METUlookupTable = {
                        'a': 'AA',
-                       'e': 'EE',
+                       'e': 'E',
                        'i': 'IY',
                        'I': 'I',
                        'o': 'O',

@@ -28,6 +28,7 @@ PATH_TO_PRAAT = '/Applications/Praat.app/Contents/MacOS/Praat'
 PATH_TO_PRAAT_SCRIPT= '/Users/joro/Documents/Phd/UPF/voxforge/myScripts/praat/loadAlignedResultAndTextGrid'
 
 LYRICS_TXT_EXT = '.txtTur'
+LYRICS_TXT_METUBET_EXT = '.txtMETU'
 PHRASE_ANNOTATION_EXT = '.TextGrid'
 
 class Aligner():
@@ -36,9 +37,9 @@ class Aligner():
     '''
 
 
-    def __init__(self, pathToHtkModel, pathToAudioFile, lyrics, loadLyricsFromFile=0):
+    def __init__(self, PATH_TO_HTK_MODEL, pathToAudioFile,  lyrics, loadLyricsFromFile=0):
         
-        self.pathToHtkModel = pathToHtkModel
+        self.pathToHtkModel = PATH_TO_HTK_MODEL
         self.pathToAudioFile = pathToAudioFile
         self.lyrics = lyrics
         self.loadLyricsFromFile = loadLyricsFromFile 
@@ -55,57 +56,86 @@ class Aligner():
         #txtTur to METU. txtMETU as persistent file not really needed. For reference stored
         
         baseNameAudioFile = os.path.splitext(self.pathToAudioFile)[0]
-
+        
+        METUBETfileName = baseNameAudioFile + LYRICS_TXT_METUBET_EXT
+        
         if (self.loadLyricsFromFile == 1):
-            METULyrics = Phonetizer.turkishScriptLyrics2METUScriptLyricsFile(baseNameAudioFile + LYRICS_TXT_EXT, baseNameAudioFile + '.txtMETU')
+            METULyrics = Phonetizer.turkishScriptLyrics2METUScriptLyricsFile(baseNameAudioFile + LYRICS_TXT_EXT, METUBETfileName)
         else:
-            METULyrics = Phonetizer.turkishScriptLyrics2METUScriptLyrics(self.lyrics, baseNameAudioFile + '.txtMETU')
+            METULyrics = Phonetizer.turkishScriptLyrics2METUScriptLyrics(self.lyrics, METUBETfileName)
     # create Word-level mlf:
         baneN = os.path.basename(self.pathToAudioFile)
         baneN = os.path.splitext(baneN)[0]
         headerLine = baneN + ' ' + METULyrics
+        
         writeListOfListToTextFile([], headerLine, '/tmp/prompts')
         
         # prompts2mlf
-        mlfName = baseNameAudioFile + HTK_MLF_WORD_ANNO_SUFFIX
+        mlfName = '/tmp/tmp' + HTK_MLF_WORD_ANNO_SUFFIX
         pipe = subprocess.Popen(['/usr/bin/perl', '/Users/joro/Documents/Phd/UPF/voxforge/HTK_scripts/prompts2mlf', mlfName, '/tmp/prompts'])
-        
+        pipe.wait()
+
         # phonetize
         dictName = '/tmp/lexicon2'
         
-        Phonetizer.METULyrics2phoneticDict(baseNameAudioFile + '.txtMETU', dictName)
+        Phonetizer.METULyrics2phoneticDict(METUBETfileName, dictName)
         return (dictName, mlfName )
 
 
-    def _extractFeatures(self):
-        baseNameAudioFile = os.path.splitext(self.pathToAudioFile)[0]
-
-        mfcFileName = baseNameAudioFile + '.mfc' 
-        pipe= subprocess.Popen([PATH_TO_HCOPY, '-A', '-D', '-T', '1', '-C', PATH_TO_CONFIG_FILES + 'wav_config', self.pathToAudioFile, mfcFileName])
+    def _extractFeatures(self, path_TO_OUTPUT):
+        baseNameAudioFile = os.path.splitext(os.path.basename(self.pathToAudioFile))[0]
+        mfcFileName = os.path.join(path_TO_OUTPUT, baseNameAudioFile  ) + '.mfc'
+        
+#         if not os.path.isfile(mfcFileName):
+        pipe= subprocess.Popen([PATH_TO_HCOPY, '-A', '-D', '-T', '1', '-C', PATH_TO_CONFIG_FILES + 'wav_config_singing', self.pathToAudioFile, mfcFileName])
         pipe.wait()
         return mfcFileName
+   
+    '''
+       @param path_TO_OUTPUT:  all generated files are put in this dir. e.g. - the files with extracted .mfc
+       @param outputHTKPhoneAligned: alignment result file
+    '''     
+    def alignAudio(self, timeShift, path_TO_OUTPUT,  outputHTKPhoneAligned ):
         
-    def alignAudio(self, timeShift, outputHTKPhoneAligned =''):
-    
 
         
         (dictName, mlfName )  = self._createWordMLFandDict()
         
         # extract featuues
         
-        mfcFileName = self._extractFeatures()
+        mfcFileName = self._extractFeatures(path_TO_OUTPUT)
         
-        if outputHTKPhoneAligned =='':
-            baseNameAudioFile = os.path.splitext(self.pathToAudioFile)[0]
-            outputHTKPhoneAligned = baseNameAudioFile + HTK_MLF_ALIGNED_SUFFIX
-        
+
         # Align with hHVite
-        pipe = subprocess.Popen([PATH_TO_HVITE, '-l', "'*'", '-o', 'S', '-A', '-D', '-T', '1', '-b', 'sil', '-C', PATH_TO_CONFIG_FILES + 'config', '-a', '-H', self.pathToHtkModel, '-i', '/tmp/phoneme-level.output', '-m', '-I', mlfName, '-y', 'lab', dictName, PATH_TO_HMMLIST, mfcFileName])
+        pipe = subprocess.Popen([PATH_TO_HVITE, '-l', "'*'", '-o', 'S', '-A', '-D', '-T', '1', '-b', 'sil', '-C', PATH_TO_CONFIG_FILES + 'config_singing', '-a', '-H', self.pathToHtkModel, '-i', '/tmp/phoneme-level.output', '-m', '-I', mlfName, '-y', 'lab', dictName, PATH_TO_HMMLIST, mfcFileName])
         pipe.wait()      
         if os.path.exists('/tmp/phoneme-level.output'):
             shutil.move('/tmp/phoneme-level.output', outputHTKPhoneAligned)
             
        
+    '''
+    align one file
+    '''
+    @staticmethod
+    def alignOnechunk(pathToHtkModel, pathToAudioFile,   wordAnnoURI, path_TO_OUTPUT, outputHTKPhoneAlignedURI='' ):
+            
+            lyrics = ""
+            aligner = Aligner(pathToHtkModel, pathToAudioFile,  lyrics, 1) 
+            
+            timeShift = 35.81
+            timeShift =  0
+    #         aligner.alignAudio(  timeShift, outputHTKPhoneAligned)
+                
+            if outputHTKPhoneAlignedURI=='':
+                baseNameAudioFile = os.path.splitext(os.path.basename(aligner.pathToAudioFile))[0]
+                outputHTKPhoneAlignedURI = os.path.join(path_TO_OUTPUT, baseNameAudioFile ) + HTK_MLF_ALIGNED_SUFFIX
+            
+            
+            aligner.alignAudio( timeShift, path_TO_OUTPUT, outputHTKPhoneAlignedURI)
+            
+            openAlignmentInPraat(wordAnnoURI, outputHTKPhoneAlignedURI, timeShift)
+    
+            return outputHTKPhoneAlignedURI  
     
 # END OF CLASS
 
@@ -150,6 +180,11 @@ def mlf2PraatFormat(listTsAndPhonemes, timeShift, baneNameAudioFile, whichSuffix
     print 'phoneme level alignment written to file: ',  phonemeAlignedfileName
     return phonemeAlignedfileName
     
+    
+    
+
+  
+                    
 
     '''
     call Praat script to: 
@@ -185,7 +220,8 @@ def openAlignmentInPraat(wordAnnoURI, outputHTKPhoneAlignedURI, timeShift):
     pipe.wait()
     
     # same praat script for PHONEME_ALIGNED_SUFFIX
-    pipe =subprocess.Popen( [ PATH_TO_PRAAT, PATH_TO_PRAAT_SCRIPT, alignedResultPath, fileNameWordAnno,  alignedFileBaseName, PHONEME_ALIGNED_SUFFIX ])
+    command = [ PATH_TO_PRAAT, PATH_TO_PRAAT_SCRIPT, alignedResultPath, fileNameWordAnno,  alignedFileBaseName, PHONEME_ALIGNED_SUFFIX ]
+    pipe =subprocess.Popen(command)
     pipe.wait()
     
     # open comparison.TextGrid in  praat. OPTIONAL

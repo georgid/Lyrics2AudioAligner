@@ -1,0 +1,21 @@
+
+Eval done only with begin ts: 
+e.g. if result <>.wordAligned is: 
+
+
+startTs phonemeOrWord
+0.0		sil
+1.11	usagi
+2.41	usagi
+2.90	sp
+3.38	nani
+
+and <>.TextGrid is 
+ts 	usagi usagi 
+ts 	nani
+
+-----
+begin ts taken into account are: 
+1.11 usagi 
+and 
+3.38 nani

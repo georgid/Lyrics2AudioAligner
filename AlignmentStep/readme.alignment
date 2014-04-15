@@ -1,3 +1,6 @@
+core method doing alignment:
+RecordingSegmenter.alignOneChunk()
+
 
 ANNOTATION:
 1) prepare annoatation: 
