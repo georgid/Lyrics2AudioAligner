@@ -104,7 +104,6 @@ if __name__ == '__main__':
 
 
 ################################### test with one chunk of sarki recording ####################################
-    compositionName = 'nihavent--sarki--aksak--koklasam_saclarini--artaki_candan/' 
     
     PATH_TO_DATA = '/Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/20_Koklasam_Saclarini_Synth/' ;
    
