@@ -87,6 +87,8 @@ class Phonetizer(object):
 
     # table 1 from Oe. Salor - Turkish speech corpora and recognition tools developed by porting SONIC: Towards multilingual speech recognition
     
+    # NOTE: unvoiced fricatives and affricatives are replaced by sp, since they are not synthesized 
+    
     # TODO: More carefull distinction between variants. e. g. # disctinction between G and GG
         METUlookupTable = {
                        'a': 'AA',
@@ -101,22 +103,22 @@ class Phonetizer(object):
                        'd': 'D',
                        'g': 'GG',
                        'G': '',
-                       'h': 'H',
+                       'h': 'fric',
                        'k': 'KK',
                        'l': 'LL',
                        'm': 'M',
                        'n': 'NN',
                        'p': 'P',
                        'r': 'RR',
-                       's': 'S',
-                       'S': 'SH',
+                       's': 'fric',
+                       'S': 'fric',
                        't': 'T',
                        'v': 'VV',
                        'y': 'Y',
-                       'z': 'Z',
+                       'z': 'fric',
                        'c': 'C',
-                       'C': 'CH',
-                       'f': 'F',
+                       'C': 'fric',
+                       'f': 'fric',
                        'j': 'J'
                        }
        
@@ -269,7 +271,7 @@ class Phonetizer(object):
                     wordAndPronunciation += phoneme
                     wordAndPronunciation += " "
                 
-                # TODO: here add sp
+                #  here add sp
                 wordAndPronunciation += 'sp'
                 wordAndPronunciation =  wordAndPronunciation.rstrip()
                 wordAndPronunciation +='\n'
