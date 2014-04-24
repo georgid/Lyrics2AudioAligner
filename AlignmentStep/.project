@@ -3,6 +3,7 @@
 	<name>AlignmentStep</name>
 	<comment></comment>
 	<projects>
+		<project>AdaptationStep</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
