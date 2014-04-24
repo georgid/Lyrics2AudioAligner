@@ -20,6 +20,7 @@ PATH_TO_HTK_MODEL = '/Users/joro/Documents/Phd/UPF/METUdata//model_output/adapte
 PATH_TO_HTK_MODEL ='/Users/joro/Documents/Phd/UPF/METUdata//model_output/adapted/HTS_japan_male.gmmlrmean_map_2'
 
 
+PATH_TO_HTK_MODEL = '/Users/joro/Documents/Phd/UPF/METUdata/model_output/multipleGaussians/hmmdefs9/iter9/hmmdefs'
 
 
 
@@ -35,8 +36,8 @@ PATH_TO_HTK_MODEL ='/Users/joro/Documents/Phd/UPF/METUdata//model_output/adapted
 # PATH_TO_NOTCLEAN_ADAPTDATA = '/Users/joro/Documents/Phd/UPF/adaptation_data_NOT_CLEAN/04_Hamiyet_Yuceses_-_Bakmiyor_Cesm-i_Siyah_Feryade/'      
 PATH_TO_NOTCLEAN_ADAPTDATA = '/tmp/audio/'
 
-PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/sertan_sarki_5songs_peaksSynthesis/'    
-PATH_TEST_DATASET = '/Volumes/IZOTOPE/sertan_sarki/'    
+PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/sertan_sarki_5songs_peaksSynthesis/'
+  
 
           
 
@@ -66,7 +67,8 @@ def doitForTestPiece(compositionName, recordingDir):
         ###########        ----- align one recording
         
         pathToRecording = os.path.join(pathToComposition, recordingDir)
-    
+        print pathToRecording
+         
         os.chdir(pathToRecording)
         pathToSectionAnnotations = os.path.join(pathToRecording, glob.glob('*.sectionAnno.txt')[0]) #             pathToAudio =  os.path.join(pathToRecording, glob.glob('*.wav')[0])
         pathToAudio = os.path.join(pathToRecording, recordingDir) + '.wav'

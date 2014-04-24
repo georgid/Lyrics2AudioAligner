@@ -133,7 +133,7 @@ class Aligner():
             
             aligner.alignAudio( timeShift, path_TO_OUTPUT, outputHTKPhoneAlignedURI)
             
-            openAlignmentInPraat(wordAnnoURI, outputHTKPhoneAlignedURI, timeShift)
+            openAlignmentInPraat(wordAnnoURI, outputHTKPhoneAlignedURI, timeShift, pathToAudioFile)
     
             return outputHTKPhoneAlignedURI  
     
@@ -195,7 +195,7 @@ def mlf2PraatFormat(listTsAndPhonemes, timeShift, baneNameAudioFile, whichSuffix
     
     open Praat to visualize it 
     '''
-def openAlignmentInPraat(wordAnnoURI, outputHTKPhoneAlignedURI, timeShift):
+def openAlignmentInPraat(wordAnnoURI, outputHTKPhoneAlignedURI, timeShift, pathToAudioFile):
     
     # prepare
     outputHTKPhoneAlignedNoExt = os.path.splitext(outputHTKPhoneAlignedURI)[0]
@@ -228,3 +228,9 @@ def openAlignmentInPraat(wordAnnoURI, outputHTKPhoneAlignedURI, timeShift):
     comparisonTextGridURI =  os.path.join(alignedResultPath, fileNameWordAnno)  + PHRASE_ANNOTATION_EXT
     pipe = subprocess.Popen(["open", '-a', PATH_TO_PRAAT, comparisonTextGridURI])
     pipe.wait()
+    
+    # and audio
+
+    pipe = subprocess.Popen(["open", '-a', PATH_TO_PRAAT, pathToAudioFile])
+    pipe.wait()
+    

@@ -132,8 +132,8 @@ class MakamRecording:
                 self.pathToDividedAudioFiles.append(filePathDividedAudio)
                 # make sure  sox (sox.sourceforge.net) is installed and call it  here with subprocess
                 sectionDuration = float(self.endTs[i])-float(self.beginTs[i])
-                pipe = subprocess.Popen([pathToSox, self.pathToAudiofile, filePathDividedAudio, 'trim', self.beginTs[i], str(sectionDuration)   ])
-                pipe.wait()
+#                pipe = subprocess.Popen([pathToSox, self.pathToAudiofile, filePathDividedAudio, 'trim', self.beginTs[i], str(sectionDuration)   ])
+#                pipe.wait()
             return
     '''
     if given wav file does not exists, assumes same file with .mp3 ext exists and converts it to wav

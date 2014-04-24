@@ -61,7 +61,7 @@ def doitForAdaptationFile(pathTodata,  audioName):
         diff = evalPhraseLevelError(phraseAnnoURI, outputHTKPhoneAlignedURI)
         
            ### OPTIONAL : open in praat
-        openAlignmentInPraat(phraseAnnoURI, outputHTKPhoneAlignedURI, 0)
+        openAlignmentInPraat(phraseAnnoURI, outputHTKPhoneAlignedURI, 0, pathToAudio)
         
         return diff
 
