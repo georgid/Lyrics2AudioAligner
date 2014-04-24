@@ -36,9 +36,8 @@ PATH_TO_HTK_MODEL = '/Users/joro/Documents/Phd/UPF/METUdata/model_output/multipl
 # PATH_TO_NOTCLEAN_ADAPTDATA = '/Users/joro/Documents/Phd/UPF/adaptation_data_NOT_CLEAN/04_Hamiyet_Yuceses_-_Bakmiyor_Cesm-i_Siyah_Feryade/'      
 PATH_TO_NOTCLEAN_ADAPTDATA = '/tmp/audio/'
 
-PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/sertan_sarki_5songs_peaksSynthesis/'
+PATH_TEST_DATASET = '/Volumes/IZOTOPE/sertan_sarki/'
   
-
           
 
 
