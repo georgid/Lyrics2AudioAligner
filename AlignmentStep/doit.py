@@ -10,6 +10,8 @@ from evaluation.WordLevelEvaluator import evalPhraseLevelError
 import os
 import glob
 from RecordingSegmenter import RecordingSegmenter
+from Adapt import MAP_EXT, MLLR_EXT, MODEL_NAME, PATH_TO_OUTPUT, NUM_MAP_ITERS
+
 
 
 
@@ -21,6 +23,11 @@ PATH_TO_HTK_MODEL ='/Users/joro/Documents/Phd/UPF/METUdata//model_output/adapted
 
 
 
+
+ # modelURI from adaptation script
+MODEL_URI = os.path.join(PATH_TO_OUTPUT, MODEL_NAME + MLLR_EXT + MAP_EXT + str(NUM_MAP_ITERS-1) )
+   
+MODEL_URI = '/Users/joro/Documents/Phd/UPF/METUdata/model_output/multipleGaussians/hmmdefs9/iter9/hmmdefs'
 
 
 # PATH_TO_HTK_MODEL = '/Users/joro/Documents/Phd/UPF/METUdata//model_output/adapted/multipleGauss/hmm4/HTS_japan_female.gmmlrmean_map_2'
@@ -35,8 +42,9 @@ PATH_TO_HTK_MODEL ='/Users/joro/Documents/Phd/UPF/METUdata//model_output/adapted
 # PATH_TO_NOTCLEAN_ADAPTDATA = '/Users/joro/Documents/Phd/UPF/adaptation_data_NOT_CLEAN/04_Hamiyet_Yuceses_-_Bakmiyor_Cesm-i_Siyah_Feryade/'      
 PATH_TO_NOTCLEAN_ADAPTDATA = '/tmp/audio/'
 
-PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/sertan_sarki_5songs_peaksSynthesis/'    
-PATH_TEST_DATASET = '/Volumes/IZOTOPE/sertan_sarki/'    
+PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/sertan_sarki_5songs_peaksSynthesis/'
+  
+PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/'
 
           
 
@@ -66,13 +74,14 @@ def doitForTestPiece(compositionName, recordingDir):
         ###########        ----- align one recording
         
         pathToRecording = os.path.join(pathToComposition, recordingDir)
-    
+        print pathToRecording
+         
         os.chdir(pathToRecording)
         pathToSectionAnnotations = os.path.join(pathToRecording, glob.glob('*.sectionAnno.txt')[0]) #             pathToAudio =  os.path.join(pathToRecording, glob.glob('*.wav')[0])
         pathToAudio = os.path.join(pathToRecording, recordingDir) + '.wav'
         
         # TODO: issue 14
-        totalError = recordingSegmenter.alignOneRecording(PATH_TO_HTK_MODEL, makamScore, pathToAudio, pathToSectionAnnotations, '/tmp/audioTur')
+        totalError = recordingSegmenter.alignOneRecording(MODEL_URI, makamScore, pathToAudio, pathToSectionAnnotations, '/tmp/audioTur')
         print("total error for song {0} is {1}".format(recordingDir,totalError ))
         
 

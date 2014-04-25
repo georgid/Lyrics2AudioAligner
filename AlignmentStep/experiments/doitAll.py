@@ -11,11 +11,8 @@ from Adapt import PATH_TO_OUTPUT, MODEL_NAME, PATH_TO_CLEAN_ADAPTDATA, adapt,\
 from matplotlib.sphinxext.plot_directive import out_of_date
 import os
 import sonicVisTextPhnDir2mlf
-from doit import PATH_TEST_DATASET
-
- # modelURI from adaptation script
-MODEL_URI = os.path.join(PATH_TO_OUTPUT, MODEL_NAME + MLLR_EXT + MAP_EXT + str(NUM_MAP_ITERS-1) )
-        
+from doit import PATH_TEST_DATASET, MODEL_URI
+     
 
 PATH_TO_HTK_MODEL = '/Volumes/IZOTOPE/adaptation_data_NOT_CLEAN/syllablingDB/hmmdefs.gmmlrmean_map_2'
 
@@ -61,7 +58,7 @@ def doitForAdaptationFile(pathTodata,  audioName):
         diff = evalPhraseLevelError(phraseAnnoURI, outputHTKPhoneAlignedURI)
         
            ### OPTIONAL : open in praat
-        openAlignmentInPraat(phraseAnnoURI, outputHTKPhoneAlignedURI, 0)
+        openAlignmentInPraat(phraseAnnoURI, outputHTKPhoneAlignedURI, 0, pathToAudio)
         
         return diff
 
@@ -105,11 +102,12 @@ if __name__ == '__main__':
 
 ################################### test with one chunk of sarki recording ####################################
     
-    PATH_TO_DATA = '/Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/20_Koklasam_Saclarini_Synth/' ;
+    PATH_TO_DATA = '/Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/' ;
+    compositionName = 'nihavent--sarki--aksak--koklasam_saclarini--artaki_candan/'
    
     audioName ='20_Koklasam_Saclarini_nakarat_from_46_047599_to_59_716561'
-       
+    audioName = '20_Koklasam_Saclarini_zemin_from_19_292461_to_32_514873'
           
-    error = doitForAdaptationFile(PATH_TO_DATA, audioName)
+    error = doitForAdaptationFile(PATH_TO_DATA + compositionName + '/20_Koklasam_Saclarini/', audioName)
     
     print error

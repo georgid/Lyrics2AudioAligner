@@ -112,7 +112,7 @@ class RecordingSegmenter(object):
                 
                 ### OPTIONAL : open in praat
                 praseAnno = os.path.splitext(currPathToAudioFile)[0] + PHRASE_ANNOTATION_EXT
-                openAlignmentInPraat(praseAnno, outputHTKPhoneAlignedURI, 0)
+                openAlignmentInPraat(praseAnno, outputHTKPhoneAlignedURI, 0, currPathToAudioFile)
                 
                 totalError += diff
                 numParts +=1
