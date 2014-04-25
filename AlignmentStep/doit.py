@@ -10,6 +10,7 @@ from evaluation.WordLevelEvaluator import evalPhraseLevelError
 import os
 import glob
 from RecordingSegmenter import RecordingSegmenter
+from Adapt import MAP_EXT, MLLR_EXT, MODEL_NAME, PATH_TO_OUTPUT, NUM_MAP_ITERS
 
 
 
@@ -19,8 +20,9 @@ PATH_TO_HTK_MODEL = '/Users/joro/Documents/Phd/UPF/METUdata//model_output/adapte
 
 PATH_TO_HTK_MODEL ='/Users/joro/Documents/Phd/UPF/METUdata//model_output/adapted/HTS_japan_male.gmmlrmean_map_2'
 
+MODEL_URI = os.path.join(PATH_TO_OUTPUT, MODEL_NAME + MLLR_EXT + MAP_EXT + str(NUM_MAP_ITERS-1) )
 
-PATH_TO_HTK_MODEL = '/Users/joro/Documents/Phd/UPF/METUdata/model_output/multipleGaussians/hmmdefs9/iter9/hmmdefs'
+#MODEL_URI = '/Users/joro/Documents/Phd/UPF/METUdata/model_output/multipleGaussians/hmmdefs9/iter9/hmmdefs'
 
 
 
@@ -73,7 +75,7 @@ def doitForTestPiece(compositionName, recordingDir):
         pathToAudio = os.path.join(pathToRecording, recordingDir) + '.wav'
         
         # TODO: issue 14
-        totalError = recordingSegmenter.alignOneRecording(PATH_TO_HTK_MODEL, makamScore, pathToAudio, pathToSectionAnnotations, '/tmp/audioTur')
+        totalError = recordingSegmenter.alignOneRecording(MODEL_URI, makamScore, pathToAudio, pathToSectionAnnotations, '/tmp/audioTur')
         print("total error for song {0} is {1}".format(recordingDir,totalError ))
         
 
@@ -93,11 +95,11 @@ if __name__ == '__main__':
         compositionName = 'nihavent--sarki--curcuna--kimseye_etmem--kemani_sarkis_efendi'
         recordingDir = '03_Bekir_Unluataer_-_Kimseye_Etmem_Sikayet_Aglarim_Ben_Halime'
 
-#         compositionName = 'muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_ozisik'
-#         recordingDir = '1-05_Ruzgar_Soyluyor_Simdi_O_Yerlerde'
-
-        compositionName = 'nihavent--sarki--aksak--koklasam_saclarini--artaki_candan'
-        recordingDir = '20_Koklasam_Saclarini'
+        compositionName = 'muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_ozisik'
+        recordingDir = '1-05_Ruzgar_Soyluyor_Simdi_O_Yerlerde'
+# 
+#         compositionName = 'nihavent--sarki--aksak--koklasam_saclarini--artaki_candan'
+#         recordingDir = '20_Koklasam_Saclarini'
          
 # #                  
         doitForTestPiece(compositionName, recordingDir)
