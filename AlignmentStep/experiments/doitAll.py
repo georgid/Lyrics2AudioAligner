@@ -12,11 +12,12 @@ from matplotlib.sphinxext.plot_directive import out_of_date
 import os
 import sonicVisTextPhnDir2mlf
 from doit import PATH_TEST_DATASET
+from scipy.odr.odrpack import Model
 
  # modelURI from adaptation script
 MODEL_URI = os.path.join(PATH_TO_OUTPUT, MODEL_NAME + MLLR_EXT + MAP_EXT + str(NUM_MAP_ITERS-1) )
 MODEL_URI = '/Users/joro/Documents/Phd/UPF/METUdata/model_output/multipleGaussians/hmmdefs9/iter9/hmmdefs'
-        
+      
 
 #PATH_TO_HTK_MODEL = '/Volumes/IZOTOPE/adaptation_data_NOT_CLEAN/syllablingDB/hmmdefs.gmmlrmean_map_2'
 
@@ -92,26 +93,39 @@ if __name__ == '__main__':
 # #      
 #     
     ####################### test with recorded clean voice ######################################
-    
+#     
 #     PATH_TEST_DATASET = '/Volumes/IZOTOPE/sertan_sarki/' # this is the clean dataset 
-#       
+#        
 #         # these two lines are only for case of GEORGI-reocroded voice
 #     compositionName = 'nihavent--sarki--aksak--koklasam_saclarini--artaki_candan/'
 #     PATH_TO_CLEAN_ADAPTDATA = PATH_TEST_DATASET + compositionName + 'GEORGI/'; 
-#       
+#        
 #     audioName = 'GEORGI_20_Koklasam_Saclarini_zemin_from_19.292461_to_32.514873'
 # # # #          audioName = '04_Hamiyet_Yuceses_-_Bakmiyor_Cesm-i_Siyah_Feryade_gazel_1'
-
-
+#     
+    
+    ######################## test with one file from sarki collection
+    
+    PATH_TEST_DATASET = '/Volumes/IZOTOPE/sertan_sarki/' # this is the clean dataset 
+       
+        # these two lines are only for case of GEORGI-reocroded voice
+    compositionName = 'nihavent--sarki--aksak--koklasam_saclarini--artaki_candan/'
+    PATH_TO_DATA = PATH_TEST_DATASET + compositionName + '20_Koklasam_Saclarini/'
+    
+       
+    audioName = '20_Koklasam_Saclarini_nakarat_from_46_047599_to_59_716561'
+    
+    error = doitForAdaptationFile(PATH_TO_DATA, audioName)
 
 ################################### test with one chunk of sarki recording ####################################
-    compositionName = 'nihavent--sarki--aksak--koklasam_saclarini--artaki_candan/' 
-    
-    PATH_TO_DATA = '/Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/20_Koklasam_Saclarini_Synth/' ;
-   
-    audioName ='20_Koklasam_Saclarini_nakarat_from_46_047599_to_59_716561'
-       
-          
-    error = doitForAdaptationFile(PATH_TO_DATA, audioName)
-    
-    print error
+#     compositionName = 'nihavent--sarki--aksak--koklasam_saclarini--artaki_candan/' 
+#     
+#     PATH_TO_DATA = '/Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/20_Koklasam_Saclarini_Synth/' ;
+#    
+#     audioName ='20_Koklasam_Saclarini_nakarat_from_46_047599_to_59_716561'
+#     
+#        
+#           
+#     error = doitForAdaptationFile(PATH_TO_DATA, audioName)
+#     
+#     print error

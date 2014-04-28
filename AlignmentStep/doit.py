@@ -20,7 +20,7 @@ PATH_TO_HTK_MODEL = '/Users/joro/Documents/Phd/UPF/METUdata//model_output/adapte
 
 PATH_TO_HTK_MODEL ='/Users/joro/Documents/Phd/UPF/METUdata//model_output/adapted/HTS_japan_male.gmmlrmean_map_2'
 
-MODEL_URI = os.path.join(PATH_TO_OUTPUT, MODEL_NAME + MLLR_EXT + MAP_EXT + str(NUM_MAP_ITERS-1) )
+MODEL_URI = os.path.join(PATH_TO_OUTPUT, MODEL_NAME +  MAP_EXT + str(NUM_MAP_ITERS) )
 
 #MODEL_URI = '/Users/joro/Documents/Phd/UPF/METUdata/model_output/multipleGaussians/hmmdefs9/iter9/hmmdefs'
 
@@ -86,20 +86,24 @@ if __name__ == '__main__':
 #         
 #         
        
-        compositionName = 'segah--sarki--curcuna--olmaz_ilac--haci_arif_bey'
-        recordingDir = '21_Recep_Birgit_-_Olmaz_Ilac_Sine-i_Sad_Pareme'
+       
            
 #         compositionName = 'nihavent--sarki--turkaksagi--nerelerde_kaldin--ismail_hakki_efendi'
 #         recordingDir = '3-12_Nerelerde_Kaldin'
 #         
-        compositionName = 'nihavent--sarki--curcuna--kimseye_etmem--kemani_sarkis_efendi'
-        recordingDir = '03_Bekir_Unluataer_-_Kimseye_Etmem_Sikayet_Aglarim_Ben_Halime'
-
+       
         compositionName = 'muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_ozisik'
         recordingDir = '1-05_Ruzgar_Soyluyor_Simdi_O_Yerlerde'
 # 
-#         compositionName = 'nihavent--sarki--aksak--koklasam_saclarini--artaki_candan'
-#         recordingDir = '20_Koklasam_Saclarini'
+        compositionName = 'nihavent--sarki--aksak--koklasam_saclarini--artaki_candan'
+        recordingDir = '20_Koklasam_Saclarini'
+        
+        compositionName = 'nihavent--sarki--curcuna--kimseye_etmem--kemani_sarkis_efendi'
+        recordingDir = '03_Bekir_Unluataer_-_Kimseye_Etmem_Sikayet_Aglarim_Ben_Halime'
+        
+        compositionName = 'segah--sarki--curcuna--olmaz_ilac--haci_arif_bey'
+        recordingDir = '21_Recep_Birgit_-_Olmaz_Ilac_Sine-i_Sad_Pareme'
+
          
 # #                  
         doitForTestPiece(compositionName, recordingDir)
