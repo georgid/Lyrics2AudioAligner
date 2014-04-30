@@ -97,6 +97,8 @@ if __name__ == '__main__':
         compositionName = 'nihavent--sarki--aksak--koklasam_saclarini--artaki_candan'
         recordingDir = '20_Koklasam_Saclarini'
 
+        compositionName = 'muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_ozisik'
+        recordingDir = '1-05_Ruzgar_Soyluyor_Simdi_O_Yerlerde'
 
          
 # #                  
