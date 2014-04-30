@@ -40,7 +40,6 @@ MODEL_URI = os.path.join(PATH_TO_OUTPUT, MODEL_NAME +  MAP_EXT + str(NUM_MAP_ITE
 # PATH_TO_NOTCLEAN_ADAPTDATA = '/Users/joro/Documents/Phd/UPF/adaptation_data_NOT_CLEAN/04_Hamiyet_Yuceses_-_Bakmiyor_Cesm-i_Siyah_Feryade/'      
 PATH_TO_NOTCLEAN_ADAPTDATA = '/tmp/audio/'
 
-PATH_TEST_DATASET = '/Volumes/IZOTOPE/sertan_sarki/'
   
 PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/'
 
