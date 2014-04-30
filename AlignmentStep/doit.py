@@ -10,7 +10,7 @@ from evaluation.WordLevelEvaluator import evalPhraseLevelError
 import os
 import glob
 from RecordingSegmenter import RecordingSegmenter
-from Adapt import MAP_EXT, MLLR_EXT, MODEL_NAME, PATH_TO_OUTPUT, NUM_MAP_ITERS
+from Adapt import MAP_EXT, MODEL_NAME, NUM_MAP_ITERS, PATH_TO_OUTPUT
 
 
 
