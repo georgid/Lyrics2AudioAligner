@@ -279,6 +279,7 @@ class Phonetizer(object):
                 pronunciationList.append(wordAndPronunciation)
                 
             pronunciationList.append('sil\tsil\n')
+            pronunciationList.append('NOISE\tNOISE\n')
                
             writeListToTextFile(pronunciationList, None,  outputFileName )
             

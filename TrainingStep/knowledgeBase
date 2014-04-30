@@ -1,9 +1,0 @@
-The proto file defines the topology of a model. 
-It is just multiplicated in the flat-start hmmdefs file for each monophone from the monophones. 
-
-the macros file - 
-
-HCompV - initialize the parameters of the models
-
-
-HERest does only one iteration. But have in mind each given file for retraining is used. which means it is run incrementally on the features of each file. 

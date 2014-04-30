@@ -9,6 +9,7 @@ from utils.Utils import mlf2WordAndTsList, writeListOfListToTextFile,\
     mlf2PhonemesAndTsList
 from Phonetizer import Phonetizer
 import shutil
+from Adapt import MODEL_NOISE_URI
 
 HTK_MLF_WORD_ANNO_SUFFIX = '.wrd.mlf'
 HTK_MLF_ALIGNED_SUFFIX= ".htkAlignedMlf"
@@ -30,6 +31,9 @@ PATH_TO_PRAAT_SCRIPT= '/Users/joro/Documents/Phd/UPF/voxforge/myScripts/praat/lo
 LYRICS_TXT_EXT = '.txtTur'
 LYRICS_TXT_METUBET_EXT = '.txtMETU'
 PHRASE_ANNOTATION_EXT = '.TextGrid'
+
+# only to satisfy HTK 
+DUMMY_HMM_URI = '/Users/joro/Documents/Phd/UPF/METUdata/model_output/multipleGaussians/DUMMY'
 
 class Aligner():
     '''
@@ -97,17 +101,20 @@ class Aligner():
     '''     
     def alignAudio(self, timeShift, path_TO_OUTPUT,  outputHTKPhoneAligned ):
         
-
-        
         (dictName, mlfName )  = self._createWordMLFandDict()
         
-        # extract featuues
+        wordNetwURI = '/tmp/test.wordNetw'
         
+        # extract featuues
+         
         mfcFileName = self._extractFeatures(path_TO_OUTPUT)
         
 
-        # Align with hHVite
-        pipe = subprocess.Popen([PATH_TO_HVITE, '-l', "'*'", '-o', 'S', '-A', '-D', '-T', '1', '-b', 'sil', '-C', PATH_TO_CONFIG_FILES + 'config_singing', '-a', '-H', self.pathToHtkModel, '-i', '/tmp/phoneme-level.output', '-m', '-I', mlfName, '-y', 'lab', dictName, PATH_TO_HMMLIST, mfcFileName])
+#         # Align with hHVite
+        pipe = subprocess.Popen([PATH_TO_HVITE, '-l', "'*'", '-o', 'S', '-A', '-D', '-T', '1', '-b', 'sil', '-C', PATH_TO_CONFIG_FILES + 'config_singing', '-a', \
+                                 '-H', self.pathToHtkModel, '-H',  DUMMY_HMM_URI , '-H',  MODEL_NOISE_URI , '-i', '/tmp/phoneme-level.output', '-m', \
+                                 '-I', mlfName, '-y', 'lab', dictName, PATH_TO_HMMLIST, mfcFileName])
+        
         pipe.wait()      
         if os.path.exists('/tmp/phoneme-level.output'):
             shutil.move('/tmp/phoneme-level.output', outputHTKPhoneAligned)
