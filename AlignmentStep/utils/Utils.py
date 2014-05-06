@@ -53,17 +53,16 @@ def writeListToTextFile(inputList,headerLine, pathToOutputFile):
     outputFileHandle.close()
 
 ##################################################################################
-        
-'''
-parse output of alignment in mlf format ( with words) 
-output: words with begin and end ts 
-
-# TODO: change automatically extension from txt to mlf
-
-''' 
 
 
 def mlf2WordAndTsList(inputFileName):
+        
+    '''
+    parse output of alignment in mlf format ( with words) 
+    output: words with begin and end ts 
+    NOTE: length of tokens=5 if no -o option is set on HVite
+    TODO: change automatically extension from txt to mlf
+    ''' 
     
     allLines = loadTextFile(inputFileName)
     
@@ -76,10 +75,10 @@ def mlf2WordAndTsList(inputFileName):
     for line in allLines[2:-1]:
         
         tokens =  line.split(" ")
-        if len(tokens) != 4:
+        if len(tokens) != 5:
             continue
         startTime = float(tokens[0])/10000000
-        wordMETU = tokens[3].strip()
+        wordMETU = tokens[-1].strip()
         listWordsAndTs.append([startTime, wordMETU])
          
     return listWordsAndTs

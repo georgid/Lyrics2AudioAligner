@@ -91,7 +91,20 @@ class Aligner():
         '''
         creates word network including optional sil and backgr noise at end and beginning
         '''
-        grammar = '([sil|NOISE] '  + METULyrics + ' [sil|NOISE])'
+        # add sil 
+        METULyricsList = METULyrics.split()
+        METULyricsAndSil = []
+        for i in range( len(METULyricsList) - 1):
+            METULyricsAndSil.append(METULyricsList[i])
+            METULyricsAndSil.append(' [sil]')
+        
+        # last item wothout silence     
+        i= i + 1
+        METULyricsAndSil.append(METULyricsList[i])
+        METULyricsAndSil = " ".join(METULyricsAndSil).strip()
+            
+        
+        grammar = '({sil|NOISE} '  + METULyricsAndSil + ' {sil|NOISE})'
         writeListToTextFile(grammar, None, '/tmp/grammar')
         
         HParseCommand = ['/usr/local/bin/HParse', '/tmp/grammar', '/tmp/wordNetw' ]

@@ -100,7 +100,12 @@ if __name__ == '__main__':
         compositionName = 'muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_ozisik'
         recordingDir = '1-05_Ruzgar_Soyluyor_Simdi_O_Yerlerde'
 
+        compositionName = 'nihavent--sarki--turkaksagi--nerelerde_kaldin--ismail_hakki_efendi'
+        recordingDir = '3-12_Nerelerde_Kaldin'
          
+        compositionName = 'nihavent--sarki--curcuna--kimseye_etmem--kemani_sarkis_efendi'
+        recordingDir = '03_Bekir_Unluataer_-_Kimseye_Etmem_Sikayet_Aglarim_Ben_Halime'
+          
 # #                  
         doitForTestPiece(compositionName, recordingDir)
 
