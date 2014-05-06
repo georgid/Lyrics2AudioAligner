@@ -1,0 +1,1 @@
+for i in `ls *.lab`; do a=`basename $i .lab`; dirN=`dirname $i`; echo $i;  awk '{ start = $1 / 10000000; if ($3=="o") $3= "O"; if ($3=="a") $3="AA"; if ($3=="i") $3="IY"; if ($3=="e") $3="E"; if ($3=="u") $3="U";  print start"\t"$3  }' $i > ${dirN}/${a}.phoneAnno;  done
