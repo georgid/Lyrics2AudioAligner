@@ -10,6 +10,9 @@ from utils.Utils import mlf2WordAndTsList, writeListOfListToTextFile,\
 from Phonetizer import Phonetizer
 import shutil
 from Adapt import MODEL_NOISE_URI
+import utils
+import utilsLyrics
+from utilsLyrics.Tools import writeListToTextFile
 
 HTK_MLF_WORD_ANNO_SUFFIX = '.wrd.mlf'
 HTK_MLF_ALIGNED_SUFFIX= ".htkAlignedMlf"
@@ -83,8 +86,21 @@ class Aligner():
         dictName = '/tmp/lexicon2'
         
         Phonetizer.METULyrics2phoneticDict(METUBETfileName, dictName)
-        return (dictName, mlfName )
-
+        return (dictName, mlfName, METULyrics )
+    
+    def _toWordNetwork(self, METULyrics):
+        '''
+        creates word network including optional sil and backgr noise at end and beginning
+        '''
+        grammar = '([sil|NOISE] '  + METULyrics + ' [sil|NOISE])'
+        writeListToTextFile(grammar, None, '/tmp/grammar')
+        
+        HParseCommand = ['/usr/local/bin/HParse', '/tmp/grammar', '/tmp/wordNetw' ]
+        pipe= subprocess.Popen(HParseCommand)
+        pipe.wait()
+        
+        return '/tmp/wordNetw'
+        
 
     def _extractFeatures(self, path_TO_OUTPUT):
         baseNameAudioFile = os.path.splitext(os.path.basename(self.pathToAudioFile))[0]
@@ -101,9 +117,9 @@ class Aligner():
     '''     
     def alignAudio(self, timeShift, path_TO_OUTPUT,  outputHTKPhoneAligned ):
         
-        (dictName, mlfName )  = self._createWordMLFandDict()
+        (dictName, mlfName, METULyrics )  = self._createWordMLFandDict()
         
-        wordNetwURI = '/tmp/test.wordNetw'
+        wordNetwURI = self._toWordNetwork( METULyrics)
         
         # extract featuues
          
@@ -111,9 +127,10 @@ class Aligner():
         
 
 #         # Align with hHVite
+                # Align with hHVite
         pipe = subprocess.Popen([PATH_TO_HVITE, '-l', "'*'", '-o', 'S', '-A', '-D', '-T', '1', '-b', 'sil', '-C', PATH_TO_CONFIG_FILES + 'config_singing', '-a', \
                                  '-H', self.pathToHtkModel, '-H',  DUMMY_HMM_URI , '-H',  MODEL_NOISE_URI , '-i', '/tmp/phoneme-level.output', '-m', \
-                                 '-I', mlfName, '-y', 'lab', dictName, PATH_TO_HMMLIST, mfcFileName])
+                                 '-w', wordNetwURI, '-y', 'lab', dictName, PATH_TO_HMMLIST, mfcFileName])
         
         pipe.wait()      
         if os.path.exists('/tmp/phoneme-level.output'):
