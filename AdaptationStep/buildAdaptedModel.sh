@@ -27,7 +27,7 @@ fi
 ADAPTATION_DIR_WITH_Wav=$1
 # ADAPTATION_DIR_WITH_Wav="/Users/joro/Documents/Phd/UPF/voxforge/auto/adaptation/"
 
-for i in `ls ${ADAPTATION_DIR_WITH_Wav}/*.wav`; do a=`basename $i .wav`; dirn=`dirname $i`;  echo -ne "$i ${dirn}/${a}.mfc" ; echo;  done > /tmp/codetrain.scp
+for i in `ls ${ADAPTATION_DIR_WITH_Wav}/*.phoneAnno`; do a=`basename $i .phoneAnno`; dirn=`dirname $i`;  echo -ne "${dirn}/${a}.wav ${dirn}/${a}.mfc" ; echo;  done > /tmp/codetrain.scp
 
 
 # extract mfccs

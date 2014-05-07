@@ -39,7 +39,7 @@ def sonicVisText2mlf(inputFileName, outputFileHandle):
 
     allLines = inputFileHandle.readlines()
     
-    # write tiomestamps as well
+    #  with end ts. at least two lines of vowels needed. For only one vowel annotations this is not the case. But ts are not use by HEREst anyway 
 #     for i in range( 1, len(allLines) - 1):
 #         
 #         tokens =  allLines[i].split("\t")
@@ -49,12 +49,12 @@ def sonicVisText2mlf(inputFileName, outputFileHandle):
 #         output=str(float(tokens[0])*10000000) +" " + str(float(nextLineTokens[0])*10000000) + " " +  monoPhone
 #         outputFileHandle.write(output)
      
-    #only monophones    
+    #only one line    
     for i in range( len(allLines) ):
         
         tokens =  allLines[i].split("\t")
-        
-        monoPhone = replaceMonophonesNotDefinedInHMMList(tokens[0])
+         
+        monoPhone = replaceMonophonesNotDefinedInHMMList(tokens[-1])
         outputFileHandle.write(monoPhone)
         
         
@@ -78,10 +78,10 @@ def replaceMonophonesNotDefinedInHMMList(monophone):
     
 '''
 # convert all files in a dir from
-# SV text format:
+# .phoneAnno SV text format:
 #  0.000000000    sil
 # to .mlf format
-NOTE: uses .wav correpsonding to existing .phoneAnno files
+NOTE: all .phoneAnno should have a corresponding .wav file. uses .wav correpsonding to existing .phoneAnno files
 # @param: inputPath - dir with .phoneAnno Files
 # @param outputFileName - abs path and name to file  .mlf 
 

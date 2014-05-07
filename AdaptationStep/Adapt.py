@@ -10,6 +10,7 @@ import subprocess
 import shutil
 from sonicVisTextPhnDir2mlf import sonicVisTextPhnDir2mlf
 from multipleGauss.toMultipleGaussians import *
+from utilsLyrics.Tools import listWavFilesWithPhoneAnno
 
 #  adaptation step. MLLR-  HTK Book page 47, MAP - page 160
 # HERest is explained in page 138
@@ -46,8 +47,9 @@ MODEL_NOISE_URI  = '/Users/joro/Documents/Phd/UPF/METUdata//model_output/multipl
 
 
     # modelName same as pathToAdaptData
-# MODEL_NAME = 'syllablingDB'
-MODEL_NAME = 'HTS_japan_female'
+MODEL_NAME = 'syllablingDB'
+# MODEL_NAME = 'HTS_japan_female'
+# MODEL_NAME = 'all_male'
 # MODEL_NAME = 'HTS_japan_male'
 # MODEL_NAME = 'kani_karaca-all_VOCALS'
 
@@ -101,7 +103,6 @@ def adapt( pathAdaptationData,  pathToAllMlf, pathToAdaptedOutput, modelName):
     pathToModelPrevStep = adaptedOut
     outModelName = os.path.join(pathToAdaptedOutput, modelName )    
     
-
     
     for i in range (NUM_MAP_ITERS):
         pathToCurrMAPModel =  outModelName + MAP_EXT + str(i+1)
