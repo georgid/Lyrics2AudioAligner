@@ -6,13 +6,12 @@ Created on Mar 17, 2014
 import os
 import subprocess
 from utils.Utils import mlf2WordAndTsList, writeListOfListToTextFile,\
-    mlf2PhonemesAndTsList
+    mlf2PhonemesAndTsList, writeListToTextFile
 from Phonetizer import Phonetizer
 import shutil
 from Adapt import MODEL_NOISE_URI
 import utils
 import utilsLyrics
-from utilsLyrics.Tools import writeListToTextFile
 
 HTK_MLF_WORD_ANNO_SUFFIX = '.wrd.mlf'
 HTK_MLF_ALIGNED_SUFFIX= ".htkAlignedMlf"
@@ -92,7 +91,25 @@ class Aligner():
         '''
         creates word network including optional sil and backgr noise at end and beginning
         '''
-        grammar = '([sil|NOISE] '  + METULyrics + ' [sil|NOISE])'
+        # add sil 
+        METULyricsList = METULyrics.split()
+        METULyricsAndSil = []
+        for i in range( len(METULyricsList) - 1):
+            METULyricsAndSil.append(METULyricsList[i])
+            METULyricsAndSil.append(' [sil]')
+        
+        # last item wothout silence     
+        i= i + 1
+        METULyricsAndSil.append(METULyricsList[i])
+        METULyricsAndSil = " ".join(METULyricsAndSil).strip()
+            
+        
+        grammar = '({sil} '  + METULyricsAndSil + ' {sil})'
+        
+        # the case of synthesis
+#         grammar = '({sil|NOISE} '  + METULyricsAndSil + ' {sil|NOISE})'
+
+
         writeListToTextFile(grammar, None, '/tmp/grammar')
         
         HParseCommand = ['/usr/local/bin/HParse', '/tmp/grammar', '/tmp/wordNetw' ]
@@ -128,7 +145,7 @@ class Aligner():
 
 #         # Align with hHVite
                 # Align with hHVite
-        pipe = subprocess.Popen([PATH_TO_HVITE, '-l', "'*'", '-o', 'S', '-A', '-D', '-T', '1', '-b', 'sil', '-C', PATH_TO_CONFIG_FILES + 'config_singing', '-a', \
+        pipe = subprocess.Popen([PATH_TO_HVITE, '-l', "'*'", '-A', '-D', '-T', '1', '-b', 'sil', '-C', PATH_TO_CONFIG_FILES + 'config_singing', '-a', \
                                  '-H', self.pathToHtkModel, '-H',  DUMMY_HMM_URI , '-H',  MODEL_NOISE_URI , '-i', '/tmp/phoneme-level.output', '-m', \
                                  '-w', wordNetwURI, '-y', 'lab', dictName, PATH_TO_HMMLIST, mfcFileName])
         

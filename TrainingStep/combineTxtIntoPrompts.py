@@ -6,7 +6,7 @@ Created on Feb 20, 2014
 
 import os
 import sys
-from Adapt import PATH_TO_CONFIG, PATH_TO_SCRIPTS, HMM_LIST
+from Adapt import  PATH_TO_SCRIPTS, HMM_LIST, PATH_TO_CONFIG
 import subprocess
 
 def combineTxtIntoPrompts(pathToDirWithTxt, pathForOutput):

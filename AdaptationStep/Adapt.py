@@ -9,8 +9,7 @@ import os
 import subprocess
 import shutil
 from sonicVisTextPhnDir2mlf import sonicVisTextPhnDir2mlf
-from multipleGauss.toMultipleGaussians import *
-from utilsLyrics.Tools import listWavFilesWithPhoneAnno
+from utilsLyrics.Tools import listWavFilesWithPhoneAnno, parseLogLik, plotList
 
 #  adaptation step. MLLR-  HTK Book page 47, MAP - page 160
 # HERest is explained in page 138
