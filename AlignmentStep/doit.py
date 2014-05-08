@@ -11,6 +11,7 @@ import os
 import glob
 from RecordingSegmenter import RecordingSegmenter
 from Adapt import MAP_EXT, MODEL_NAME, NUM_MAP_ITERS, PATH_TO_OUTPUT
+from utilsLyrics.Tools import getMeanAndStDevError
 
 
 
@@ -75,8 +76,9 @@ def doitForTestPiece(compositionName, recordingDir):
         pathToAudio = os.path.join(pathToRecording, recordingDir) + '.wav'
         
         # TODO: issue 14
-        totalError = recordingSegmenter.alignOneRecording(MODEL_URI, makamScore, pathToAudio, pathToSectionAnnotations, '/tmp/audioTur')
-        print("total error for song {0} is {1}".format(recordingDir,totalError ))
+        alignmentErrors = recordingSegmenter.alignOneRecording(MODEL_URI, makamScore, pathToAudio, pathToSectionAnnotations, '/tmp/audioTur')
+        mean, stDev = getMeanAndStDevError(alignmentErrors)
+        print("mean error {1} and stDev error {2} for song {0} ".format(recordingDir, mean, stDev ))
         
 
 

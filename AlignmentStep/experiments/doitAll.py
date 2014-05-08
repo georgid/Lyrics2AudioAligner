@@ -13,35 +13,13 @@ import os
 import sonicVisTextPhnDir2mlf
 from doit import PATH_TEST_DATASET
 from scipy.odr.odrpack import Model
+from utilsLyrics.Tools import getMeanAndStDevError
 
  # modelURI from adaptation script
 MODEL_URI = os.path.join(PATH_TO_OUTPUT, MODEL_NAME + MLLR_EXT + MAP_EXT + str(NUM_MAP_ITERS-1) )
+# speech model
 MODEL_URI = '/Users/joro/Documents/Phd/UPF/METUdata/model_output/multipleGaussians/hmmdefs9/iter9/hmmdefs'
       
-
-#PATH_TO_HTK_MODEL = '/Volumes/IZOTOPE/adaptation_data_NOT_CLEAN/syllablingDB/hmmdefs.gmmlrmean_map_2'
-
-# PATH_TO_HTK_MODEL = '/Users/joro/Documents/Phd/UPF/METUdata/model_output/hmmdefs'
-
-
-########## FEMALE
-# PATH_TO_HTK_MODEL = '/Users/joro/Documents/Phd/UPF/METUdata//model_output/adapted/hts_female_hmmdefs.gmmlrmean_map_2'
-# PATH_TO_HTK_MODEL = '/Users/joro/Documents/Phd/UPF/METUdata//model_output/adapted/multipleGauss/hmm4/HTS_japan_female.gmmlrmean_map_2'
-
-
-######## MALE
-
-# PATH_TO_HTK_MODEL ='/Users/joro/Documents/Phd/UPF/METUdata//model_output/adapted/HTS_japan_male.gmmlrmean_map_2'
-
-# PATH_TO_HTK_MODEL = '/Users/joro/Documents/Phd/UPF/METUdata//model_output/adapted/syllablingDB.gmmlrmean_map_2'
-
-#PATH_TO_HTK_MODEL = '/Users/joro/Documents/Phd/UPF/METUdata//model_output/hmmdefs.gmllrmean_gmmlr_4' 
-
-# NOT_CLEAN : deprecated! 
-#PATH_TO_NOTCLEAN_ADAPTDATA = '/Users/joro/Documents/Phd/UPF/adaptation_data_NOT_CLEAN/syllablingDB/'
-# PATH_TO_NOTCLEAN_ADAPTDATA = '/Users/joro/Documents/Phd/UPF/adaptation_data_NOT_CLEAN/04_Hamiyet_Yuceses_-_Bakmiyor_Cesm-i_Siyah_Feryade/'      
-
-
 
 
 
@@ -59,63 +37,50 @@ def doitForAdaptationFile(pathTodata,  audioName):
         
       
         outputHTKPhoneAlignedURI = RecordingSegmenter.alignOneChunk(MODEL_URI, '/tmp/audioTur', "", pathToAudio, 1)
-
-        diff = evalPhraseLevelError(phraseAnnoURI, outputHTKPhoneAlignedURI)
+        alignmentErrors  = evalPhraseLevelError(phraseAnnoURI, outputHTKPhoneAlignedURI)
+        
+        mean, stDev = getMeanAndStDevError(alignmentErrors)
+        
+        
+        print "mean : ", mean, "st dev: " , stDev
+        
+        
         
            ### OPTIONAL : open in praat
         openAlignmentInPraat(phraseAnnoURI, outputHTKPhoneAlignedURI, 0, pathToAudio)
         
-        return diff
+        return mean, stDev  
 
 
 if __name__ == '__main__':
 
-        #########  test with adaptation data ##########################      
-#         audioName = 'este_3_slow1'
-#         audioName = 'alf_3_slow1'
-#         audioName = 'amaury_3_slow1'
-# 
- 
-#     PATH_TO_HTK_MODEL = '/Users/joro/Documents/Phd/UPF/METUdata//model_output/adapted/multipleGauss/hmm4/HTS_japan_male.gmmlrmean_map_2'
+        #########  MALE ##########################      
+        PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/test_data_soloVoice_male/' 
+
+        audioName = 'alf_3_slow1'
+        audioName = 'amaury_3_slow1'
+        
+        audioName = 'nitech_jp_song060_m001_003'
+        audioName = 'nitech_jp_song060_m001_007'
+  
+        audioName = 'GEORGI_20_Koklasam_Saclarini_zemin_from_19.292461_to_32.514873'
+        
+        audioName = 'este_3_slow1'
+        mean, stDev = doitForAdaptationFile(PATH_TEST_DATASET  , audioName)
+        
+
 
   
 
 #       
-#     # female  
+#      female  
 #     audioName = 'nitech_jp_song070_f001_070'
 # 
-#     # male
-# #     audioName = 'nitech_jp_song060_m001_003'
 #        
-#     error = doitForAdaptationFile(PATH_TO_CLEAN_ADAPTDATA + MODEL_NAME + '/' , audioName)
-#       
-#     print error
 # #      
-#     
-    ####################### test with recorded clean voice ######################################
-#     
-#     PATH_TEST_DATASET = '/Volumes/IZOTOPE/sertan_sarki/' # this is the clean dataset 
-#        
-#         # these two lines are only for case of GEORGI-reocroded voice
-#     compositionName = 'nihavent--sarki--aksak--koklasam_saclarini--artaki_candan/'
-#     PATH_TO_CLEAN_ADAPTDATA = PATH_TEST_DATASET + compositionName + 'GEORGI/'; 
-#        
-#     audioName = 'GEORGI_20_Koklasam_Saclarini_zemin_from_19.292461_to_32.514873'
-# # # #          audioName = '04_Hamiyet_Yuceses_-_Bakmiyor_Cesm-i_Siyah_Feryade_gazel_1'
-#     
+ 
     
-    ######################## test with one file from sarki collection
-    
-    PATH_TEST_DATASET = '/Volumes/IZOTOPE/sertan_sarki/' # this is the clean dataset 
-       
-        # these two lines are only for case of GEORGI-reocroded voice
-    compositionName = 'nihavent--sarki--aksak--koklasam_saclarini--artaki_candan/'
-    PATH_TO_DATA = PATH_TEST_DATASET + compositionName + '20_Koklasam_Saclarini/'
-    
-       
-    audioName = '20_Koklasam_Saclarini_nakarat_from_46_047599_to_59_716561'
-    
-    error = doitForAdaptationFile(PATH_TO_DATA, audioName)
+  
 
 ################################### test with one chunk of sarki recording ####################################
 #     compositionName = 'nihavent--sarki--aksak--koklasam_saclarini--artaki_candan/' 
