@@ -47,7 +47,7 @@ ADAPTED_MODEL=${ADAPTATION_DATA}/adaptedModel/hmmdefs.gmllrmean
 
 3) prepare phoneme-level mlf. Parses file with extension .phn
 #if Praat used: do for each file: 
-python /Users/joro/Documents/Phd/UPF/voxforge/myScripts/utils/TextGrid_Parsing.py <fileName>.TextGrid <fileName>.phoneAnno
+python /Users/joro/Documents/Phd/UPF/voxforge/myScripts/utils/TextGrid_Parsing.py <fileName>.TextGrid <fileName>.phn
 
 # always do:
 python /Users/joro/Documents/Phd/UPF/voxforge/myScripts/utils/sonicVisTextPhnDir2mlf.py $ADAPTATION_DATA $ALL_MLF

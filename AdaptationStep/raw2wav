@@ -1,0 +1,1 @@
+for i in `ls ~/Downloads/HTS-demo_NIT-SONG070-F001/data/rawShorter/*.raw`; do  a=`basename $i .raw `;   sox -r 48000 -b 16 -e signed -c 1 $i $a.wav ;    done

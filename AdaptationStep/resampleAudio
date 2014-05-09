@@ -1,0 +1,8 @@
+
+# resample audio to 44100
+
+cd $ADAPTATION_DATA_CLEAN; 
+   % show filename
+   for dir in `ls -d */`; do cd $dir; for wav in `ls *.wav`; do echo $wav; done; cd ..; done
+	%resample: 
+	   for dir in `ls -d */`; do cd $dir; for wav in `ls *.wav`; do sox $wav $wav.wav rate 44100 ; done; cd ..; done

@@ -27,13 +27,13 @@ fi
 ADAPTATION_DIR_WITH_Wav=$1
 # ADAPTATION_DIR_WITH_Wav="/Users/joro/Documents/Phd/UPF/voxforge/auto/adaptation/"
 
-for i in `ls ${ADAPTATION_DIR_WITH_Wav}/*.wav`; do a=`basename $i .wav`; dirn=`dirname $i`;  echo -ne "$i ${dirn}/${a}.mfc" ; echo;  done > /tmp/codetrain.scp
+for i in `ls ${ADAPTATION_DIR_WITH_Wav}/*.phoneAnno`; do a=`basename $i .phoneAnno`; dirn=`dirname $i`;  echo -ne "${dirn}/${a}.wav ${dirn}/${a}.mfc" ; echo;  done > /tmp/codetrain.scp
+
 
 # extract mfccs
 /usr/local/bin/HCopy -A -D -T 1 -C /Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/input_files/wav_config -S /tmp/codetrain.scp
 
 for i in `ls ${ADAPTATION_DIR_WITH_Wav}/*.mfc`; do echo $i; done > /tmp/codetrain_mfc.scp
-
 
 
 #### adaptation parameters.
@@ -79,8 +79,8 @@ ADAPTED_MODEL_OUTPUT=$5
 # awk '{start = $1 / 10000000; end= $2 / 10000000;  print start, end,  $3}' alignment.output
 
 # -S is path to mfcs. -I is phoneme-level annotation of audio. Could be given by the forced alignment in previous step.
-# HERest -T 1 -C $DATA/input_files/config -C $ADAPTATION/configs/gmllr.config.global -J $ADAPTATION/configs/ -K $OUTPUT_ADAPTATION gmllrmean -S /tmp/codetrain_mfc.scp -I $PHONE_LEVEL_ALIGNMENT -H $HMM -u a $HMMLIST > $OUTPUT_ADAPTATION/log
-#cat $OUTPUT_ADAPTATION/log
+#HERest -T 1 -C $DATA/input_files/config -C $ADAPTATION/configs/gmllr.config.global -J $ADAPTATION/configs/ -K $OUTPUT_ADAPTATION gmllrmean -S /tmp/codetrain_mfc.scp -I $PHONE_LEVEL_ALIGNMENT -H $HMM -u a $HMMLIST > $OUTPUT_ADAPTATION/log
+cat $OUTPUT_ADAPTATION/log
 echo "HERest output is stored in $OUTPUT_ADAPTATION/log" 
 
 # apply transform
