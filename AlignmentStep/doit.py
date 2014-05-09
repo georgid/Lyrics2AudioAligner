@@ -78,6 +78,7 @@ def doitForTestPiece(compositionName, recordingDir):
         # TODO: issue 14
         alignmentErrors = recordingSegmenter.alignOneRecording(MODEL_URI, makamScore, pathToAudio, pathToSectionAnnotations, '/tmp/audioTur')
         mean, stDev = getMeanAndStDevError(alignmentErrors)
+       
         print("mean error {1} and stDev error {2} for song {0} ".format(recordingDir, mean, stDev ))
         
 
