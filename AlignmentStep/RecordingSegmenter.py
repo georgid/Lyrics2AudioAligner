@@ -13,9 +13,10 @@ from MakamRecording import MakamRecording
 import subprocess
 import os
 import glob
-from utils.Utils import mlf2WordAndTsList, writeListOfListToTextFile, loadTextFile
+from utils.Utils import  writeListOfListToTextFile, loadTextFile
 from Aligner import Aligner, HTK_MLF_ALIGNED_SUFFIX, PHRASE_ANNOTATION_EXT,\
     openAlignmentInPraat
+import sys
 from evaluation.WordLevelEvaluator import evalPhraseLevelError
 
 
@@ -84,13 +85,23 @@ class RecordingSegmenter(object):
             # divide into segments
             makamRecording.divideAudio()
             
+            makamRecording.markUsedChunks()
+            
             # prepare eval metric:
-            totalError = 0; 
             numParts = 0;
+            listAllAlignmnetErrors = []
             
             for whichChunk in range(len(makamRecording.sectionIndices)):
                 sectionIndex =  makamRecording.sectionIndices[whichChunk]
+                # section not described in score
+                if sectionIndex == 0:
+                    continue
+                
                 lyrics = makamRecording.makamScore.sectionToLyricsMap[sectionIndex-1][1]
+                
+                # some sections have errors in melodia. so dont use them.
+#                 if not makamRecording.isChunkUsed[whichChunk]:
+#                     continue
                 
                 # skip non-vocal sections
                 if lyrics == "" or "." in lyrics:
@@ -106,36 +117,43 @@ class RecordingSegmenter(object):
                 basenAudioFile = os.path.splitext(currPathToAudioFile)[0]
                 phraseAnnoURI = basenAudioFile  + PHRASE_ANNOTATION_EXT
                 
-                diff = 0
-                diff = evalPhraseLevelError(phraseAnnoURI, outputHTKPhoneAlignedURI)
-                print( "error is {1} for {0} ".format(currPathToAudioFile,diff))  
+                
+                currChunkAlignmentErrors = evalPhraseLevelError(phraseAnnoURI, outputHTKPhoneAlignedURI)
+                listAllAlignmnetErrors.extend(currChunkAlignmentErrors)
+                print( "error is {1} for {0} ".format(currPathToAudioFile,currChunkAlignmentErrors))  
                 
                 ### OPTIONAL : open in praat
                 praseAnno = os.path.splitext(currPathToAudioFile)[0] + PHRASE_ANNOTATION_EXT
                 openAlignmentInPraat(praseAnno, outputHTKPhoneAlignedURI, 0, currPathToAudioFile)
                 
-                totalError += diff
                 numParts +=1
+                # numPArts not needed for now
                 
-            return totalError / numParts
+            return listAllAlignmnetErrors
 
 
     
     ''' align one audio chunk 
-    @param lyricsFromFile - option to load lyrics from file, or from @param lyrics
+    @param isLyricsFromFile - option to load lyrics from file with ext .txtTur
+    if isLyricsFromFile=1, loads lyrics from  
+    else lyrics  are the  @param lyrics itself 
     '''
 
     @staticmethod
-    def alignOneChunk( pathToHtkModel, path_TO_OUTPUT, lyrics, currPathToAudioFile, lyricsFromFile):
+    def alignOneChunk( pathToHtkModel, path_TO_OUTPUT, lyrics, currPathToAudioFile, isLyricsFromFile):
         
-        chunkAligner = Aligner(pathToHtkModel, currPathToAudioFile, lyrics, lyricsFromFile)
+        
+        if  not(os.path.isdir(path_TO_OUTPUT)):
+            os.mkdir(path_TO_OUTPUT);
+        
+        chunkAligner = Aligner(pathToHtkModel, currPathToAudioFile, lyrics, isLyricsFromFile)
     
 
         baseNameAudioFile = os.path.splitext(os.path.basename(chunkAligner.pathToAudioFile))[0]
         
         
         outputHTKPhoneAlignedURI = os.path.join(path_TO_OUTPUT, baseNameAudioFile) + HTK_MLF_ALIGNED_SUFFIX
-#         if (not(os.path.isfile(outputHTKPhoneAlignedURI)) ):
+      
         chunkAligner.alignAudio(0, path_TO_OUTPUT, outputHTKPhoneAlignedURI)
         
      
@@ -148,7 +166,7 @@ class RecordingSegmenter(object):
 if __name__ == '__main__':
        
       
-       print 'blah'
+       print 'in recording segmenter main method'
 #         ----
         
 #         # align all recrodings

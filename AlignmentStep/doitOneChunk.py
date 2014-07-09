@@ -1,6 +1,6 @@
 '''
 Created on Apr 15, 2014
-Main for 
+With .txtTur file given
 @author: joro
 '''
 from Aligner import PHRASE_ANNOTATION_EXT, openAlignmentInPraat
@@ -17,6 +17,7 @@ from utilsLyrics.Tools import getMeanAndStDevError
 import glob
 from CodeWarrior.Standard_Suite import file
 from macpath import splitext
+import sys
 
  # modelURI from adaptation script
 MODEL_URI = os.path.join(PATH_TO_OUTPUT, MODEL_NAME  + MAP_EXT + str(NUM_MAP_ITERS) )
@@ -33,7 +34,7 @@ MODEL_URI = os.path.join(PATH_TO_OUTPUT, MODEL_NAME +  MAP_EXT + '3' )
 NOTE: first run AdaptationStep/Adapt.adapt(). THen URI to model  is constructed directly from there by the global variable. MODEL_NAME
 '''
         
-def doitForAdaptationFile(pathTodata,  audioName):
+def doitForOneFile(pathTodata,  audioName):
         ################### ADAPTATION: ################
         
         pathToAudio =    pathTodata + audioName + '.wav'
@@ -58,35 +59,47 @@ def doitForAdaptationFile(pathTodata,  audioName):
 
 
 if __name__ == '__main__':
+    
+    fullURIAudio = sys.argv[1];
+    outputHTKPhoneAlignedURI = RecordingSegmenter.alignOneChunk(MODEL_URI, '/tmp/audioTur', "", fullURIAudio, 1)
+    print outputHTKPhoneAlignedURI;
+    
+    
+    basenAudioFile = os.path.splitext(fullURIAudio)[0]
+    phraseAnnoURI = basenAudioFile  + PHRASE_ANNOTATION_EXT
+                
+                
+    currChunkAlignmentErrors = evalPhraseLevelError(phraseAnnoURI, outputHTKPhoneAlignedURI)
+    print currChunkAlignmentErrors
 
         #########  MALE all ##########################      
-        PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/test_data_soloVoice_male/' 
-         
-         
-       
-        audioName1 = 'amaury_3_slow1'
-        audioName2 = 'alf_3_slow1'
-        audioName3 = 'este_3_slow1'
-         
-        audioName4 = 'nitech_jp_song060_m001_003'
-        audioName5 = 'nitech_jp_song060_m001_007'
-         
-        audioName6 = 'GEORGI_20_Koklasam_Saclarini_zemin_from_19.292461_to_32.514873'
-        audioName7 = '1-05_Ruzgar_Soyluyor_Simdi_O_Yerlerde_zemin_from_0_143205_to_38_756510'
-         
-        audioNames = [audioName1, audioName2, audioName3, audioName4, audioName5, audioName6, audioName7]
-         
-        totalAlignementError = []
-         
-#         mean, stDev, alignmentErrors = doitForAdaptationFile(PATH_TEST_DATASET  , audioName7)
-         
-        for i in range(7):
-            mean, stDev, alignmentErrors = doitForAdaptationFile(PATH_TEST_DATASET  , audioNames[i])
-            totalAlignementError.extend(alignmentErrors)
- 
-#         total statistics:    
-        totalMean, totalStDev =  getMeanAndStDevError(totalAlignementError)  
-        print "(", totalMean, ",", totalStDev, ")" 
+#         PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/test_data_soloVoice_male/' 
+#          
+#          
+#        
+#         audioName1 = 'amaury_3_slow1'
+#         audioName2 = 'alf_3_slow1'
+#         audioName3 = 'este_3_slow1'
+#          
+#         audioName4 = 'nitech_jp_song060_m001_003'
+#         audioName5 = 'nitech_jp_song060_m001_007'
+#          
+#         audioName6 = 'GEORGI_20_Koklasam_Saclarini_zemin_from_19.292461_to_32.514873'
+#         audioName7 = '1-05_Ruzgar_Soyluyor_Simdi_O_Yerlerde_zemin_from_0_143205_to_38_756510'
+#          
+#         audioNames = [audioName1, audioName2, audioName3, audioName4, audioName5, audioName6, audioName7]
+#          
+#         totalAlignementError = []
+#          
+# #         mean, stDev, alignmentErrors = doitForOneFile(PATH_TEST_DATASET  , audioName7)
+#          
+#         for i in range(7):
+#             mean, stDev, alignmentErrors = doitForOneFile(PATH_TEST_DATASET  , audioNames[i])
+#             totalAlignementError.extend(alignmentErrors)
+#  
+# #         total statistics:    
+#         totalMean, totalStDev =  getMeanAndStDevError(totalAlignementError)  
+#         print "(", totalMean, ",", totalStDev, ")" 
 
 
 ############# MALE ALL FILES OF KANI iN A GIVEN DIR: 
@@ -98,22 +111,24 @@ if __name__ == '__main__':
 #         totalAlignementError = []
 #         for fileN in glob.glob("*.wav"):
 #             baseName = splitext(fileN)[0]
-#             mean, stDev, alignmentErrors = doitForAdaptationFile(PATH_TEST_DATASET  , baseName)
+#             mean, stDev, alignmentErrors = doitForOneFile(PATH_TEST_DATASET  , baseName)
 #             totalAlignementError.extend(alignmentErrors)
 #         
 #         totalMean, totalStDev =  getMeanAndStDevError(totalAlignementError)  
 #         print "(", totalMean, ",", totalStDev, ")" 
 
 
-################################### test with one chunk of sarki recording ####################################
-#     compositionName = 'nihavent--sarki--aksak--koklasam_saclarini--artaki_candan/' 
+
+################################### test with one chunk of sarki recording. Use lazy function ####################################
+
+#     PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/test_data_synthesis'
+# 
+#     compositionName = 'nihavent--sarki--aksak--bakmiyor_cesm-i--haci_arif_bey'
+#     recordingDir = '04_Hamiyet_Yuceses_-_Bakmiyor_Cesm-i_Siyah_Feryade'
+# 
 #     
-#     PATH_TO_DATA = '/Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/20_Koklasam_Saclarini_Synth/' ;
-#    
-#     audioName ='20_Koklasam_Saclarini_nakarat_from_46_047599_to_59_716561'
-#     
-#        
-#           
-#     error = doitForAdaptationFile(PATH_TO_DATA, audioName)
-#     
+#         
+#            
+#     error = doitForOneFile(PATH_TEST_DATASET, recordingDir)
+#      
 #     print error
