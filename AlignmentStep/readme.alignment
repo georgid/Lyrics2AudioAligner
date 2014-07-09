@@ -1,7 +1,36 @@
-core method doing alignment:
-RecordingSegmenter.alignOneChunk()
 
 
+
+---------
+Usage of ALIGNMENT: 
+
+
+- run forced alignment for whole song (divide in chunks and run for each chunk):
+$GITDIR/AlignmentStep/doit.py <wav> <txtTur_withNewLines> <sectionAnno>
+
+
+
+- run forced alignment for one chunk only: 
+
+$GITDIR/AlignmentStep/doitOneChunk.py
+
+	The basic function is:
+ 	RecordingSegmenter.alignOneChunk( pathToHtkModel, path_TO_OUTPUT, lyrics, currPathToAudioFile, isLyricsFromFile)
+	
+	If you leave lyrics="" and set isLyricsFromFile=1, then it searches for file <currPathToAudioFile>.txtTur with lyrics in turkish script
+
+
+
+
+- run forced alignment for one chunk only with HVite:  
+$GITDIR/AlignmentStep/doForceAligment.sh <pathToAudioNoExtension> <LYRICS>  /tmp/phoneme-level.out.mlf
+
+NOTE: For output file phonemeLevel.mlf -o suppresses probability (S), words (W)
+
+
+
+
+----------------------------------------
 ANNOTATION:
 1) prepare annoatation: 
 
@@ -12,20 +41,8 @@ TODO: script for evaluation
 
 ------------------------------------------------------------
 
-III. ALIGNMENT: 
-
-- run forced alignment for whole song (divide in chunks and run for each chunk):
-$GITDIR/AlignmentStep/doit.py <wav> <txtTur_withNewLines> <sectionAnno>
-
-- run forced alignment for one chunk only: with HVite: 
-
- $GITDIR/AlignmentStep/doForceAligment.sh <pathToAudioNoExtension> <LYRICS>  /tmp/phoneme-level.out.mlf
-
-NOTE: For output file phonemeLevel.mlf -o suppresses probability (S), words (W)
 
 
 TODO: 
-1) add noise background models
-2) Are they optional now? add optional silence models between words. how? 
 3) instead of GMMs see tutorial for DBN (Rolf). first see jeff hintons video.
 

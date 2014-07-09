@@ -11,6 +11,8 @@ from utils.Utils import writeListOfListToTextFile, mlf2WordAndTsList
 from lib2to3.btm_utils import tokens
 from Aligner import HTK_MLF_ALIGNED_SUFFIX, PHRASE_ANNOTATION_EXT
 import os
+import sys
+from IPython.core.tests.test_formatters import numpy
 
 
 ##################################################################################
@@ -41,58 +43,81 @@ def wordsList2avrgTxt(annotationWordList, detectedWordList):
     return
 
 '''
-averg error for begin Ts of phrase. 
-TODO: averg error for end Ts of phrase (not done yet)
-TODO: combine both
+TODO: eval performance of end timest. only and compare with begin ts. 
 '''
 def evalPhraseLevelError(phraseLevelAnno, htkAlignedFile  ):
     
-    sumDifferences = 0;
-    matchedWordCounter = 0.0;
+    alignmentErrors = []
     
-    # load both files 
-    annotationPhraseList = TextGrid2WordList(phraseLevelAnno)
+    ######################  
+    # prepare list of phrases from ANNOTATION:
+    annotationPhraseListA = TextGrid2WordList(phraseLevelAnno)
+    
+    annotationPhraseListNoPauses = []
+    for tsAndPhrase in annotationPhraseListA:
+        if tsAndPhrase[2] != "" and not(tsAndPhrase[2].isspace()): # skip empty phrases
+                annotationPhraseListNoPauses.append(tsAndPhrase)
+    
+    if len(annotationPhraseListNoPauses) == 0:
+        sys.exit(phraseLevelAnno + ' is empty!')
+    
+    ####################### 
+    # # prepare list phrases from DETECTED:
     detectedWordList= mlf2WordAndTsList(htkAlignedFile)
-    if len(detectedWordList) == 0:
-        print htkAlignedFile + 'is empty!'
-        exit
     
-    
-    # remove sp and sil entries from word detectedWordList
-    
+    # remove NOISE and sil entries from word detectedWordList
     detectedWordListNoPauses = []   #result 
     for detectedTsAndWrd in detectedWordList:
-        if detectedTsAndWrd[1] != 'sp' and detectedTsAndWrd[1] != 'sil':
+        if detectedTsAndWrd[2] != 'sp' and detectedTsAndWrd[2] != 'sil' and detectedTsAndWrd[2] != 'NOISE':
             detectedWordListNoPauses.append(detectedTsAndWrd)
-            
     
-    # find start words of annotationPhraseList
-    firstWords = [] # result :  first words in phrases 
+    if len(detectedWordListNoPauses) == 0:
+        sys.exit(htkAlignedFile + ' is empty!')
+    
+    # TODO: The whole evaluation, not but numWords, but by word id. ISSUE: 19
+  
+    
+    # find start words of annotationPhraseListNoPauses
     currentWordNumber = 0
-    for tsAndPhrase in annotationPhraseList:
-        if tsAndPhrase[1] == "": # skip empy words
-            continue
-        tsAndPhrase[1] = tsAndPhrase[1].strip()
-        words = tsAndPhrase[1].split(" ")
+    for tsAndPhrase in annotationPhraseListNoPauses:
+       
+        tsAndPhrase[2] = tsAndPhrase[2].strip()
+        words = tsAndPhrase[2].split(" ")
         numWordsInPhrase = len(words)
         
-        # calc difference
+        if numWordsInPhrase == 0:
+            sys.exit('phrase with no words in annotation file!')
+        
+        if  currentWordNumber + 1 > len(detectedWordListNoPauses):
+            sys.exit('more words detected than in annotation. No evaluation possible')
+            
+        currTsandWord = detectedWordListNoPauses[currentWordNumber]
+        
+        # calc difference phrase begin Ts
         annotatedPhraseBEginTs = tsAndPhrase[0]
-        detectedPhraseBeginTs = detectedWordListNoPauses[currentWordNumber][0]
+        detectedPhraseBeginTs = currTsandWord[0]
         
-        currdifference = abs(float(annotatedPhraseBEginTs) - float(detectedPhraseBeginTs))
-        matchedWordCounter +=1.0
-        sumDifferences = sumDifferences + currdifference
+        currAlignmentError = calcError(annotatedPhraseBEginTs, detectedPhraseBeginTs)
+        alignmentErrors.append(currAlignmentError)
         
+        # calc difference phrase end Ts
+        annotatedPhraseEndTs = tsAndPhrase[1]
+        detectedPhraseEndTs = currTsandWord[1]
         
+        currAlignmentError = calcError(annotatedPhraseEndTs, detectedPhraseEndTs)
+        alignmentErrors.append(currAlignmentError)
+        
+        #### proceed as many words in annotation as         
         currentWordNumber +=numWordsInPhrase
+                
+    return  alignmentErrors
+        
+
+def calcError(annotatedPhraseBEginTs, detectedPhraseBeginTs):
+    currAlignmentError = float(annotatedPhraseBEginTs) - float(detectedPhraseBeginTs)
+    currAlignmentError = numpy.round(currAlignmentError, decimals=2)
+    return currAlignmentError      
     
-    return sumDifferences/matchedWordCounter
-        
-        
-        
-    
-    # eval avrg error
     
     
     
@@ -103,12 +128,8 @@ def evalPhraseLevelError(phraseLevelAnno, htkAlignedFile  ):
 if __name__ == '__main__':
     
     
-    PATH_TO_EVAL_FILE = '/Users/joro/Documents/Phd/UPF/adaptation_data_NOT_CLEAN/HTS_japan_female/'
-    audioName = 'nitech_jp_song070_f001_070'  
-    baseNameAudioURI = os.path.join(PATH_TO_EVAL_FILE + audioName)
-    
-    diff = evalPhraseLevelError(baseNameAudioURI)
-    print diff
+    print "in WordLevelEval"
+
     
     ############# FROM HERE ON: old testing code for word-level eval 
 #     tmpMLF= '/Users/joro/Documents/Phd/UPF/turkish-makam-lyrics-2-audio-test-data/muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_ozisik/1-05_Ruzgar_Soyluyor_Simdi_O_Yerlerde/1-05_Ruzgar_Soyluyor_Simdi_O_Yerlerde_nakarat2_from_192.962376_to_225.170507.phone-level.output'
@@ -118,7 +139,6 @@ if __name__ == '__main__':
 #     
 #   
 # # TODO: error in parsing of sertan's textGrid
-# # TODO: think about sil. Discard in counting
 #     textGridFile = '/Users/joro/Documents/Phd/UPF/turkish-makam-lyrics-2-audio-test-data/muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_ozisik/1-05_Ruzgar_Soyluyor_Simdi_O_Yerlerde/1-05_Ruzgar_Soyluyor_Simdi_O_Yerlerde.TextGrid'
 # #     textGridFile='/Volumes/IZOTOPE/adaptation_data/kani_karaca-cargah_tevsih.TextGrid'
 # #     textGridFile = '/Users/joro/Documents/Phd/UPF/Example_words_phonemes.TextGrid'

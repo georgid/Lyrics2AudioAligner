@@ -52,8 +52,8 @@ class SymbTrParser(object):
             tokens = line.split("\t")
             
             if len(tokens) == 12:
-                    # this CHECK DOES NOT WORK:
-                    if tokens[11] != '.' and tokens[11] != '. ' and tokens[11] != '.  ' and tokens[11] != 'SAZ' and tokens[11] != u'ARANA\u011eME' and tokens[11] != u'ARANA\u011eME ' and  tokens[11] != u'ARANA\u011eME  ' and  tokens[11] != u'ARANA\\\\u011eME' and  tokens[11] != u'ARANAGME'   :   
+                    # TUK ZABIVA. 
+                    if tokens[11] != '.' and tokens[11] != '. ' and tokens[11] != '.  ' and tokens[11] != 'SAZ' and tokens[11] != 'SAZ ' and tokens[11] != 'SAZ  ' and tokens[11] != u'ARANA\u011eME' and tokens[11] != u'ARANA\u011eME ' and  tokens[11] != u'ARANA\u011eME  ' and  tokens[11] != u'ARANA\\\\u011eME' and  tokens[11] != u'ARANAGME'   :   
         #           note number and syllable
                         tupleSyllable = int(tokens[0]), tokens[11]
                     

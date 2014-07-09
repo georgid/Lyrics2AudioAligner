@@ -4,6 +4,7 @@ Created on Mar 12, 2014
 @author: joro
 '''
 import codecs
+from IPython.utils._tokenize_py2 import Token
 
     ##################################################################################
 
@@ -52,36 +53,6 @@ def writeListToTextFile(inputList,headerLine, pathToOutputFile):
     
     outputFileHandle.close()
 
-##################################################################################
-
-
-def mlf2WordAndTsList(inputFileName):
-        
-    '''
-    parse output of alignment in mlf format ( with words) 
-    output: words with begin and end ts 
-    NOTE: length of tokens=5 if no -o option is set on HVite
-    TODO: change automatically extension from txt to mlf
-    ''' 
-    
-    allLines = loadTextFile(inputFileName)
-    
-    
-    listWordsAndTs = []
-        
-    
-    
-    # when reading lines from MLF, skip first 2 and last
-    for line in allLines[2:-1]:
-        
-        tokens =  line.split(" ")
-        if len(tokens) != 5:
-            continue
-        startTime = float(tokens[0])/10000000
-        wordMETU = tokens[-1].strip()
-        listWordsAndTs.append([startTime, wordMETU])
-         
-    return listWordsAndTs
 
 
 '''
@@ -121,6 +92,70 @@ def mlf2PhonemesAndTsList(inputFileName):
         prevStartTime = startTime
          
     return listPhonemesAndTs
+    
+    
+    
+def mlf2WordAndTsList(inputFileName):
+        
+    '''
+    parse output of alignment in mlf format ( with words) 
+    output: words with begin and end ts 
+    NOTE: length of tokens=5 if no -o option is set on HVite
+    TODO: change automatically extension from txt to mlf
+    ''' 
+    
+    extracedWordList = []
+    
+    LENGTH_TOKENS_NEW_WORD= 5
+    
+    allLines = loadTextFile(inputFileName)
+    
+    listWordsAndTs = allLines[2:-1]
+        
+    currentTokenIndex = 0    
+    tokens =  listWordsAndTs[currentTokenIndex].split(" ")
+    
+    while currentTokenIndex < len(listWordsAndTs):
+        
+        # get begin ts 
+        startTime = float(tokens[0])/10000000
+        wordMETU = tokens[-1].strip()
+        
+        # move to next        
+        prevTokens = tokens 
+        currentTokenIndex += 1
+        
+        # sanity check
+        if currentTokenIndex >= len(listWordsAndTs):
+            endTime =  float(prevTokens[1])/10000000
+            extracedWordList.append([startTime, endTime, wordMETU])     
+ 
+            break
+        
+        tokens =  listWordsAndTs[currentTokenIndex].split(" ")
+        
+        # fast forward phonemes while end of word
+        while len(tokens) == LENGTH_TOKENS_NEW_WORD - 1 and currentTokenIndex < len(listWordsAndTs):
+            
+            # end of word is last phoneme before 'sp' 
+            if tokens[2]=="sp":
+                # move to next
+                currentTokenIndex += 1
+                if currentTokenIndex < len(listWordsAndTs):
+                    tokens =  listWordsAndTs[currentTokenIndex].split(" ")
+
+                break
+            
+            prevTokens = tokens 
+            currentTokenIndex += 1
+            tokens =  listWordsAndTs[currentTokenIndex].split(" ")
+        
+        # end of word. after inner while loop  
+        endTime =  float(prevTokens[1])/10000000
+        
+        extracedWordList.append([startTime, endTime, wordMETU])     
+        
+    return extracedWordList    
     
     
     

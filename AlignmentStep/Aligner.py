@@ -5,13 +5,15 @@ Created on Mar 17, 2014
 '''
 import os
 import subprocess
-from utils.Utils import mlf2WordAndTsList, writeListOfListToTextFile,\
-    mlf2PhonemesAndTsList, writeListToTextFile
+
 from Phonetizer import Phonetizer
 import shutil
-from Adapt import MODEL_NOISE_URI
 import utils
 import utilsLyrics
+from Adapt import MODEL_NOISE_URI
+import sys
+from utils.Utils import writeListOfListToTextFile, writeListToTextFile,\
+    mlf2PhonemesAndTsList, mlf2WordAndTsList
 
 HTK_MLF_WORD_ANNO_SUFFIX = '.wrd.mlf'
 HTK_MLF_ALIGNED_SUFFIX= ".htkAlignedMlf"
@@ -37,6 +39,12 @@ PHRASE_ANNOTATION_EXT = '.TextGrid'
 # only to satisfy HTK 
 DUMMY_HMM_URI = '/Users/joro/Documents/Phd/UPF/METUdata/model_output/multipleGaussians/DUMMY'
 
+
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
 class Aligner():
     '''
     classdocs
@@ -50,6 +58,17 @@ class Aligner():
         self.lyrics = lyrics
         self.loadLyricsFromFile = loadLyricsFromFile 
     
+        ######################## LOGGING: #############
+        # log to put HTK output
+        logName = '/tmp/log_all'
+        self.currLogHandle = open(logName, 'w')
+        self.currLogHandle.flush()
+        
+
+
+        
+    def __del__(self):
+        self.currLogHandle.close()
      ##################################################################################
 
     '''
@@ -118,8 +137,9 @@ class Aligner():
         baseNameAudioFile = os.path.splitext(os.path.basename(self.pathToAudioFile))[0]
         mfcFileName = os.path.join(path_TO_OUTPUT, baseNameAudioFile  ) + '.mfc'
         
+        HCopyCommand = [PATH_TO_HCOPY, '-A', '-D', '-T', '1', '-C', PATH_TO_CONFIG_FILES + 'wav_config_singing', self.pathToAudioFile, mfcFileName]
 #         if not os.path.isfile(mfcFileName):
-        pipe= subprocess.Popen([PATH_TO_HCOPY, '-A', '-D', '-T', '1', '-C', PATH_TO_CONFIG_FILES + 'wav_config_singing', self.pathToAudioFile, mfcFileName])
+        pipe= subprocess.Popen(HCopyCommand, stdout=self.currLogHandle)
         pipe.wait()
         return mfcFileName
    
@@ -142,7 +162,7 @@ class Aligner():
                 # Align with hHVite
         pipe = subprocess.Popen([PATH_TO_HVITE, '-l', "'*'", '-A', '-D', '-T', '1', '-b', 'sil', '-C', PATH_TO_CONFIG_FILES + 'config_singing', '-a', \
                                  '-H', self.pathToHtkModel, '-H',  DUMMY_HMM_URI , '-H',  MODEL_NOISE_URI , '-i', '/tmp/phoneme-level.output', '-m', \
-                                 '-w', wordNetwURI, '-y', 'lab', dictName, PATH_TO_HMMLIST, mfcFileName])
+                                 '-w', wordNetwURI, '-y', 'lab', dictName, PATH_TO_HMMLIST, mfcFileName], stdout=self.currLogHandle)
         
         pipe.wait()      
         if os.path.exists('/tmp/phoneme-level.output'):
@@ -169,6 +189,10 @@ class Aligner():
             
             aligner.alignAudio( timeShift, path_TO_OUTPUT, outputHTKPhoneAlignedURI)
             
+            if (not(os.path.isfile(outputHTKPhoneAlignedURI)) ):
+                print ("no htkAligned results file!")
+                sys.exit()
+            
             openAlignmentInPraat(wordAnnoURI, outputHTKPhoneAlignedURI, timeShift, pathToAudioFile)
     
             return outputHTKPhoneAlignedURI  
@@ -188,6 +212,7 @@ def prepareOutputForPraat(baneNameAudioFile, timeShift):
    
 ################ parse mlf and write word-level text file    
     listTsAndWords = mlf2WordAndTsList(baneNameAudioFile + HTK_MLF_ALIGNED_SUFFIX)
+    
     wordAlignedfileName=  mlf2PraatFormat(listTsAndWords, timeShift, baneNameAudioFile, WORD_ALIGNED_SUFFIX)
 
   
@@ -204,18 +229,20 @@ def prepareOutputForPraat(baneNameAudioFile, timeShift):
 '''
 convenience method
 '''
-def mlf2PraatFormat(listTsAndPhonemes, timeShift, baneNameAudioFile, whichSuffix):
+def mlf2PraatFormat( listTsAndPhonemes, timeShift, baneNameAudioFile, whichSuffix):
     
     # timeshift
     for index in range(len(listTsAndPhonemes)):
         listTsAndPhonemes[index][0] = listTsAndPhonemes[index][0] + timeShift
+        if (len(listTsAndPhonemes[index]) == 3): 
+            del listTsAndPhonemes[index][1]
         
     phonemeAlignedfileName = baneNameAudioFile + whichSuffix
     
     writeListOfListToTextFile(listTsAndPhonemes, 'startTs phonemeOrWord\n', phonemeAlignedfileName)
-    print 'phoneme level alignment written to file: ',  phonemeAlignedfileName
+    logger.debug('phoneme level alignment written to file: ',  phonemeAlignedfileName)
     return phonemeAlignedfileName
-    
+
     
     
 
@@ -252,7 +279,8 @@ def openAlignmentInPraat(wordAnnoURI, outputHTKPhoneAlignedURI, timeShift, pathT
     fileNameWordAnno = os.path.splitext(os.path.basename(wordAnnoURI))[0]
     
     # in praat script extensions  WORD_ALIGNED_SUFFIX  is added automatically
-    pipe =subprocess.Popen( [ PATH_TO_PRAAT, PATH_TO_PRAAT_SCRIPT, alignedResultPath, fileNameWordAnno,  alignedFileBaseName, WORD_ALIGNED_SUFFIX ])
+    command = [PATH_TO_PRAAT, PATH_TO_PRAAT_SCRIPT, alignedResultPath, fileNameWordAnno,  alignedFileBaseName, WORD_ALIGNED_SUFFIX ]
+    pipe =subprocess.Popen(command)
     pipe.wait()
     
     # same praat script for PHONEME_ALIGNED_SUFFIX
@@ -269,4 +297,5 @@ def openAlignmentInPraat(wordAnnoURI, outputHTKPhoneAlignedURI, timeShift, pathT
 
     pipe = subprocess.Popen(["open", '-a', PATH_TO_PRAAT, pathToAudioFile])
     pipe.wait()
+    
     

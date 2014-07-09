@@ -63,6 +63,14 @@ if __name__ == '__main__':
     fullURIAudio = sys.argv[1];
     outputHTKPhoneAlignedURI = RecordingSegmenter.alignOneChunk(MODEL_URI, '/tmp/audioTur', "", fullURIAudio, 1)
     print outputHTKPhoneAlignedURI;
+    
+    
+    basenAudioFile = os.path.splitext(fullURIAudio)[0]
+    phraseAnnoURI = basenAudioFile  + PHRASE_ANNOTATION_EXT
+                
+                
+    currChunkAlignmentErrors = evalPhraseLevelError(phraseAnnoURI, outputHTKPhoneAlignedURI)
+    print currChunkAlignmentErrors
 
         #########  MALE all ##########################      
 #         PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/test_data_soloVoice_male/' 
@@ -113,14 +121,14 @@ if __name__ == '__main__':
 
 ################################### test with one chunk of sarki recording. Use lazy function ####################################
 
-    PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/test_data_synthesis'
-
-    compositionName = 'nihavent--sarki--aksak--bakmiyor_cesm-i--haci_arif_bey'
-    recordingDir = '04_Hamiyet_Yuceses_-_Bakmiyor_Cesm-i_Siyah_Feryade'
-
-    
-        
-           
-    error = doitForOneFile(PATH_TEST_DATASET, recordingDir)
-     
-    print error
+#     PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/test_data_synthesis'
+# 
+#     compositionName = 'nihavent--sarki--aksak--bakmiyor_cesm-i--haci_arif_bey'
+#     recordingDir = '04_Hamiyet_Yuceses_-_Bakmiyor_Cesm-i_Siyah_Feryade'
+# 
+#     
+#         
+#            
+#     error = doitForOneFile(PATH_TEST_DATASET, recordingDir)
+#      
+#     print error

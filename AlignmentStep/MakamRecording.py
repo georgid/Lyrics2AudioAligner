@@ -8,6 +8,9 @@ Created on Mar 3, 2014
 from MakamScore import MakamScore
 import subprocess
 import os
+from genericpath import isfile
+import sys
+from aetools import Error
 
 pathToSox = "/usr/local/bin/sox"
     
@@ -36,12 +39,15 @@ class MakamRecording:
         self.beginTs=[]
         self.endTs = []  
         
+        # section names ordered as played in a recording
         self.sectionNamesSequence = []
         
         self.sectionIndices = []
         
         self._loadsectionTimeStamps( pathToLinkedSectionsFile)
-
+        
+        self.isChunkUsed  = []
+        
         '''
         assigns a pointer (number) to each section Name from score
         '''
@@ -101,12 +107,19 @@ class MakamRecording:
         
         for line in sectionsFileHandle:
             tokens =  line.split()
-            
+    
+            if tokens[2] == 'gazel':
+                continue
+                     
             self.beginTs.append(tokens[0])
+    
             self.endTs.append(tokens[1])
             self.sectionNamesSequence.append(tokens[2])
             
             # WORKAROUND for section mapping. read mapping index from 4th field in .annotations file
+            # sanity check: 
+            if len(tokens) < 4:
+                sys.exit("last column (mathing to  sections in .tsv) in file .sectionAnno file is missing")
             self.sectionIndices.append(int(tokens[3]))
             
         # divide into columns
@@ -116,7 +129,8 @@ class MakamRecording:
         return
     
        ##################################################################################
-
+  
+        
         # for given audio and ts divide audio into audio segments
     def divideAudio(self):
             
@@ -132,8 +146,8 @@ class MakamRecording:
                 self.pathToDividedAudioFiles.append(filePathDividedAudio)
                 # make sure  sox (sox.sourceforge.net) is installed and call it  here with subprocess
                 sectionDuration = float(self.endTs[i])-float(self.beginTs[i])
-#                pipe = subprocess.Popen([pathToSox, self.pathToAudiofile, filePathDividedAudio, 'trim', self.beginTs[i], str(sectionDuration)   ])
-#                pipe.wait()
+                pipe = subprocess.Popen([pathToSox, self.pathToAudiofile, filePathDividedAudio, 'trim', self.beginTs[i], str(sectionDuration)   ])
+                pipe.wait()
             return
     '''
     if given wav file does not exists, assumes same file with .mp3 ext exists and converts it to wav
@@ -146,6 +160,15 @@ class MakamRecording:
              pipe = subprocess.Popen(['/usr/local/bin/ffmpeg', '-i', baseNameAudioFile + '.mp3', self.pathToAudiofile])
              pipe.wait() 
     
+    def markUsedChunks(self):
+        
+        self.isChunkUsed = [1] * len(self.pathToDividedAudioFiles)
+        
+        for index, pathToDividedAudioFile in enumerate(self.pathToDividedAudioFiles):
+            if isfile( os.path.splitext(pathToDividedAudioFile)[0] +  ".notUsed"):
+                self.isChunkUsed[index] = 0
+        
+        
     
 if __name__ == '__main__':
         # only for unit testing purposes
