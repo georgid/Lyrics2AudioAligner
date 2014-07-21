@@ -4,7 +4,6 @@ Created on Mar 12, 2014
 @author: joro
 '''
 import codecs
-from IPython.utils._tokenize_py2 import Token
 
     ##################################################################################
 

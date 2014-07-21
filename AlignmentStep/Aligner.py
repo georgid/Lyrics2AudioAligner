@@ -31,7 +31,7 @@ PATH_TO_CONFIG_FILES= '/Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/input
 PATH_TO_HMMLIST='/Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/interim_files/monophones1'
 
 PATH_TO_PRAAT = '/Applications/Praat.app/Contents/MacOS/Praat'
-PATH_TO_PRAAT_SCRIPT= '/Users/joro/Documents/Phd/UPF/voxforge/myScripts/praat/loadAlignedResultAndTextGrid'
+PATH_TO_PRAAT_SCRIPT= '/Users/joro/Documents/Phd/UPF/voxforge/myScripts/praat/loadAlignedResultAndTextGrid.rb'
 
 LYRICS_TXT_EXT = '.txtTur'
 LYRICS_TXT_METUBET_EXT = '.txtMETU'
@@ -220,23 +220,24 @@ def prepareOutputForPraat(baneNameAudioFile, timeShift):
 ################ parse mlf and write word-level text file    
     listTsAndWords = mlf2WordAndTsList(baneNameAudioFile + HTK_MLF_ALIGNED_SUFFIX)
     
-    wordAlignedfileName=  mlf2PraatFormat(listTsAndWords, timeShift, baneNameAudioFile, WORD_ALIGNED_SUFFIX)
+    wordAlignedfileName=  writeToTabSeparatedFile(listTsAndWords, timeShift, baneNameAudioFile, WORD_ALIGNED_SUFFIX)
 
   
 ########################## same for phoneme-level: 
     
     # with : phoneme-level alignment
     listTsAndPhonemes = mlf2PhonemesAndTsList (baneNameAudioFile + HTK_MLF_ALIGNED_SUFFIX)
-    phonemeAlignedfileName=  mlf2PraatFormat(listTsAndPhonemes, timeShift, baneNameAudioFile, PHONEME_ALIGNED_SUFFIX)
+    phonemeAlignedfileName=  writeToTabSeparatedFile(listTsAndPhonemes, timeShift, baneNameAudioFile, PHONEME_ALIGNED_SUFFIX)
     
     
     return wordAlignedfileName, phonemeAlignedfileName
 
 
 '''
+write to tab-separated file: startTs<tab>wordID. This format is done to  be easy to read from praat.  
 convenience method
 '''
-def mlf2PraatFormat( listTsAndPhonemes, timeShift, baneNameAudioFile, whichSuffix):
+def writeToTabSeparatedFile( listTsAndPhonemes, timeShift, baneNameAudioFile, whichSuffix):
     
     # timeshift
     for index in range(len(listTsAndPhonemes)):

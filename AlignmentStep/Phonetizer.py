@@ -24,7 +24,7 @@ class Phonetizer(object):
      # lookupTable for conversion deom turkish to METU
 
         lookupTable = {
-    # soft g
+   # soft g
          u'\u011f' : 'G',
     # Ğ
         u'\u011e' : 'G',
@@ -85,14 +85,16 @@ class Phonetizer(object):
     }
        
 
-    # table 1 from Oe. Salor - Turkish speech corpora and recognition tools developed by porting SONIC: Towards multilingual speech recognition
-    
-    # NOTE: unvoiced fricatives and affricatives are replaced by sp, since they are not synthesized 
-    
-    # TODO: More carefull distinction between variants. e. g. # disctinction between G and GG
-        METUlookupTable = {
+        '''
+            Just replace letters by corresponding names of phoneme models
+        
+            # TODO: More carefull distinction between variants. e. g. # disctinction between NN and N
+         
+        '''
+        telugulLookupTable = {
                        'a': 'AA',
                        'e': 'E',
+                       'ee':'IY',
                        'i': 'IY',
                        'I': 'I',
                        'o': 'O',
@@ -103,23 +105,21 @@ class Phonetizer(object):
                        'd': 'D',
                        'g': 'GG',
                        'G': '',
-                       'h': 'fric',
+                       'h': '',
                        'k': 'KK',
                        'l': 'LL',
                        'm': 'M',
                        'n': 'NN',
                        'p': 'P',
                        'r': 'RR',
-                       's': 'fric',
-                       'S': 'fric',
+                       's': 's',
                        't': 'T',
                        'v': 'VV',
                        'y': 'Y',
-                       'z': 'fric',
-                       'c': 'C',
-                       'C': 'fric',
-                       'f': 'fric',
-                       'j': 'J'
+                       'z': 'Z',
+                       'ch': 'TS',
+                       'f': 'f',
+                       'j': 'DJ'
                        }
        
         def __init__(self):
@@ -185,10 +185,11 @@ class Phonetizer(object):
             s = list(METUword)
         
             for i in range(len(s)):
-                if s[i] in Phonetizer.METUlookupTable:
-                    s[i] = Phonetizer.METUlookupTable[s[i]]
+                if s[i] in Phonetizer.telugulLookupTable:
+                    s[i] = Phonetizer.telugulLookupTable[s[i]]
                 else:
                     s[i] = "NON-EXISTENT"
+                    sys.exit("grapheme", s[i], "not in gpraheme-to-phoneme lookup table")
                     
             return s
             

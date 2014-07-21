@@ -7,7 +7,6 @@ Created on Mar 17, 2014
 import os
 import glob
 from utilsLyrics.Tools import getMeanAndStDevError, writeListToTextFile
-from bsddb.test.test_dbtables import pickle
 from Adapt import MAP_EXT, NUM_MAP_ITERS, PATH_TO_OUTPUT, MODEL_NAME
 from RecordingSegmenter import RecordingSegmenter
 
@@ -49,7 +48,8 @@ PATH_TEST_DATASET = '/Volumes/IZOTOPE/sertan_sarki'
     
           
 
-PATH_TO_OUTPUT_RESULTS = '/tmp/audioTur/'
+PATH_TO_OUTPUT_RESULTS = '/tmp/varnam/'
+# PATH_TO_OUTPUT_RESULTS = '/tmp/audioTur/'
 
 # PATH_TO_OUTPUT_RESULTS = '/Users/joro/Documents/Phd/UPF/FMA2014_tex fullPaper/FigureGenerationScripts/'
 

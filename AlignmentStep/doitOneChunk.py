@@ -8,16 +8,16 @@ from RecordingSegmenter import RecordingSegmenter
 from evaluation.WordLevelEvaluator import evalPhraseLevelError
 from Adapt import PATH_TO_OUTPUT, MODEL_NAME, PATH_TO_CLEAN_ADAPTDATA, adapt,\
     MLLR_EXT, MAP_EXT, NUM_MAP_ITERS
-from matplotlib.sphinxext.plot_directive import out_of_date
 import os
 import sonicVisTextPhnDir2mlf
-from doit import PATH_TEST_DATASET
-from scipy.odr.odrpack import Model
+from doit import PATH_TEST_DATASET, PATH_TO_OUTPUT_RESULTS
 from utilsLyrics.Tools import getMeanAndStDevError
 import glob
 from CodeWarrior.Standard_Suite import file
 from macpath import splitext
 import sys
+from evaluation.TextGrid_Parsing import TextGrid2WordList
+
 
  # modelURI from adaptation script
 MODEL_URI = os.path.join(PATH_TO_OUTPUT, MODEL_NAME  + MAP_EXT + str(NUM_MAP_ITERS) )
@@ -42,35 +42,65 @@ def doitForOneFile(pathTodata,  audioName):
         
         phraseAnnoURI = pathTodata +  audioName + PHRASE_ANNOTATION_EXT
         
-      
-        outputHTKPhoneAlignedURI = RecordingSegmenter.alignOneChunk(MODEL_URI, '/tmp/audioTur', "", pathToAudio, 1)
+       
+        lyrics  = TextGrid2WordList(phraseAnnoURI)
+        
+        
+        outputHTKPhoneAlignedURI = RecordingSegmenter.alignOneChunk(MODEL_URI, PATH_TO_OUTPUT_RESULTS, lyrics, pathToAudio, 0)
         alignmentErrors  = evalPhraseLevelError(phraseAnnoURI, outputHTKPhoneAlignedURI)
         
-        mean, stDev = getMeanAndStDevError(alignmentErrors)
+        mean, stDev, median = getMeanAndStDevError(alignmentErrors)
         
 #         print "mean : ", mean, "st dev: " , stDev
         print "(", mean, ",", stDev, ")"
         
         
-           ### OPTIONAL : open in praat
+           ### OPTIONAL for visualization: open in praat
         openAlignmentInPraat(phraseAnnoURI, outputHTKPhoneAlignedURI, 0, pathToAudio)
         
         return mean, stDev, alignmentErrors
 
 
 if __name__ == '__main__':
-    
-    fullURIAudio = sys.argv[1];
-    outputHTKPhoneAlignedURI = RecordingSegmenter.alignOneChunk(MODEL_URI, '/tmp/audioTur', "", fullURIAudio, 1)
-    print outputHTKPhoneAlignedURI;
-    
-    
-    basenAudioFile = os.path.splitext(fullURIAudio)[0]
-    phraseAnnoURI = basenAudioFile  + PHRASE_ANNOTATION_EXT
-                
-                
-    currChunkAlignmentErrors = evalPhraseLevelError(phraseAnnoURI, outputHTKPhoneAlignedURI)
-    print currChunkAlignmentErrors
+     
+    PATH_TEST_DATASET = '/Users/joro/Dropbox/Varnam_Analysis/data/audio/abhogi/'
+     
+    audio = "prasanna_Evvari_bodhanavini"
+     
+    mean, stDev, alignmentErrors = doitForOneFile(PATH_TEST_DATASET  , audio)
+ 
+     
+        
+
+
+
+
+#############  ALL FILES OF Varnams iN A GIVEN DIR: 
+
+    PATH_TEST_DATASET = '/Users/joro/Dropbox/Varnam_Analysis/data/audio/abhogi/'
+      
+    os.chdir(PATH_TEST_DATASET)
+      
+    totalAlignementError = []
+    for fileN in glob.glob("*_*.wav"):
+        baseName = splitext(fileN)[0]
+        
+        phraseAnnoURI = PATH_TEST_DATASET +  baseName + PHRASE_ANNOTATION_EXT
+
+        if not( os.path.isfile(phraseAnnoURI)):
+             continue 
+         
+        mean, stDev, alignmentErrors = doitForOneFile(PATH_TEST_DATASET  , baseName)
+        totalAlignementError.extend(alignmentErrors)
+      
+    totalMean, totalStDev, totalMedian =  getMeanAndStDevError(totalAlignementError)  
+    print "(", totalMean, ",", totalStDev, ")" 
+
+#################################################
+
+
+
+
 
         #########  MALE all ##########################      
 #         PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/test_data_soloVoice_male/' 
@@ -100,23 +130,6 @@ if __name__ == '__main__':
 # #         total statistics:    
 #         totalMean, totalStDev =  getMeanAndStDevError(totalAlignementError)  
 #         print "(", totalMean, ",", totalStDev, ")" 
-
-
-############# MALE ALL FILES OF KANI iN A GIVEN DIR: 
-
-#         PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/test_data_soloVoice_kani_karaca-cargah_tevsih/'
-#         
-#         os.chdir(PATH_TEST_DATASET)
-#         
-#         totalAlignementError = []
-#         for fileN in glob.glob("*.wav"):
-#             baseName = splitext(fileN)[0]
-#             mean, stDev, alignmentErrors = doitForOneFile(PATH_TEST_DATASET  , baseName)
-#             totalAlignementError.extend(alignmentErrors)
-#         
-#         totalMean, totalStDev =  getMeanAndStDevError(totalAlignementError)  
-#         print "(", totalMean, ",", totalStDev, ")" 
-
 
 
 ################################### test with one chunk of sarki recording. Use lazy function ####################################
