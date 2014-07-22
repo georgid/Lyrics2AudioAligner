@@ -4,7 +4,7 @@ Created on Mar 5, 2014
 @author: joro
 '''
 
-from evaluation.TextGrid_Parsing import TextGrid2Dict, TextGrid2WordAndTsList
+from evaluation.TextGrid_Parsing import TextGrid2WordList
 from evaluation.textgrid import TextGrid
 from SymbTrParser import loadTextFile
 from utils.Utils import writeListOfListToTextFile, mlf2WordAndTsList
@@ -50,7 +50,7 @@ def evalPhraseLevelError(phraseLevelAnno, htkAlignedFile  ):
     
     ######################  
     # prepare list of phrases from ANNOTATION:
-    annotationPhraseListA = TextGrid2WordAndTsList(phraseLevelAnno)
+    annotationPhraseListA = TextGrid2WordList(phraseLevelAnno)
     
     annotationPhraseListNoPauses = []
     for tsAndPhrase in annotationPhraseListA:

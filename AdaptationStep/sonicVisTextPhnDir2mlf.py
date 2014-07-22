@@ -10,7 +10,7 @@ Currently adjusted according to syllablingDB
 import os
 import sys
 # utilLyrics should be installed as a python library
-from Tools import walklevel
+from utilsLyrics.Tools import walklevel
 pathToTools = os.path.abspath(".")
 if pathToTools not in sys.path:
     sys.path.insert(0,pathToTools)

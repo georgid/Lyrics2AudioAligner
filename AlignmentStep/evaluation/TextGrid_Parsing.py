@@ -41,13 +41,28 @@ def TextGrid2Dict(textgrid_file, outputFileName):
 
 	outputFileHandle.close()		
 
+
+
 '''
-textGrid2Array
-@deprecated: use TextGrid2WordList instead
+textGrid2Array of words only
+NOTE! make sure text writing preferences in Praat are set to utf-8.
+
 '''	
-def TextGrid2WordAndTsList(textgrid_file):
+def TextGrid2WordList(textgrid_file, onlyLyrics=0):
 		
+			
+		lyrics=''
 		beginTsAndWordList=[]
+		
+		# if file not in UTF=encoding, stop
+		blob = open(textgrid_file).read()
+		magicInstance = magic.open(magic.MAGIC_MIME_ENCODING)
+		magicInstance.load()
+		encoding = magicInstance.buffer(blob)  # "utf-8" "us-ascii" etc
+		
+		if(encoding != 'utf-8'):
+			print("Encoding of file {0} is not utf-8. If there are non-utf characters in the annotated text, make sure text writing preferences in Praat are set to utf-8 ".format(textgrid_file) )
+		
 		
 		par_obj = tgp.TextGrid.load(textgrid_file)	#loading the object	
 		tiers= tgp.TextGrid._find_tiers(par_obj)	#finding existing tiers		
@@ -61,56 +76,19 @@ def TextGrid2WordAndTsList(textgrid_file):
 				
 				for line in tier_details:
 					beginTsAndWordList.append([line[0], line[1], line[2]])
-		
-		if not isTierFound:
-			sys.exit('tier in file {0} might not be named correctly. Name it {1}' .format(textgrid_file, tier_name))
-		return beginTsAndWordList		
 
-
-##################################################################################
-
-
-'''
-textGrid2Array of words only
-NOTE! make sure text writing preferences in Praat are set to utf-8 
-'''	
-def TextGrid2WordList(textgrid_file):
-		
-			
-		lyrics=''
-		
-		# if file not in UTF=encoding, stop
-		blob = open(textgrid_file).read()
-		magicInstance = magic.open(magic.MAGIC_MIME_ENCODING)
-		magicInstance.load()
-		encoding = magicInstance.buffer(blob)  # "utf-8" "us-ascii" etc
-		
-		if(encoding != 'utf-8'):
-			sys.exit("Encoding of file {0} is not utf-8".format(textgrid_file) )
-		
-		
-		par_obj = tgp.TextGrid.load(textgrid_file)	#loading the object	
-		tiers= tgp.TextGrid._find_tiers(par_obj)	#finding existing tiers		
-		
-		isTierFound = 0
-		for tier in tiers:
-		
-			if tier.tier_name() == tier_name:	#iterating over tiers and selecting the one specified
-				isTierFound = 1
-				tier_details = tier.make_simple_transcript();		#this function parse the file nicely and return cool tuples
-				
-				for line in tier_details:
 					lyrics += line[2]
 					lyrics += ' '
 				
-# 				for line in tier_details:
-# 					words = line[2].strip().split()
-# 					for word in words:
-# 						wordList.append(word )
+
 		
 		if not isTierFound:
 			sys.exit('tier in file {0} might not be named correctly. Name it {1}' .format(textgrid_file, tier_name))
-		return lyrics		
+		
+		if onlyLyrics:
+			return lyrics
+		else:
+			return beginTsAndWordList		
 
 
 ##################################################################################

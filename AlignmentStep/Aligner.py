@@ -73,8 +73,9 @@ class Aligner():
      ##################################################################################
 
     '''
+    Grapheme2phoneme conversion. outputs a dict file with words with their pronunciations
     only one audio file and lyrics provided
-    @param timeShift: add to start of timstamps (needed tog get real audio timestamp if audio is part of a bigger recording)
+    @param timeShift: add to start of timstamps (needed to get real audio timestamp if audio is part of a bigger recording)
     '''
     
 

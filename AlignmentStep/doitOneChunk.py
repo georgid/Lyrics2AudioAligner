@@ -42,10 +42,10 @@ def doitForOneFile(pathTodata,  audioName):
         
         phraseAnnoURI = pathTodata +  audioName + PHRASE_ANNOTATION_EXT
         
-       
-        lyrics  = TextGrid2WordList(phraseAnnoURI)
+        # get lyrics from annotation file. not very flexible solution!
+        lyrics  = TextGrid2WordList(phraseAnnoURI, 1)
         
-        
+        # REcording Segmner not used since no segmentation needed. Only this one static method, which did not have a better place.
         outputHTKPhoneAlignedURI = RecordingSegmenter.alignOneChunk(MODEL_URI, PATH_TO_OUTPUT_RESULTS, lyrics, pathToAudio, 0)
         alignmentErrors  = evalPhraseLevelError(phraseAnnoURI, outputHTKPhoneAlignedURI)
         
