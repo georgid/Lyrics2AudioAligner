@@ -43,7 +43,17 @@ def wordsList2avrgTxt(annotationWordList, detectedWordList):
     return
 
 '''
-TODO: eval performance of end timest. only and compare with begin ts. 
+Generated a list of alignment errors in total for all phrases from annotation.
+  Alignment error is the sum  of the error at the beginning of the first word and the error at the end of the last word in each phrase, summed over all phrases.
+  Note that the metric can be used for evaluating alignment on word-level as well : if a phrase consists of a single word 
+  Note that this metric is strict: if end of a phrase coincides with beginning of next phrase, the error is still considered twice: once for the beginning and once for the evaluation.
+       
+@param phraseLevelAnno:  Praat's .TextGrid fromat. annotation of phrases of couple of words 
+@param htkAlignedFile:  detection results. begin and end timestamp and for each word   
+
+
+TODO: eval performance of end timest. only and compare with begin ts. Does the tool leave behind or does it go in advance?  
+
 '''
 def evalPhraseLevelError(phraseLevelAnno, htkAlignedFile  ):
     
@@ -61,6 +71,8 @@ def evalPhraseLevelError(phraseLevelAnno, htkAlignedFile  ):
     if len(annotationPhraseListNoPauses) == 0:
         sys.exit(phraseLevelAnno + ' is empty!')
     
+    
+    
     ####################### 
     # # prepare list phrases from DETECTED:
     detectedWordList= mlf2WordAndTsList(htkAlignedFile)
@@ -74,11 +86,11 @@ def evalPhraseLevelError(phraseLevelAnno, htkAlignedFile  ):
     if len(detectedWordListNoPauses) == 0:
         sys.exit(htkAlignedFile + ' is empty!')
     
-    # TODO: The whole evaluation, not but numWords, but by word id. ISSUE: 19
   
     
     # find start words of annotationPhraseListNoPauses
     currentWordNumber = 0
+    
     for tsAndPhrase in annotationPhraseListNoPauses:
        
         tsAndPhrase[2] = tsAndPhrase[2].strip()
@@ -91,21 +103,26 @@ def evalPhraseLevelError(phraseLevelAnno, htkAlignedFile  ):
         if  currentWordNumber + 1 > len(detectedWordListNoPauses):
             sys.exit('more words detected than in annotation. No evaluation possible')
             
-        currTsandWord = detectedWordListNoPauses[currentWordNumber]
+        currDetectedTsandWord = detectedWordListNoPauses[currentWordNumber]
         
-        # calc difference phrase begin Ts
-        annotatedPhraseBEginTs = tsAndPhrase[0]
-        detectedPhraseBeginTs = currTsandWord[0]
         
-        currAlignmentError = calcError(annotatedPhraseBEginTs, detectedPhraseBeginTs)
+        #### calc difference phrase begin Ts
+        currAnnotatedPhraseBEginTs = tsAndPhrase[0]
+        
+        detectedPhraseBeginTs = currDetectedTsandWord[0]
+        
+        currAlignmentError = calcError(currAnnotatedPhraseBEginTs, detectedPhraseBeginTs)
         alignmentErrors.append(currAlignmentError)
         
-        # calc difference phrase end Ts
-        annotatedPhraseEndTs = tsAndPhrase[1]
-        detectedPhraseEndTs = currTsandWord[1]
         
-        currAlignmentError = calcError(annotatedPhraseEndTs, detectedPhraseEndTs)
+        
+        ##### calc difference phrase end Ts
+        currAnnotatedPhraseEndTs = tsAndPhrase[1]
+        detectedPhraseEndTs = currDetectedTsandWord[1]
+        
+        currAlignmentError = calcError(currAnnotatedPhraseEndTs, detectedPhraseEndTs)
         alignmentErrors.append(currAlignmentError)
+        
         
         #### proceed as many words in annotation as         
         currentWordNumber +=numWordsInPhrase

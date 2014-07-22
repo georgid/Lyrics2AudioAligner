@@ -30,7 +30,7 @@ PATH_TO_CONFIG_FILES= '/Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/input
 PATH_TO_HMMLIST='/Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/interim_files/monophones1'
 
 PATH_TO_PRAAT = '/Applications/Praat.app/Contents/MacOS/Praat'
-PATH_TO_PRAAT_SCRIPT= '/Users/joro/Documents/Phd/UPF/voxforge/myScripts/praat/loadAlignedResultAndTextGrid'
+PATH_TO_PRAAT_SCRIPT= '/Users/joro/Documents/Phd/UPF/voxforge/myScripts/praat/loadAlignedResultAndTextGrid.rb'
 
 LYRICS_TXT_EXT = '.txtTur'
 LYRICS_TXT_METUBET_EXT = '.txtMETU'

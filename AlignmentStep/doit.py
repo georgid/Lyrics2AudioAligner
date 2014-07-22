@@ -9,7 +9,7 @@ from Aligner import Aligner, HTK_MLF_ALIGNED_SUFFIX,\
 import os
 import glob
 from utilsLyrics.Tools import getMeanAndStDevError, writeListToTextFile
-from bsddb.test.test_dbtables import pickle
+
 from Adapt import MAP_EXT, NUM_MAP_ITERS, PATH_TO_OUTPUT, MODEL_NAME
 from RecordingSegmenter import RecordingSegmenter
 
@@ -118,8 +118,8 @@ if __name__ == '__main__':
 #         compositionName = 'ussak--sarki--duyek--aksam_oldu_huzunlendim--semahat_ozdenses'
 #         recordingDir = '06_Semahat_Ozdenses_-_Aksam_Oldu_Huzunlendim'
 # #              
-        currAlignmentErrors = doitForTestPiece(compositionName, recordingDir)
-        mean, stDev, median = getMeanAndStDevError(currAlignmentErrors)
+#         currAlignmentErrors = doitForTestPiece(compositionName, recordingDir)
+#         mean, stDev, median = getMeanAndStDevError(currAlignmentErrors)
 
 
 
@@ -161,15 +161,20 @@ if __name__ == '__main__':
                          
                          ]       
         
+        
+        
+        
         ##### only female #############################
          
 #         compositionNames = compositionNamesFemale
 #         recordingDirs = recordingDirsFemale
 #          
 
-        ############ only male  
-        compositionNames = compositionNamesMale
-        recordingDirs = recordingDirsMale
+#         ############ only male  
+#         compositionNames = compositionNamesMale
+#         recordingDirs = recordingDirsMale
+#         
+        
         
         
         ######### both ##################
