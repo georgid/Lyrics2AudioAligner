@@ -4,12 +4,9 @@ Created on Mar 17, 2014
 
 @author: joro
 '''
-from Aligner import Aligner, HTK_MLF_ALIGNED_SUFFIX,\
-    PHRASE_ANNOTATION_EXT
 import os
 import glob
 from utilsLyrics.Tools import getMeanAndStDevError, writeListToTextFile
-
 from Adapt import MAP_EXT, NUM_MAP_ITERS, PATH_TO_OUTPUT, MODEL_NAME
 from RecordingSegmenter import RecordingSegmenter
 
@@ -45,13 +42,14 @@ PATH_TO_NOTCLEAN_ADAPTDATA = '/tmp/audio/'
 # PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/'
 
 # this one has excluded sections with wrong pitch from melodia
-PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/test_data_synthesis'
+#PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/test_data_synthesis'
 
-# PATH_TEST_DATASET = '/Volumes/IZOTOPE/sertan_sarki'
+PATH_TEST_DATASET = '/Volumes/IZOTOPE/sertan_sarki'
     
           
 
-PATH_TO_OUTPUT_RESULTS = '/tmp/audioTur/'
+PATH_TO_OUTPUT_RESULTS = '/tmp/varnam/'
+# PATH_TO_OUTPUT_RESULTS = '/tmp/audioTur/'
 
 # PATH_TO_OUTPUT_RESULTS = '/Users/joro/Documents/Phd/UPF/FMA2014_tex fullPaper/FigureGenerationScripts/'
 

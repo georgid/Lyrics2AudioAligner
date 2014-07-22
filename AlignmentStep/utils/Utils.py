@@ -4,7 +4,6 @@ Created on Mar 12, 2014
 @author: joro
 '''
 import codecs
-from IPython.utils._tokenize_py2 import Token
 
     ##################################################################################
 
@@ -94,6 +93,7 @@ def mlf2PhonemesAndTsList(inputFileName):
     return listPhonemesAndTs
     
     
+
     
 def mlf2WordAndTsList(inputFileName):
         

@@ -10,7 +10,7 @@ import subprocess
 import shutil
 from Tools import *
 from matplotlib.pyplot import *
-from utilsLyrics.Tools import listWavFiles
+from utilsLyrics.Tools import listWavFiles, plotList
 from combineTxtIntoPrompts import callHRestNTimes
 from test.sortperf import doit
 
@@ -103,15 +103,15 @@ def increaseOneGaussian(toNumGaussians, numReestimIters, pathToInputModel, outpu
     
         
         
-'''
-plots a list as a simple plot
-'''
-def plotList(list):
-    figure()
-    # original model
-    plot(list, 'g')
-    # adapted model
-    show()
+# '''
+# plots a list as a simple plot
+# '''
+# def plotList(listOfPlots):
+#     figure()
+#     # original model
+#     plot(listOfPlots, 'g')
+#     # adapted model
+#     show()
 
 
  # parse logs    
@@ -153,14 +153,14 @@ def doit(numReestimIters, numGaussians, pathToInputModel, outputmodelPATH, phone
     for toNumGaussians in range(2,numGaussians):
         outputModelFolder = os.path.join(outputmodelPATH, 'hmmdefs' + str(toNumGaussians) )
     
-        
+
         lastOutputModelURI= increaseOneGaussian(toNumGaussians, numReestimIters, pathToInputModel, outputModelFolder, phoneLevelAnno_uri, codeTrainURI, hmmlistURI)
         
         # upload number
         pathToInputModel = lastOutputModelURI
    
         listLogLiks = []
-#         listLogLiks = parseLogs(toNumGaussians, numReestimIters)
+        listLogLiks = parseLogs(toNumGaussians, numReestimIters)
         
         totalListLogLiks.extend(listLogLiks)
     

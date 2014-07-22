@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # Natural Language Toolkit: TextGrid analysis
 #
 # Copyright (C) 2001-2011 NLTK Project
@@ -569,7 +571,7 @@ item []:
         intervals [12]:
             xmin = 2044.8329108578437
             xmax = 2045.144149659864 
-            text = "oU" 
+            text = "oUğş" 
 """
 
 demo_data2 = """File type = "ooTextFile"
