@@ -63,13 +63,13 @@ def doitForOneFile(pathTodata,  audioName):
 
 if __name__ == '__main__':
      
-    PATH_TEST_DATASET = '/Users/joro/Dropbox/Varnam_Analysis/data/audio/abhogi/'
-     
-    audio = "prasanna_Evvari_bodhanavini"
-     
-    mean, stDev, alignmentErrors = doitForOneFile(PATH_TEST_DATASET  , audio)
- 
-     
+#     PATH_TEST_DATASET = '/Users/joro/Dropbox/Varnam_Analysis/data/audio/abhogi/'
+#      
+#     audio = "prasanna_Evvari_bodhanavini"
+#      
+#     mean, stDev, alignmentErrors = doitForOneFile(PATH_TEST_DATASET  , audio)
+#  
+#      
         
 
 

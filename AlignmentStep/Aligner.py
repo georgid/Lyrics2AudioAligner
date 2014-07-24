@@ -6,7 +6,6 @@ Created on Mar 17, 2014
 import os
 import subprocess
 
-from Phonetizer import Phonetizer
 import shutil
 import utils
 import utilsLyrics
@@ -15,6 +14,7 @@ from Adapt import MODEL_NOISE_URI
 import sys
 from utils.Utils import writeListOfListToTextFile, writeListToTextFile,\
     mlf2WordAndTsList, mlf2PhonemesAndTsList
+from Phonetizer import lyrics2phoneticDict
 
 HTK_MLF_WORD_ANNO_SUFFIX = '.wrd.mlf'
 HTK_MLF_ALIGNED_SUFFIX= ".htkAlignedMlf"
@@ -75,56 +75,58 @@ class Aligner():
     '''
     Grapheme2phoneme conversion. outputs a dict file with words with their pronunciations
     only one audio file and lyrics provided
-    @param timeShift: add to start of timstamps (needed to get real audio timestamp if audio is part of a bigger recording)
+    @param timeShift: add to start of timestamps (needed to get actual audio timestamps if audio is part of a bigger recording)
     '''
     
 
-    def _createWordMLFandDict(self):
+    def _createWordMLFandDict(self, words):
         #txtTur to METU. txtMETU as persistent file not really needed. For reference stored
-        
-        baseNameAudioFile = os.path.splitext(self.pathToAudioFile)[0]
-        
-        METUBETfileName = baseNameAudioFile + LYRICS_TXT_METUBET_EXT
-        
-        if (self.loadLyricsFromFile == 1):
-            METULyrics = Phonetizer.turkishScriptLyrics2METUScriptLyricsFile(baseNameAudioFile + LYRICS_TXT_EXT, METUBETfileName)
-        else:
-            METULyrics = Phonetizer.turkishScriptLyrics2METUScriptLyrics(self.lyrics, METUBETfileName)
-    # create Word-level mlf:
-        baneN = os.path.basename(self.pathToAudioFile)
-        baneN = os.path.splitext(baneN)[0]
-        headerLine = baneN + ' ' + METULyrics
-        
-        writeListOfListToTextFile([], headerLine, '/tmp/prompts')
-        
+#         
+#         baseNameAudioFile = os.path.splitext(self.pathToAudioFile)[0]
+#         
+#         METUBETfileName = baseNameAudioFile + LYRICS_TXT_METUBET_EXT
+#         
+#   
+#         METULyrics = Phonetizer.turkishScriptLyrics2METUScriptLyrics(self.lyrics, METUBETfileName)
+#     # create Word-level mlf:
+#         baneN = os.path.basename(self.pathToAudioFile)
+#         baneN = os.path.splitext(baneN)[0]
+#         headerLine = baneN + ' ' + METULyrics
+#         
+#         writeListOfListToTextFile([], headerLine, '/tmp/prompts')
+#         
         # prompts2mlf
-        mlfName = '/tmp/tmp' + HTK_MLF_WORD_ANNO_SUFFIX
-        pipe = subprocess.Popen(['/usr/bin/perl', '/Users/joro/Documents/Phd/UPF/voxforge/HTK_scripts/prompts2mlf', mlfName, '/tmp/prompts'])
-        pipe.wait()
+# SEEMS THIS CODE NOT NEEDED
+#         mlfName = '/tmp/tmp' + HTK_MLF_WORD_ANNO_SUFFIX
+#         pipe = subprocess.Popen(['/usr/bin/perl', '/Users/joro/Documents/Phd/UPF/voxforge/HTK_scripts/prompts2mlf', mlfName, '/tmp/prompts'])
+#         pipe.wait()
 
         # phonetize
         dictName = '/tmp/lexicon2'
         
-        Phonetizer.METULyrics2phoneticDict(METUBETfileName, dictName)
-        return (dictName, mlfName, METULyrics )
+        
+        
+        lyrics2phoneticDict(words, dictName)
+        return (dictName)
     
-    def _toWordNetwork(self, METULyrics):
+    
+    def _toWordNetwork(self, words):
         '''
         creates word network including optional sil and backgr noise at end and beginning
         '''
         # add sil 
-        METULyricsList = METULyrics.split()
+        METULyricsList = words
         METULyricsAndSil = []
         for i in range( len(METULyricsList) - 1):
             METULyricsAndSil.append(METULyricsList[i])
             METULyricsAndSil.append(' [sil]')
         
-        # last item wothout silence     
+        # last item without silence     
         i= i + 1
         METULyricsAndSil.append(METULyricsList[i])
         METULyricsAndSil = " ".join(METULyricsAndSil).strip()
             
-        
+        # the case of no synthesis
         grammar = '({sil} '  + METULyricsAndSil + ' {sil})'
         
         # the case of synthesis
@@ -156,12 +158,25 @@ class Aligner():
     '''     
     def alignAudio(self, timeShift, path_TO_OUTPUT,  outputHTKPhoneAligned ):
         
-        (dictName, mlfName, METULyrics )  = self._createWordMLFandDict()
+        # preprocess
+        if not isinstance(self.lyrics, unicode):
+            self.lyrics = unicode(self.lyrics,'utf-8')
         
-        wordNetwURI = self._toWordNetwork( METULyrics)
+        lyrics = self.lyrics.replace('\n',' ')    
+            
+        words = lyrics.split()
+        
+        
+        ####
+#         (dictName )  = self._createWordMLFandDict(words)
+        
+        dictName = '/tmp/lexicon2'
+        lyrics2phoneticDict(words, dictName)
+        
+        wordNetwURI = self._toWordNetwork( words)
+        
         
         # extract featuues
-         
         mfcFileName = self._extractFeatures(path_TO_OUTPUT)
         
 
