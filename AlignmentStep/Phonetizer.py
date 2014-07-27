@@ -26,28 +26,34 @@ telugulLookupTable = {
                
                 # ā
                u'\u0101':'AA',
+               u'a\u0304':'AA',
                
                'e': 'E',
                
                # ē
                u'\u0113':'E',
+               u'e\u0304':'E',
                
                
                'i': 'IY',
               
               # ī
                u'\u012b':'IY',
+               u'i\u0304':'IY',
                
                
                'o': 'O',
                # ō
                u'\u014d':'O',
+               u'o\u0304':'O',
+               
                
                'u': 'U',
                
+               
                # ū
                u'\u016b':'U',
-              
+              u'u\u0304':'U',
                
                
                'b': 'B',
@@ -61,6 +67,7 @@ telugulLookupTable = {
                'n': 'NN',
                 # ṅ
                u'\u1e45':'NN',
+               u'n\u0307':'NN',
                
                'p': 'P',
                'r': 'RR',
@@ -69,17 +76,22 @@ telugulLookupTable = {
                
                # ṝ
                u'\u1e5d':'RR',
-              
+               u'\u1e5b\u0304':'RR',
+
                's': 'S',
                # ś
                u'\u015b':'S',
+               u's\u0301':'S',
+
                
                 # ṣ
                u'\u1e63':'SH',
+               u's\u0323':'SH',
                
                't': 'T',
                 # ṭ
                u'\u1e6d':'T',
+               u't\u0323':'T',
                
                'v': 'VV',
                'y': 'Y',
@@ -100,16 +112,16 @@ telugulLookupTable = {
    # if there are diaresis expressed as two chars in utf, combines them together
    # @param - listA - list with letters of a word
    # @return listWithCombined  
-def combineDiaresisChars( listA):
+def combineDiacriticsChars( listA, utfCode):
     diaresisIndeces = []
     for i, j in enumerate(listA): 
-        if j == u'\u0308':
+        if j == utfCode:
            diaresisIndeces.append(i)
     
     # transform diaresis
     for indexL in diaresisIndeces:
         diaresisLetter = listA.pop(indexL - 1)
-        newLetter = diaresisLetter + u'\u0308'
+        newLetter = diaresisLetter + utfCode
         listA.insert(indexL - 1, newLetter)
 
     # remove diaresis    
@@ -124,8 +136,24 @@ def grapheme2Phoneme( word):
 #     wprd = word.lower()
     s = list(word)
 
-    # combine two-char Diaresis
-    s = combineDiaresisChars(s)                    
+    #@@@ combine two-char Diaresis: 
+    # DIRTY not optimal has too loop in word for each diacritic type 
+    
+    # turkish diaeresis
+    s = combineDiacriticsChars(s, u'\u0308')
+    
+    # telugu macron
+    s = combineDiacriticsChars(s, u'\u0304')
+    
+    # telugu acute
+    s = combineDiacriticsChars(s, u'\u0301') 
+    
+    # telugu dot below
+    s = combineDiacriticsChars(s, u'\u0323')                      
+    
+       # telugu dot above
+    s = combineDiacriticsChars(s, u'\u0307')                      
+
 
     for i in range(len(s)):
         s[i] = s[i].lower()

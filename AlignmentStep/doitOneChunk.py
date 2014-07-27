@@ -77,7 +77,7 @@ if __name__ == '__main__':
 
 #############  ALL FILES OF Varnams iN A GIVEN DIR: 
 
-    PATH_TEST_DATASET = '/Users/joro/Dropbox/Varnam_Analysis/data/audio/abhogi/'
+    PATH_TEST_DATASET = '/Users/joro/Dropbox/Varnam_Analysis/data/lyricsAnnotation/abhogi/'
       
     os.chdir(PATH_TEST_DATASET)
       
