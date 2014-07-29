@@ -48,8 +48,8 @@ MODEL_NOISE_URI  = '/Users/joro/Documents/Phd/UPF/METUdata//model_output/multipl
     # modelName same as pathToAdaptData
 # MODEL_NAME = 'syllablingDB'
 # MODEL_NAME = 'HTS_japan_female'
-MODEL_NAME = 'all_male'
-# MODEL_NAME = 'HTS_japan_male'
+# MODEL_NAME = 'all_male'
+MODEL_NAME = 'HTS_japan_male'
 # MODEL_NAME = 'kani_karaca-all_VOCALS'
 
 # MODEL_NAME = 'kani_karaca-all'
