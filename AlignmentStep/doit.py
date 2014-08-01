@@ -48,8 +48,8 @@ PATH_TEST_DATASET = '/Volumes/IZOTOPE/sertan_sarki'
     
           
 
-PATH_TO_OUTPUT_RESULTS = '/tmp/varnam/'
-# PATH_TO_OUTPUT_RESULTS = '/tmp/audioTur/'
+# PATH_TO_OUTPUT_RESULTS = '/tmp/varnam/'
+PATH_TO_OUTPUT_RESULTS = '/tmp/audioTur/'
 
 # PATH_TO_OUTPUT_RESULTS = '/Users/joro/Documents/Phd/UPF/FMA2014_tex fullPaper/FigureGenerationScripts/'
 
@@ -116,8 +116,13 @@ if __name__ == '__main__':
 #         compositionName = 'ussak--sarki--duyek--aksam_oldu_huzunlendim--semahat_ozdenses'
 #         recordingDir = '06_Semahat_Ozdenses_-_Aksam_Oldu_Huzunlendim'
 # #              
-#         currAlignmentErrors = doitForTestPiece(compositionName, recordingDir)
-#         mean, stDev, median = getMeanAndStDevError(currAlignmentErrors)
+        
+        compositionName = 'segah--sarki--curcuna--olmaz_ilac--haci_arif_bey'
+        recordingDir = '21_Recep_Birgit_-_Olmaz_Ilac_Sine-i_Sad_Pareme'
+        
+        
+        currAlignmentErrors = doitForTestPiece(compositionName, recordingDir)
+        mean, stDev, median = getMeanAndStDevError(currAlignmentErrors)
 
 
 

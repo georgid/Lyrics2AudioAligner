@@ -4,7 +4,8 @@ import re
 import textgrid as tgp
 import sys, os
 from setuptools.command.easy_install import sys_executable
-from utils.Utils import loadTextFile
+from utils.Utils import loadTextFile, writeListToTextFile,\
+	writeListOfListToTextFile
 from buildtools import MAGIC
 from Aligner import PHRASE_ANNOTATION_EXT
 sys.path.append(os.path.realpath('../Batch_Processing/'))
@@ -13,9 +14,9 @@ import magic
 
 # code from Sankalp
 
-# tier_name = "phonemes"
+tier_name = "phonemes"
 # tier_name = "words"
-tier_name = "phrases"
+# tier_name = "phrases"
 
 '''
 textGrid to column file 
@@ -83,7 +84,7 @@ def TextGrid2WordList(textgrid_file, onlyLyrics=0):
 
 		
 		if not isTierFound:
-			sys.exit('tier in file {0} might not be named correctly. Name it {1}' .format(textgrid_file, tier_name))
+			sys.exit('tier in file {0} might not be named correctly. Currently the tool is configured to work with tiers named {1}' .format(textgrid_file, tier_name))
 		
 		if onlyLyrics:
 			return lyrics
@@ -101,4 +102,9 @@ if __name__ == '__main__':
 	PATH_TEST_DATASET_NEW = '/Users/joro/Dropbox/Varnam_Analysis/data/audio/abhogi/'
 	audio = "prasanna_Evvari_bodhanavini"
 	
-	TextGrid2WordList(PATH_TEST_DATASET_NEW + audio + PHRASE_ANNOTATION_EXT)
+	PATH_TEST_DATASET_NEW = '/Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/ISTANBUL/safiye/'
+	audio ='01_Olmaz_Part2_T1'
+	
+
+	annotationPhraseListA = TextGrid2WordList(PATH_TEST_DATASET_NEW + audio + PHRASE_ANNOTATION_EXT)
+	writeListOfListToTextFile(annotationPhraseListA, '', PATH_TEST_DATASET_NEW + audio + '.anno')
