@@ -10,7 +10,7 @@ import codecs
 import sys
     
 # converts turkish script lyrics to phonetic dictinary 
-# @param: inputFileName - one-line file with lyrics
+# @param: inputFileName - one-line file with lyrics .txtTur separated by space 
 
 def METULyrics2phoneticDict(inputFileName, outputFileName):
     

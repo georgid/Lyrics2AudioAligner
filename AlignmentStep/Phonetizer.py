@@ -188,7 +188,7 @@ class Phonetizer(object):
                 if s[i] in Phonetizer.METUlookupTable:
                     s[i] = Phonetizer.METUlookupTable[s[i]]
                 else:
-                    s[i] = "NON-EXISTENT"
+                    sys.exit("grapheme {0} not in gpraheme-to-phoneme lookup table".format(s[i]) )                    
                     
             return s
             

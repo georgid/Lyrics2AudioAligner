@@ -4,6 +4,8 @@ Created on Mar 12, 2014
 @author: joro
 '''
 import codecs
+from IPython.utils._tokenize_py2 import Token
+import numpy
 
     ##################################################################################
 
@@ -79,13 +81,17 @@ def mlf2PhonemesAndTsList(inputFileName):
 
         startTime = float(tokens[0])/10000000
         
+        endTime = float(tokens[1])/10000000
+        
         # if Praat does not allow insertion of new token with same timestamp. This happend when prev. token was 'sp'. So remove it and insert current
         if (prevStartTime == startTime):
             listPhonemesAndTs.pop()
             
         
         phoneme = tokens[2].strip()
-        listPhonemesAndTs.append([startTime, phoneme])
+        
+        
+        listPhonemesAndTs.append([startTime,endTime,  phoneme])
         
         # remember startTime 
         prevStartTime = startTime
@@ -157,5 +163,18 @@ def mlf2WordAndTsList(inputFileName):
         
     return extracedWordList    
     
+    
+    ########### statistics on a array
+def getMeanAndStDevError(alignmentErrors):
+        
+        absalignmentErrors = [0] * len(alignmentErrors)
+        for index, alError in enumerate(alignmentErrors):
+            absalignmentErrors[index] = abs(alError)
+        
+        mean = numpy.round(numpy.mean(absalignmentErrors), decimals=2)
+        median = numpy.round( numpy.median(absalignmentErrors), decimals=2)
+        stDev = numpy.round( numpy.std(alignmentErrors), decimals=2)
+        
+        return mean, stDev, median
     
     

@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
-
 # Natural Language Toolkit: TextGrid analysis
 #
 # Copyright (C) 2001-2011 NLTK Project
 # Author: Margaret Mitchell <itallow@gmail.com>
 #         Steven Bird <sb@csse.unimelb.edu.au> (revisions)
 # URL: <http://www.nltk.org>
+# http://nltk.googlecode.com/svn/trunk/nltk_contrib/nltk_contrib/textgrid.py
 # For license information, see LICENSE.TXT
 #
 
@@ -571,7 +570,7 @@ item []:
         intervals [12]:
             xmin = 2044.8329108578437
             xmax = 2045.144149659864 
-            text = "oUğş" 
+            text = "oU" 
 """
 
 demo_data2 = """File type = "ooTextFile"

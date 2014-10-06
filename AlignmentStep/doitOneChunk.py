@@ -3,21 +3,23 @@ Created on Apr 15, 2014
 With .txtTur file given
 @author: joro
 '''
+from CodeWarrior.Standard_Suite import file
+import glob
+from macpath import splitext
+import os
+import sys
+
+from matplotlib.sphinxext.plot_directive import out_of_date
+
+from Adapt import PATH_TO_OUTPUT, MODEL_NAME, PATH_TO_CLEAN_ADAPTDATA, adapt, \
+    MLLR_EXT, MAP_EXT, NUM_MAP_ITERS
 from Aligner import PHRASE_ANNOTATION_EXT, openAlignmentInPraat
 from RecordingSegmenter import RecordingSegmenter
-from evaluation.WordLevelEvaluator import evalPhraseLevelError
-from Adapt import PATH_TO_OUTPUT, MODEL_NAME, PATH_TO_CLEAN_ADAPTDATA, adapt,\
-    MLLR_EXT, MAP_EXT, NUM_MAP_ITERS
-from matplotlib.sphinxext.plot_directive import out_of_date
-import os
-import sonicVisTextPhnDir2mlf
 from doit import PATH_TEST_DATASET
+from evaluation.WordLevelEvaluator import evalPhraseLevelError
 from scipy.odr.odrpack import Model
-from utilsLyrics.Tools import getMeanAndStDevError
-import glob
-from CodeWarrior.Standard_Suite import file
-from macpath import splitext
-import sys
+import sonicVisTextPhnDir2mlf
+
 
  # modelURI from adaptation script
 MODEL_URI = os.path.join(PATH_TO_OUTPUT, MODEL_NAME  + MAP_EXT + str(NUM_MAP_ITERS) )

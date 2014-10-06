@@ -1,4 +1,22 @@
+Class Design: 
 
+RecordingSegmenter
+ is just a holder of two methods: to align whole recording and to align a single chunk. 
+No class fields. 
+RecordingSegmenter.alignOneRecording() takes as input makamScore object.
+
+
+MakamScore 
+field sectionLyrics is a map: 
+e.g.
+"nakarat" -> "word1 word2 word3"
+
+
+
+Phonetizer
+grapheme2phoneme(word) 
+turkishlyrics2PhoneticDict parses all words and turns them into a HTK-format dictionary. 
+HTK takes the sequence of words (mlf file) and the dict and puts exoands them internally  
 
 
 ---------

@@ -160,6 +160,10 @@ class MakamRecording:
              pipe = subprocess.Popen(['/usr/local/bin/ffmpeg', '-i', baseNameAudioFile + '.mp3', self.pathToAudiofile])
              pipe.wait() 
     
+    '''
+    notUsed are chunks which will not be used in evaluation. 
+    This used for now to exclude chunks where melodia has wrong pitch detection
+    '''
     def markUsedChunks(self):
         
         self.isChunkUsed = [1] * len(self.pathToDividedAudioFiles)

@@ -17,7 +17,7 @@ from utils.Utils import  writeListOfListToTextFile, loadTextFile
 from Aligner import Aligner, HTK_MLF_ALIGNED_SUFFIX, PHRASE_ANNOTATION_EXT,\
     openAlignmentInPraat
 import sys
-from evaluation.WordLevelEvaluator import evalPhraseLevelError
+from evaluation.WordLevelEvaluator import evalAlignmentError
 
 
 
@@ -71,7 +71,7 @@ class RecordingSegmenter(object):
 
         
     ''' align one recording from symbTr
-        split into chunk and align each  
+        split into chunks using manually annotated sections from @param pathToSectionAnnotations, and align each  
     
     '''
     def alignOneRecording(self, pathToHtkModel, makamScore, pathToAudioFile, pathToSectionAnnotations, path_TO_OUTPUT):
@@ -118,13 +118,13 @@ class RecordingSegmenter(object):
                 phraseAnnoURI = basenAudioFile  + PHRASE_ANNOTATION_EXT
                 
                 
-                currChunkAlignmentErrors = evalPhraseLevelError(phraseAnnoURI, outputHTKPhoneAlignedURI)
+                currChunkAlignmentErrors = evalAlignmentError(phraseAnnoURI, outputHTKPhoneAlignedURI)
                 listAllAlignmnetErrors.extend(currChunkAlignmentErrors)
                 print( "error is {1} for {0} ".format(currPathToAudioFile,currChunkAlignmentErrors))  
                 
                 ### OPTIONAL : open in praat
                 praseAnno = os.path.splitext(currPathToAudioFile)[0] + PHRASE_ANNOTATION_EXT
-#                 openAlignmentInPraat(praseAnno, outputHTKPhoneAlignedURI, 0, currPathToAudioFile)
+                openAlignmentInPraat(praseAnno, outputHTKPhoneAlignedURI, 0, currPathToAudioFile)
                 
                 numParts +=1
                 # numPArts not needed for now

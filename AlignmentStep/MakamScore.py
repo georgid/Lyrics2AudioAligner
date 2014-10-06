@@ -10,6 +10,7 @@ import codecs
 
 import glob
 from SymbTrParser import SymbTrParser
+import sys
 # 
 # COMPOSITION_NAME = 'muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_ozisik'
 # COMPOSITION_NAME = 'huseyni--sarki--turkaksagi--hicran_oku--sevki_bey'
@@ -49,7 +50,7 @@ class MakamScore():
         
         #self.loadLyricsForSections(pathToSymbTrFile)
         
-        # pats to individual lyrics files
+        # pats to individual ..txt lyrics files. 
         self.pathsTolyricSectionFiles = []
         
       
@@ -124,7 +125,20 @@ class MakamScore():
             print  string_for_output + '  \n\n'
         
         
+
+    
      ##################################################################################
+def main(pathToComposition):
+        
+        os.chdir(pathToComposition)
+        pathTotxt = os.path.join(pathToComposition, glob.glob("*.txt")[0])
+        pathToSectionTsv =  os.path.join(pathToComposition, glob.glob("*.tsv")[0])
+        makamScore = MakamScore(pathTotxt, pathToSectionTsv )
+#         
+        makamScore.printSectionsAndLyrics()
+        
+#         makamScore.serializeLyricsToFile()
+        
        
 if __name__ == '__main__':
 
@@ -132,13 +146,8 @@ if __name__ == '__main__':
         
         print "in Makam Score"
         
-#         pathToComposition = os.path.join(PATH_TEST_DATASET, COMPOSITION_NAME)
-#         os.chdir(pathToComposition)
-#         pathTotxt = os.path.join(pathToComposition, glob.glob("*.txt")[0])
-#         pathToSectionTsv =  os.path.join(pathToComposition, glob.glob("*.tsv")[0])
-#         makamScore = MakamScore(pathTotxt,pathToSectionTsv )
-#         
-#         makamScore.printSectionsAndLyrics()
+        if len(sys.argv) != 2:
+            print ("usage: {} URI_symbtTr.txt".format(sys.argv[0]) )
+            sys.exit();
         
-#         makamScore.serializeLyricsToFile()
-        
+        main(sys.argv[1])
