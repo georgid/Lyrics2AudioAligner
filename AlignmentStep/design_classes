@@ -1,0 +1,45 @@
+Class Design: 
+
+RecordingSegmenter
+ is just a holder of two methods: 
+ No class fields. 
+ 
+ RecordingSegmenter.alignOneRecording- 
+ 	for each section from MakamRecording, gets lyrics from makamRecording and  calls 
+ 
+ RecordingSegmenter.RecordingSegmenter.alignOneChunk  - to align a single chunk. 
+	these methods of segmenting maybe better to put in MakamRecording?  
+
+
+MakamRecording - all recording-specific info, sections. Handles the mapping between score and recording sections. 
+Note that There might be omissions and change of order in a recording of a given composition.  
+self.sections - recording-specific sections 
+self.makamScore
+self.audioFile
+
+
+MakamScore 
+field sectionLyrics is a map: 
+e.g.
+"nakarat" -> "word1 word2 word3"
+
+each word is of object type Word, each Word in its turn contains a list of object type Syllable
+
+
+Phonetizer
+grapheme2phoneme(word) 
+turkishlyrics2PhoneticDict parses all words and turns them into a HTK-format dictionary. 
+HTK takes the sequence of words (mlf file) and the dict and  expands them internally  
+
+
+Aligner - most important class
+
+self.lyrics - stores lyrics for given audio
+
+Aligner.Aligner.alignAudio - creates word-level grammar file and dict file; runs alignment with HTK
+
+incl. feature extraction
+
+
+
+MakamScore.createTranscriptForSection - just array of all phonems, used in matlab dtw 
