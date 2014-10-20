@@ -11,6 +11,9 @@ import codecs
 import glob
 from SymbTrParser import SymbTrParser
 import sys
+from Phonetizer import Phonetizer
+from Utils import writeListToTextFile
+from Phoneme import Phoneme
 # 
 # COMPOSITION_NAME = 'muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_ozisik'
 # COMPOSITION_NAME = 'huseyni--sarki--turkaksagi--hicran_oku--sevki_bey'
@@ -23,10 +26,6 @@ class MakamScore():
     classdocs
     '''
 
-    #class const variable. order is important
-    # assumes the forth is melodic repetition of second but with different melody
-
-
 
 ##################################################################################
 
@@ -37,18 +36,12 @@ class MakamScore():
         '''
         self.compositionName = os.path.splitext(pathToSymbTrFile)[0]
         
-        # lyrics divided by sections
-        
+        ''' lyrics divided into sectons.
+        # e.g. "nakarat" : [ word1 word2 ] '''
         self.sectionToLyricsMap = []
-        self._loadSectionsAndLyricsFromSymbTr(pathToSymbTrFile, pathToSectionTsvFile)
         
+        self._loadSectionsAndSyllablesFromSymbTr(pathToSymbTrFile, pathToSectionTsvFile)
         
-        '''
-        @deprecated: 
-        '''
-#         self.sectionLyricsDict = {MakamScore.sectionNamesSequence[0]:"", MakamScore.sectionNamesSequence[1]:"", MakamScore.sectionNamesSequence[2]:"", MakamScore.sectionNamesSequence[3]:""}
-        
-        #self.loadLyricsForSections(pathToSymbTrFile)
         
         # pats to individual ..txt lyrics files. 
         self.pathsTolyricSectionFiles = []
@@ -60,71 +53,185 @@ class MakamScore():
     reads section names
     groups together section names and lyrics 
     '''
-    def _loadSectionsAndLyricsFromSymbTr(self, pathToSymbTrFile, pathToSectionTsvFile):
-        symbTrParser = SymbTrParser(pathToSymbTrFile, pathToSectionTsvFile)
+    def _loadSectionsAndSyllablesFromSymbTr(self, pathToSymbTrFile, pathToSectionTsvFile):
+        symbTrParser = SymbTrParser(pathToSymbTrFile)
        
-        symbTrParser.syllablesToWords()
+        symbTrParser._loadSectionBoundaries(pathToSectionTsvFile)
+        
+        wordsAllSections = symbTrParser.syllables2Words()
         
         # for each section part
-        for currSectionBoundary,currSectionLyrics in zip(symbTrParser.sectionboundaries, symbTrParser.sectionLyrics):
+        for currSectionBoundary,currSectionLyrics in zip(symbTrParser.sectionboundaries, wordsAllSections):
             tupleSectionNameAndLyrics =  currSectionBoundary[0], currSectionLyrics  
             self.sectionToLyricsMap.append(tupleSectionNameAndLyrics)
+            
+    def getLyricsForSection(self,sectionNumber):
+        return self.sectionToLyricsMap[sectionNumber][1]
  
-    ##################################################################################
-    
-    '''    
-    @deprecated with old self.sectionLyricsDict
-             # NOTE: Each section shoud be in a new line. Ideally copy paste from score.pdf to a textFile.
-    # assigns strophes(lyrical lines) to sections:  
-    # assumes strophes are 4 in pathTo.txtdivided file. Checks repeating labels in pathToLinkedSectionsFile   
-    '''
-    def loadLyricsForSections(self, pathToTxtTurFile):
-            txtTurFileHandle =  codecs.open(pathToTxtTurFile, 'r', 'utf-8')
-
-            lyrics = txtTurFileHandle.readlines()
-            if len(lyrics) != 4:
-                print "num of lyrics lines in file % is not 4"
-                return
-            else:
-                # put in dictionary the lyrics
-                for i in range(4):
-                    self.sectionLyricsDict[MakamScore.sectionNamesSequence[i]]=lyrics[i]
-                
-             
-     ##################################################################################
-       
-    '''
-    @deprecated:  with old self.sectionLyricsDict. TODO: rewrite
-    put each section in a separate .txtTur file
-    An optional method. Now doit.alignOneRecroding() does not need to print lyrics txtTur for each section 
-    '''        
-    def serializeLyricsToFile(self):
-        for key, value in self.sectionLyricsDict.iteritems():
-            # form name
-            pathTolyricSectionFile=self.compositionName + "_" + key + ".txtTur"
-            
-            #write path in object variables
-            self.pathsTolyricSectionFiles.append( pathTolyricSectionFile)
-            
-            outputFileHandle = codecs.open(pathTolyricSectionFile, 'w', 'utf-8')
-            outputFileHandle.write(value)
-            outputFileHandle.close()
-
-            print "file %s written", (pathTolyricSectionFile)
-
+  
    ##################################################################################
-    '''
-    utility method to print class fields
-    '''
     def printSectionsAndLyrics(self):
+        '''
+        utility method to print all lyrics that are read from symbTr
+        '''
         for currSection in self.sectionToLyricsMap:
+    
+            print '\n' + str(currSection[0]) + ':'
+            
+            for word in  currSection[1]:
+                print word.__str__().encode('utf-8','replace')
+    #             string_for_output = currSection[1].encode('utf-8','replace')
+        
 
-            print str(currSection[0]) + ': \n' 
+    def serializePhonemesForSection(self, whichSection, outputFileName):
+        '''
+        list of all phonemes. print to file @param outputFileName
+        '''    
+        words = self.getLyricsForSection(whichSection)
+        
+        listPhonemes =  []
+        phonemeSil = Phoneme("sil"); phonemeSil.setDuration('1')
+#         listPhonemes.append(phonemeSil)
+        
+        for word_ in words:
+            for syllable_ in word_.syllables:
+                syllable_.expandToPhonemes()
+                listPhonemes.extend(syllable_.phonemes )
+        
+#         listPhonemes.append(phonemeSil)    
 
-            string_for_output = currSection[1].encode('utf-8','replace')
-            print  string_for_output + '  \n\n'
+        
+        writeListToTextFile(listPhonemes, None,  outputFileName )
+        return listPhonemes
+    
+    def _calcPhonemeDurations(self, whichSection):
+        words = self.getLyricsForSection(whichSection)
+        for word_ in words:
+            for syllable in word_.syllables:
+                syllable.calcPhonemeDurations()
         
         
+    def getIndicesPhonemes(self, whichSection ):
+        '''
+        getIndices of word begins in phoneme list expanded with states used in DTW alignment
+        '''
+        words = self.getLyricsForSection(whichSection)
+        
+#       consists of tuples startIndices and word identities
+        indicesBeginWords = []
+        
+        NUMSTATES_SIL = 3
+        NUMSTATES_PHONEME = 3
+        
+        # start with sil, +1 to satisfy indexing in matlab
+        currBeginIndex = NUMSTATES_SIL + 1
+         
+        
+        for word_ in words:
+            
+#             indicesBeginWords.append( (currBeginIndex, word_.text) )
+            indicesBeginWords.append(currBeginIndex )
+            # sp has one state only
+            currBeginIndex  = currBeginIndex + NUMSTATES_PHONEME * (word_.getNumPhonemes() - 1) + 1
+        # last word sil
+        indicesBeginWords.append(currBeginIndex )
+        
+        return  indicesBeginWords
+    
+    
+    
+    
+              
+            
+    
+    def getIndicesPhonemes_durations(self, whichSection):
+        ''' same as getIndicesPhonemes but with durations.
+        Assume phoneme.Durations are calculated.  
+        '''
+        
+        self._calcPhonemeDurations(whichSection)
+        
+        words = self.getLyricsForSection(whichSection)
+        
+#       consists of tuples startIndices and word identities
+        indicesBeginWords = []
+        
+        NUMSTATES_SIL = 3
+        NUMSTATES_PHONEME = 3
+        
+        currBeginIndex = NUMSTATES_SIL + 1
+         
+        
+        for word_ in words:
+            
+#             indicesBeginWords.append( (currBeginIndex, word_.text) )
+            indicesBeginWords.append( currBeginIndex )
+
+            wordTotalDur = 0 
+            for syllable_ in word_.syllables:
+                for phoneme_ in syllable_.phonemes:
+                    currDuration = NUMSTATES_PHONEME * phoneme_.getDuration()
+                    wordTotalDur = wordTotalDur + currDuration  
+            
+            currBeginIndex  = currBeginIndex + wordTotalDur
+        
+        # last word sil
+        indicesBeginWords.append( currBeginIndex )
+
+        
+        return  indicesBeginWords
+ 
+ 
+#        end of class
+
+           
+                    
+def serializeIndices( makamScore, whichSection, withDurations, URI_IndicesFile):
+    '''
+    helper method
+    '''
+    if withDurations:
+           indices =  makamScore.getIndicesPhonemes_durations(whichSection)
+             
+    else:
+ 
+           indices = makamScore.getIndicesPhonemes(whichSection)
+        
+    writeListToTextFile(indices, None,  URI_IndicesFile ) 
+
+
+        
+def parseScoreAndSerialize(pathToComposition, whichSection, withDurations):
+        '''
+        Main method. for matlab
+        prints sequence of phonemes, sequence of durarions. indices of word start positions 
+        '''
+        
+        os.chdir(pathToComposition)
+        pathTotxt = os.path.join(pathToComposition, glob.glob("*.txt")[0])
+        pathToSectionTsv =  os.path.join(pathToComposition, glob.glob("*.tsv")[0])
+        makamScore = MakamScore(pathTotxt, pathToSectionTsv )
+        
+        # 1. phoneme IDs
+        listPhonemes = makamScore.serializePhonemesForSection(whichSection, '/tmp/test.phn')
+        listDurations = []
+        
+        # 2. phoneme Durations
+        makamScore._calcPhonemeDurations(whichSection)
+
+        for phoneme_ in listPhonemes :
+            listDurations.append(phoneme_.duration)
+        writeListToTextFile(listDurations, None, '/tmp/test.durations')
+        
+        # 3. indices
+        serializeIndices(makamScore, whichSection, withDurations, '/tmp/test.indices')
+        
+#       just for information   
+        makamScore.printSectionsAndLyrics()
+
+                                 
+         
+
 
     
      ##################################################################################
@@ -134,20 +241,31 @@ def main(pathToComposition):
         pathTotxt = os.path.join(pathToComposition, glob.glob("*.txt")[0])
         pathToSectionTsv =  os.path.join(pathToComposition, glob.glob("*.tsv")[0])
         makamScore = MakamScore(pathTotxt, pathToSectionTsv )
-#         
+        
         makamScore.printSectionsAndLyrics()
+        # is this needed? 
         
-#         makamScore.serializeLyricsToFile()
         
-       
+        
+      
+
+          
+             
 if __name__ == '__main__':
 
         # only for unit testing purposes
         
         print "in Makam Score"
         
-        if len(sys.argv) != 2:
-            print ("usage: {} URI_symbtTr.txt".format(sys.argv[0]) )
+#         if len(sys.argv) != 2:
+#             print ("usage: {} path to symbtTr.txt and symbTr.tsv".format(sys.argv[0]) )
+#             sys.exit();
+#          
+#         main(sys.argv[1])
+#          
+        if len(sys.argv) != 4:
+            print ("usage: {} <dir of symbtTr.txt and symbTr.tsv> <whichSectionNumber> <hasDurations?>".format(sys.argv[0]) )
             sys.exit();
-        
-        main(sys.argv[1])
+         
+        parseScoreAndSerialize(sys.argv[1], int(sys.argv[2]), int(sys.argv[3]))
+         

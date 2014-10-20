@@ -55,7 +55,7 @@ PATH_TO_OUTPUT_RESULTS = '/tmp/audioTur/'
 
 '''
 whole recording from test symbtr corpus
-most important method recordingSegmenter.alignOneRecording  
+most important method recordingSegmenter.segmentAndAlignOneRecording  
 '''
     
 def doitForTestPiece(compositionName, recordingDir):
@@ -84,7 +84,7 @@ def doitForTestPiece(compositionName, recordingDir):
         pathToAudio = os.path.join(pathToRecording, recordingDir) + '.wav'
         
         # TODO: issue 14
-        alignmentErrors = recordingSegmenter.alignOneRecording(MODEL_URI, makamScore, pathToAudio, pathToSectionAnnotations, PATH_TO_OUTPUT_RESULTS)
+        alignmentErrors = recordingSegmenter.segmentAndAlignOneRecording(MODEL_URI, makamScore, pathToAudio, pathToSectionAnnotations, PATH_TO_OUTPUT_RESULTS)
         
 #         mean, stDev, median = getMeanAndStDevError(alignmentErrors)
 #         

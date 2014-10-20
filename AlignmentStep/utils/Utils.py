@@ -3,9 +3,15 @@ Created on Mar 12, 2014
 
 @author: joro
 '''
+
 import codecs
 from IPython.utils._tokenize_py2 import Token
 import numpy
+import os
+import sys
+
+parentDir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0]) ), os.path.pardir)) 
+sys.path.append(parentDir)
 
     ##################################################################################
 
@@ -50,6 +56,7 @@ def writeListToTextFile(inputList,headerLine, pathToOutputFile):
         outputFileHandle.write(headerLine)
     
     for listLine in inputList:
+        listLine = str(listLine) + '\n'
         outputFileHandle.write(listLine)
     
     outputFileHandle.close()

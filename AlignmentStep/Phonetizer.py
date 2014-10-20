@@ -6,10 +6,13 @@ Created on Mar 22, 2014
 '''
 
 
+
 import codecs
 import sys
-from utils.Utils import *
 
+from Utils import writeListToTextFile
+
+# from utils.Utils import writeListToTextFile
 
 
 '''
@@ -103,22 +106,22 @@ class Phonetizer(object):
                        'd': 'D',
                        'g': 'GG',
                        'G': '',
-                       'h': 'fric',
+                       'h': 'H',
                        'k': 'KK',
                        'l': 'LL',
                        'm': 'M',
                        'n': 'NN',
                        'p': 'P',
                        'r': 'RR',
-                       's': 'fric',
-                       'S': 'fric',
+                       's': 'S',
+                       'S': 'SH',
                        't': 'T',
                        'v': 'VV',
                        'y': 'Y',
-                       'z': 'fric',
+                       'z': 'Z',
                        'c': 'C',
-                       'C': 'fric',
-                       'f': 'fric',
+                       'C': 'CH',
+                       'f': 'F',
                        'j': 'J'
                        }
        
@@ -152,10 +155,10 @@ class Phonetizer(object):
                     
             
             return "".join(combinedList)
+
         
         # convert to METU script a string of words
-
-    
+  
     
            # if there are diaresis expressed as two chars in utf, combines them together
            # @param - listA - list with letters of a word
@@ -182,15 +185,18 @@ class Phonetizer(object):
         @staticmethod
         def grapheme2Phoneme( METUword):
             
-            s = list(METUword)
+            METULetters = list(METUword)
+            phonemesList = [] 
         
-            for i in range(len(s)):
-                if s[i] in Phonetizer.METUlookupTable:
-                    s[i] = Phonetizer.METUlookupTable[s[i]]
+            for i in range(len(METULetters)):
+                if METULetters[i] in Phonetizer.METUlookupTable:
+                    currPhoneme = Phonetizer.METUlookupTable[METULetters[i]]
+                    if currPhoneme != "":
+                        phonemesList.append(currPhoneme)
                 else:
-                    sys.exit("grapheme {0} not in gpraheme-to-phoneme lookup table".format(s[i]) )                    
+                    sys.exit("grapheme {0} not in gpraheme-to-phoneme lookup table".format(currPhoneme) )                    
                     
-            return s
+            return phonemesList
             
             
             
@@ -248,7 +254,6 @@ class Phonetizer(object):
             pronunciationList = []
             
             inputFileHandle = open(inputFileName,'r')
-            outputFileHandle = open(outputFileName,  'w')
             
             METUlyrics = inputFileHandle.read()
             METUlyrics = METUlyrics.replace('\n',' ')    
@@ -286,5 +291,7 @@ class Phonetizer(object):
                     
             inputFileHandle.close()
             return
+        
+        
 
         

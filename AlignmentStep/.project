@@ -4,6 +4,9 @@
 	<comment></comment>
 	<projects>
 		<project>AdaptationStep</project>
+		<project>HMM</project>
+		<project>htk2s3</project>
+		<project>utilsLyrics</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

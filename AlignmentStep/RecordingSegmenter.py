@@ -57,7 +57,7 @@ class RecordingSegmenter(object):
             makamScore = MakamScore(pathTotxt, pathToSectionTsv)
             
             # individual lyrics line written to separate files. 
-            # then these files loaded fro each segment
+            # then these files loaded from each segment
             # done because might be needed at evaulation
 #             makamScore.serializeLyricsToFile()    
             return makamScore              
@@ -74,7 +74,7 @@ class RecordingSegmenter(object):
         split into chunks using manually annotated sections from @param pathToSectionAnnotations, and align each  
     
     '''
-    def alignOneRecording(self, pathToHtkModel, makamScore, pathToAudioFile, pathToSectionAnnotations, path_TO_OUTPUT):
+    def segmentAndAlignOneRecording(self, pathToHtkModel, makamScore, pathToAudioFile, pathToSectionAnnotations, path_TO_OUTPUT):
 
         
             makamRecording = MakamRecording(makamScore, pathToAudioFile, pathToSectionAnnotations)

@@ -1,0 +1,7 @@
+
+Thisngs to optimize.
+
+---------
+the way syllables2WordsOneSecion is called is not optimized in SymbTrParser.SymbTrParser.syllables2Words
+TODO:
+when parsing sections consecutively keep index of  syllable of last parsed secion and start at it for next section.
