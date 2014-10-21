@@ -9,8 +9,17 @@ import os
 import sys
 from Word import Word
 from Syllable import Syllable
-from Utils import loadTextFile
+import imp
 
+parentDir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0]) ), os.path.pardir)) 
+pathUtils = os.path.join(parentDir, 'utilsLyrics') 
+# pathUtils = '/Users/joro/Documents/Phd/UPF/voxforge/myScripts/utilsLyrics'
+
+# utils_ = imp.load_source('Utils', pathUtils  )
+
+sys.path.append(pathUtils )
+
+from Utilz import  loadTextFile
 
 
 class SymbTrParser(object):
@@ -141,7 +150,6 @@ class SymbTrParser(object):
                 for one section only .
                 add syllables until noteNumber of current Syllable reaches  @param endNoteNumber 
             @param beginIndex - beginning current index syllable
-            @return beginIndex - final current index syllable
         """
         syllablesInCurrWord  = []
         listWords = []
@@ -151,13 +159,11 @@ class SymbTrParser(object):
         if (beginIndex == -1):
             return listWords
         
-        currSyllable = self.listSyllables[beginIndex]
         
         while (beginIndex <= len(self.listSyllables)-1 # sanity check
-                    and currSyllable.noteNum <= endNoteNumber ): # while note number associated with syllable is less than last note number in section 
+                    and self.listSyllables[beginIndex].noteNum <= endNoteNumber ): # while note number associated with syllable is less than last note number in section 
                     
                         currSyllable = self.listSyllables[beginIndex]
-                        
                         # construct new word at whitespace
                         if currSyllable.text[-1].isspace():
                             
@@ -176,6 +182,7 @@ class SymbTrParser(object):
 
                         else:
                             syllablesInCurrWord.append(currSyllable)
+                            
                             
                         beginIndex = beginIndex + 1
                         

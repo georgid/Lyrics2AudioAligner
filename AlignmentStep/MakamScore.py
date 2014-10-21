@@ -5,15 +5,27 @@ Created on Mar 3, 2014
 
 @author: joro
 '''
+
+
 import os
+import sys
+import imp
+parentDir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0]) ), os.path.pardir)) 
+# /Users/joro/Documents/Phd/UPF/voxforge/myScripts/utilsLyrics
+
+utils_ = imp.load_source('Utils', os.path.join(parentDir, 'utilsLyrics')  )
+
+
+
 import codecs
 
 import glob
 from SymbTrParser import SymbTrParser
-import sys
 from Phonetizer import Phonetizer
-from Utils import writeListToTextFile
 from Phoneme import Phoneme
+# from utils.Utils import writeListToTextFile
+
+
 # 
 # COMPOSITION_NAME = 'muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_ozisik'
 # COMPOSITION_NAME = 'huseyni--sarki--turkaksagi--hicran_oku--sevki_bey'
@@ -91,17 +103,17 @@ class MakamScore():
         
         listPhonemes =  []
         phonemeSil = Phoneme("sil"); phonemeSil.setDuration('1')
-#         listPhonemes.append(phonemeSil)
+        listPhonemes.append(phonemeSil)
         
         for word_ in words:
             for syllable_ in word_.syllables:
                 syllable_.expandToPhonemes()
                 listPhonemes.extend(syllable_.phonemes )
         
-#         listPhonemes.append(phonemeSil)    
+        listPhonemes.append(phonemeSil)    
 
         
-        writeListToTextFile(listPhonemes, None,  outputFileName )
+        utils_.writeListToTextFile(listPhonemes, None,  outputFileName )
         return listPhonemes
     
     def _calcPhonemeDurations(self, whichSection):
@@ -197,13 +209,13 @@ def serializeIndices( makamScore, whichSection, withDurations, URI_IndicesFile):
  
            indices = makamScore.getIndicesPhonemes(whichSection)
         
-    writeListToTextFile(indices, None,  URI_IndicesFile ) 
+    utils_.writeListToTextFile(indices, None,  URI_IndicesFile ) 
 
 
         
 def parseScoreAndSerialize(pathToComposition, whichSection, withDurations):
         '''
-        Main method. for matlab
+        Main method for  DTW in matlab
         prints sequence of phonemes, sequence of durarions. indices of word start positions 
         '''
         
@@ -221,7 +233,7 @@ def parseScoreAndSerialize(pathToComposition, whichSection, withDurations):
 
         for phoneme_ in listPhonemes :
             listDurations.append(phoneme_.duration)
-        writeListToTextFile(listDurations, None, '/tmp/test.durations')
+        utils_.writeListToTextFile(listDurations, None, '/tmp/test.durations')
         
         # 3. indices
         serializeIndices(makamScore, whichSection, withDurations, '/tmp/test.indices')
@@ -239,14 +251,20 @@ def main(pathToComposition):
         
         os.chdir(pathToComposition)
         pathTotxt = os.path.join(pathToComposition, glob.glob("*.txt")[0])
-        pathToSectionTsv =  os.path.join(pathToComposition, glob.glob("*.tsv")[0])
+        pathToSectionTsv =  os.path.join(pathToComposition, glob.glob("*.sections.tsv")[0])
+        
         makamScore = MakamScore(pathTotxt, pathToSectionTsv )
         
         makamScore.printSectionsAndLyrics()
         # is this needed? 
         
         
-        
+def mainDTWMatlab():
+        if len(sys.argv) != 4:
+            print ("usage: {} <dir of symbtTr.txt and symbTr.tsv> <whichSectionNumber> <hasDurations?>".format(sys.argv[0]) )
+            sys.exit();
+
+        parseScoreAndSerialize(sys.argv[1], int(sys.argv[2]), int(sys.argv[3]))        
       
 
           
@@ -257,15 +275,11 @@ if __name__ == '__main__':
         
         print "in Makam Score"
         
-#         if len(sys.argv) != 2:
-#             print ("usage: {} path to symbtTr.txt and symbTr.tsv".format(sys.argv[0]) )
-#             sys.exit();
-#          
-#         main(sys.argv[1])
-#          
-        if len(sys.argv) != 4:
-            print ("usage: {} <dir of symbtTr.txt and symbTr.tsv> <whichSectionNumber> <hasDurations?>".format(sys.argv[0]) )
+        if len(sys.argv) != 2:
+            print ("usage: {} <path to symbtTr.txt and symbTr.tsv>".format(sys.argv[0]) )
             sys.exit();
-         
-        parseScoreAndSerialize(sys.argv[1], int(sys.argv[2]), int(sys.argv[3]))
+          
+        main(sys.argv[1])
+          
+      
          

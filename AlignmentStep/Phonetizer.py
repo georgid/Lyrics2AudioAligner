@@ -9,8 +9,13 @@ Created on Mar 22, 2014
 
 import codecs
 import sys
+import os
+import imp
 
-from Utils import writeListToTextFile
+parentDir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0]) ), os.path.pardir)) 
+print 'parent dir ', parentDir
+utils_ = imp.load_source('Utils', os.path.join(parentDir, 'utilsLyrics')  )
+
 
 # from utils.Utils import writeListToTextFile
 
@@ -286,7 +291,7 @@ class Phonetizer(object):
             pronunciationList.append('sil\tsil\n')
             pronunciationList.append('NOISE\tNOISE\n')
                
-            writeListToTextFile(pronunciationList, None,  outputFileName )
+            utils_.writeListToTextFile(pronunciationList, None,  outputFileName )
             
                     
             inputFileHandle.close()
