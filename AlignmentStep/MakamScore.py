@@ -10,13 +10,16 @@ Created on Mar 3, 2014
 import os
 import sys
 import imp
+
+# trick to make terminal NOT assume ascii
+reload(sys).setdefaultencoding("utf-8")
+
 parentDir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0]) ), os.path.pardir)) 
-# /Users/joro/Documents/Phd/UPF/voxforge/myScripts/utilsLyrics
+pathUtils = os.path.join(parentDir, 'utilsLyrics')
 
-utils_ = imp.load_source('Utils', os.path.join(parentDir, 'utilsLyrics')  )
+sys.path.append(pathUtils )
 
-
-
+from Utilz import writeListToTextFile
 import codecs
 
 import glob
@@ -78,6 +81,8 @@ class MakamScore():
             self.sectionToLyricsMap.append(tupleSectionNameAndLyrics)
             
     def getLyricsForSection(self,sectionNumber):
+        #python indexing starts from zero
+        sectionNumber = sectionNumber - 1
         return self.sectionToLyricsMap[sectionNumber][1]
  
   
@@ -113,7 +118,7 @@ class MakamScore():
         listPhonemes.append(phonemeSil)    
 
         
-        utils_.writeListToTextFile(listPhonemes, None,  outputFileName )
+        writeListToTextFile(listPhonemes, None,  outputFileName )
         return listPhonemes
     
     def _calcPhonemeDurations(self, whichSection):
@@ -123,148 +128,48 @@ class MakamScore():
                 syllable.calcPhonemeDurations()
         
         
-    def getIndicesPhonemes(self, whichSection ):
+    def printSyllables(self, whichSection):
         '''
-        getIndices of word begins in phoneme list expanded with states used in DTW alignment
+        debug: print syllables 
         '''
         words = self.getLyricsForSection(whichSection)
         
-#       consists of tuples startIndices and word identities
-        indicesBeginWords = []
-        
-        NUMSTATES_SIL = 3
-        NUMSTATES_PHONEME = 3
-        
-        # start with sil, +1 to satisfy indexing in matlab
-        currBeginIndex = NUMSTATES_SIL + 1
-         
-        
         for word_ in words:
-            
-#             indicesBeginWords.append( (currBeginIndex, word_.text) )
-            indicesBeginWords.append(currBeginIndex )
-            # sp has one state only
-            currBeginIndex  = currBeginIndex + NUMSTATES_PHONEME * (word_.getNumPhonemes() - 1) + 1
-        # last word sil
-        indicesBeginWords.append(currBeginIndex )
-        
-        return  indicesBeginWords
-    
-    
-    
-    
-              
-            
-    
-    def getIndicesPhonemes_durations(self, whichSection):
-        ''' same as getIndicesPhonemes but with durations.
-        Assume phoneme.Durations are calculated.  
-        '''
-        
-        self._calcPhonemeDurations(whichSection)
-        
-        words = self.getLyricsForSection(whichSection)
-        
-#       consists of tuples startIndices and word identities
-        indicesBeginWords = []
-        
-        NUMSTATES_SIL = 3
-        NUMSTATES_PHONEME = 3
-        
-        currBeginIndex = NUMSTATES_SIL + 1
-         
-        
-        for word_ in words:
-            
-#             indicesBeginWords.append( (currBeginIndex, word_.text) )
-            indicesBeginWords.append( currBeginIndex )
-
-            wordTotalDur = 0 
-            for syllable_ in word_.syllables:
-                for phoneme_ in syllable_.phonemes:
-                    currDuration = NUMSTATES_PHONEME * phoneme_.getDuration()
-                    wordTotalDur = wordTotalDur + currDuration  
-            
-            currBeginIndex  = currBeginIndex + wordTotalDur
-        
-        # last word sil
-        indicesBeginWords.append( currBeginIndex )
-
-        
-        return  indicesBeginWords
- 
- 
-#        end of class
-
-           
-                    
-def serializeIndices( makamScore, whichSection, withDurations, URI_IndicesFile):
-    '''
-    helper method
-    '''
-    if withDurations:
-           indices =  makamScore.getIndicesPhonemes_durations(whichSection)
-             
-    else:
- 
-           indices = makamScore.getIndicesPhonemes(whichSection)
-        
-    utils_.writeListToTextFile(indices, None,  URI_IndicesFile ) 
+                for syll in word_.syllables:
+                    print syll  
+               
 
 
-        
-def parseScoreAndSerialize(pathToComposition, whichSection, withDurations):
-        '''
-        Main method for  DTW in matlab
-        prints sequence of phonemes, sequence of durarions. indices of word start positions 
-        '''
-        
-        os.chdir(pathToComposition)
-        pathTotxt = os.path.join(pathToComposition, glob.glob("*.txt")[0])
-        pathToSectionTsv =  os.path.join(pathToComposition, glob.glob("*.tsv")[0])
-        makamScore = MakamScore(pathTotxt, pathToSectionTsv )
-        
-        # 1. phoneme IDs
-        listPhonemes = makamScore.serializePhonemesForSection(whichSection, '/tmp/test.phn')
-        listDurations = []
-        
-        # 2. phoneme Durations
-        makamScore._calcPhonemeDurations(whichSection)
-
-        for phoneme_ in listPhonemes :
-            listDurations.append(phoneme_.duration)
-        utils_.writeListToTextFile(listDurations, None, '/tmp/test.durations')
-        
-        # 3. indices
-        serializeIndices(makamScore, whichSection, withDurations, '/tmp/test.indices')
-        
-#       just for information   
-        makamScore.printSectionsAndLyrics()
-
-                                 
-         
 
 
     
      ##################################################################################
-def main(pathToComposition):
+    
+
+def loadScore(pathToComposition):
+    '''
+    load all score-related info into an object
+    '''
+    os.chdir(pathToComposition)
+    pathTotxt = os.path.join(pathToComposition, glob.glob("*.txt")[0])
+    pathToSectionTsv = os.path.join(pathToComposition, glob.glob("*.sections.tsv")[0])
+    makamScore = MakamScore(pathTotxt, pathToSectionTsv)
+    return makamScore
+
+
+def main(argv):
+        if len(argv) != 2:
+            print ("usage: {} <path to symbtTr.txt and symbTr.tsv>".format(argv[0]) )
+            sys.exit();
+        pathToComposition = argv[1]
         
-        os.chdir(pathToComposition)
-        pathTotxt = os.path.join(pathToComposition, glob.glob("*.txt")[0])
-        pathToSectionTsv =  os.path.join(pathToComposition, glob.glob("*.sections.tsv")[0])
-        
-        makamScore = MakamScore(pathTotxt, pathToSectionTsv )
+        makamScore = loadScore(pathToComposition)
         
         makamScore.printSectionsAndLyrics()
         # is this needed? 
         
         
-def mainDTWMatlab():
-        if len(sys.argv) != 4:
-            print ("usage: {} <dir of symbtTr.txt and symbTr.tsv> <whichSectionNumber> <hasDurations?>".format(sys.argv[0]) )
-            sys.exit();
-
-        parseScoreAndSerialize(sys.argv[1], int(sys.argv[2]), int(sys.argv[3]))        
+     
       
 
           
@@ -275,11 +180,7 @@ if __name__ == '__main__':
         
         print "in Makam Score"
         
-        if len(sys.argv) != 2:
-            print ("usage: {} <path to symbtTr.txt and symbTr.tsv>".format(sys.argv[0]) )
-            sys.exit();
-          
-        main(sys.argv[1])
+        main(sys.argv)
           
       
          

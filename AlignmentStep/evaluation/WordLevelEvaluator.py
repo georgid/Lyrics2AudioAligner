@@ -9,15 +9,20 @@ This is similar to proposed by shriberg on sentence boundary detection.
 
 import os
 import sys
+import numpy
 
-from IPython.core.tests.test_formatters import numpy
 
 # this allows path to packages to be resolved correctly (on import) from outside of eclipse 
 parentDir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0]) ), os.path.pardir)) 
 sys.path.append(parentDir)
 
+# utilsLyrics
+pathUtils = os.path.join(parentDir,  'utilsLyrics')
+sys.path.append(pathUtils )
+
+
 from evaluation.TextGrid_Parsing import TextGrid2Dict, TextGrid2WordList
-from utils.Utils import writeListOfListToTextFile, mlf2WordAndTsList, \
+from Utilz import  mlf2WordAndTsList, \
     mlf2PhonemesAndTsList, getMeanAndStDevError
 
 
@@ -146,16 +151,16 @@ def calcError(annotatedPhraseBEginTs, detectedPhraseBeginTs):
     
 
 
-def evalOneFile(annotationURI, detectedURI, evalLevel=tierAliases.phonemeLevel):
+def evalOneFile(argv):
         ''' Main utility function
         ''' 
        
-        if (len(sys.argv) != 4):
-             print ("Usage:  {} {} {} {}".format(sys.argv[0], "annotationURI", "detectedURI", "tierAliases.phonemeLevel") ) 
-             sys.exit();
-       
+        if len(argv) != 4:
+            print ("usage: {} <URI_annotation> <URI_detected> <evalLevel>".format(argv[0]) )
+            sys.exit();
+             
         
-        alignmentErrors  = evalAlignmentError(annotationURI, detectedURI, int(evalLevel))
+        alignmentErrors  = evalAlignmentError(argv[1], argv[2], int(argv[3]))
         
         mean, stDev, median = getMeanAndStDevError(alignmentErrors)
         
@@ -169,30 +174,29 @@ def evalOneFile(annotationURI, detectedURI, evalLevel=tierAliases.phonemeLevel):
         
         return mean, stDev,  median, alignmentErrors
     
-    
+             
+   
 
 ##################################################################################
 
 if __name__ == '__main__':
     
+    evalOneFile(sys.argv)
     
     
-         
 #     PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/ISTANBUL/goekhan/'
-    PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/ISTANBUL/safiye/'
-    
-    audioName = '01_Olmaz_Part2_nakarat'
-#     audioName = '02_Kimseye_Part6_nakarat'     
-#     audioName = '02_Kimseye_Part1_zemin'     
+#     PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/ISTANBUL/safiye/'
 #     
-    annotationURI = os.path.join(PATH_TEST_DATASET,  audioName + ANNOTATION_EXT)
-    detectedURI = os.path.join(PATH_TEST_DATASET,  audioName +  DETECTED_EXT)
-     
-#     annotationURI = '/Volumes/IZOTOPE/sertan_sarki/segah--sarki--curcuna--olmaz_ilac--haci_arif_bey/21_Recep_Birgit_-_Olmaz_Ilac_Sine-i_Sad_Pareme/21_Recep_Birgit_-_Olmaz_Ilac_Sine-i_Sad_Pareme_meyan2_from_69_194485_to_79_909261.TextGrid'
-#     detectedURI = '~//Downloads/blah'
+#     audioName = ''
+#     annotationURI = os.path.join(PATH_TEST_DATASET,  audioName + ANNOTATION_EXT)
+#     detectedURI = os.path.join(PATH_TEST_DATASET,  audioName +  DETECTED_EXT)
 #      
-    mean, stDev,  median, alignmentErrors  = evalOneFile(sys.argv[1], sys.argv[2], sys.argv[3])
-#     mean, stDev,  median, alignmentErrors  = evalOneFile(annotationURI, detectedURI, tierAliases.wordLevel)
+# #     annotationURI = '/Volumes/IZOTOPE/sertan_sarki/segah--sarki--curcuna--olmaz_ilac--haci_arif_bey/21_Recep_Birgit_-_Olmaz_Ilac_Sine-i_Sad_Pareme/21_Recep_Birgit_-_Olmaz_Ilac_Sine-i_Sad_Pareme_meyan2_from_69_194485_to_79_909261.TextGrid'
+# #     detectedURI = '~//Downloads/blah'
+# #      
+#     mean, stDev,  median, alignmentErrors  = evalOneFile(argv[1], argv[2], argv[3])
+# #     mean, stDev,  median, alignmentErrors  = evalOneFile(annotationURI, detectedURI, tierAliases.wordLevel)
+#     
 
 
     

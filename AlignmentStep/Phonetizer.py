@@ -11,11 +11,13 @@ import codecs
 import sys
 import os
 import imp
+from Utilz import writeListToTextFile
+
 
 parentDir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0]) ), os.path.pardir)) 
-print 'parent dir ', parentDir
-utils_ = imp.load_source('Utils', os.path.join(parentDir, 'utilsLyrics')  )
+pathUtils = os.path.join(parentDir, 'utilsLyrics')
 
+sys.path.append(pathUtils )
 
 # from utils.Utils import writeListToTextFile
 
@@ -291,7 +293,7 @@ class Phonetizer(object):
             pronunciationList.append('sil\tsil\n')
             pronunciationList.append('NOISE\tNOISE\n')
                
-            utils_.writeListToTextFile(pronunciationList, None,  outputFileName )
+            writeListToTextFile(pronunciationList, None,  outputFileName )
             
                     
             inputFileHandle.close()

@@ -9,6 +9,7 @@ import glob
 from utilsLyrics.Tools import getMeanAndStDevError, writeListToTextFile
 from Adapt import MAP_EXT, NUM_MAP_ITERS, PATH_TO_OUTPUT, MODEL_NAME
 from RecordingSegmenter import RecordingSegmenter
+import MakamScore
 
 
 PATH_TO_HTK_MODEL = '/Volumes/IZOTOPE/adaptation_data_NOT_CLEAN/syllablingDB/hmmdefs.gmmlrmean_map_2'
@@ -65,13 +66,7 @@ def doitForTestPiece(compositionName, recordingDir):
     ####### prepare composition! ############
         
         pathToComposition = os.path.join(PATH_TEST_DATASET, compositionName)
-        os.chdir(pathToComposition)
-        pathToSymbTrTxt = os.path.join(pathToComposition, glob.glob("*.txt")[0])
-        pathToSectionTsv = os.path.join(pathToComposition, glob.glob("*.sections.tsv")[0])
-        
-                    # TODO: issue 14
-        recordingSegmenter = RecordingSegmenter()
-        makamScore =  recordingSegmenter.loadMakamScore(pathToSymbTrTxt, pathToSectionTsv)
+        makamScore = MakamScore.loadScore(pathToComposition)
         print "makam score loaded"
         
         ###########        ----- align one recording
@@ -84,6 +79,7 @@ def doitForTestPiece(compositionName, recordingDir):
         pathToAudio = os.path.join(pathToRecording, recordingDir) + '.wav'
         
         # TODO: issue 14
+        recordingSegmenter = RecordingSegmenter()
         alignmentErrors = recordingSegmenter.segmentAndAlignOneRecording(MODEL_URI, makamScore, pathToAudio, pathToSectionAnnotations, PATH_TO_OUTPUT_RESULTS)
         
 #         mean, stDev, median = getMeanAndStDevError(alignmentErrors)

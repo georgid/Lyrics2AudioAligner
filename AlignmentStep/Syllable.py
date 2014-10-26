@@ -5,8 +5,12 @@ Created on Oct 8, 2014
 '''
 from Phonetizer import Phonetizer
 from Phoneme import Phoneme
+import sys
 
-
+#     64 for 64th note
+MINIMAL_DURATION_UNIT = 64
+#  consonant duration fixed to  32-th 
+CONSONANT_DURATION = MINIMAL_DURATION_UNIT / 32
 
 class Syllable():
         ''' syllables class done because in symbolic file lyrics are represented as syllables
@@ -26,6 +30,8 @@ class Syllable():
             set if this is last syllable in word
             '''
             self.hasShortPauseAtEnd = hasShortPauseAtEnd
+        def setDuration(self, duration):
+            self.duration = duration
         
         def expandToPhonemes(self):
             '''
@@ -61,7 +67,7 @@ class Syllable():
         
         def calcPhonemeDurations(self):
             '''
-            durations set to 1, the rest for the vowel.
+            all consonant durations set to 1 unit, the rest for the vowel.
             
             '''
             if self.phonemes is None:
@@ -69,13 +75,20 @@ class Syllable():
                 
             vowelPos = self.getPositionVowel()
             
-            # THERE should not be such syllable, just in case
+            # if no vowel in syllable - equal division. just in case
             if vowelPos == -1:
                 for phoneme in self.phonemes:
 #                     no vowel => equal duration for all
                     phoneme.setDuration(self.duration / self.getNumPhonemes())
             else: # one vowel
                 for phoneme in self.phonemes:
-                       phoneme.duration = 1
-                vowelDuration = self.duration - self.getNumPhonemes() + 1
+                       phoneme.duration = CONSONANT_DURATION
+                vowelDuration = self.duration - (self.getNumPhonemes() - 1) * CONSONANT_DURATION
+                # sanity check
+                if vowelDuration <= 0:
+                    sys.exit("phoneme {} of syllable {} has duration of zero or less units. ".format(phoneme.ID, self.text)  )
                 self.phonemes[self.getPositionVowel()].setDuration(vowelDuration)
+                
+        def __str__(self):
+                syllalbeTest = self.text.encode('utf-8','replace')
+                return syllalbeTest + " duration: " + str(self.duration) + "\n" 

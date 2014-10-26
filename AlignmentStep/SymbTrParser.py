@@ -8,7 +8,7 @@ import codecs
 import os
 import sys
 from Word import Word
-from Syllable import Syllable
+from Syllable import Syllable, MINIMAL_DURATION_UNIT
 import imp
 
 parentDir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0]) ), os.path.pardir)) 
@@ -29,8 +29,8 @@ class SymbTrParser(object):
     Then concatenated into words if needed 
     TODO: take only section names from tsv file. parse sections from symbTr double spaces 
     '''
-#     16 for 16th note
-    MINIMAL_DURATION_UNIT = 16
+
+
     
     def __init__(self, pathToSymbTrFile):
         '''
@@ -52,7 +52,9 @@ class SymbTrParser(object):
    ##################################################################################
      
     '''
-    load syllables from symbTr file. calculate syllable duration from the associated notes 
+    load all notes with syllables from symbTr file. 
+    ignores all notes with no syllable!
+    calculate syllable duration from the associated notes 
     '''
     def _loadSyllables(self, pathToSymbTrFile):
              
@@ -71,12 +73,14 @@ class SymbTrParser(object):
             tokens = line.split("\t")
             if len(tokens) != 12:
                 print "TOKENS ARE 11, no syllable ";  sys.exit()
+            
 
-            currDuration = float(tokens[6]) / float(tokens[7]) * SymbTrParser.MINIMAL_DURATION_UNIT
+            currDuration = float(tokens[6]) / float(tokens[7]) * MINIMAL_DURATION_UNIT
             currTxtToken = tokens[11]
                 
             # no syllalbe
-            if  currTxtToken.startswith('.') or currTxtToken.startswith('SAZ') or currTxtToken.startswith(u'ARANA\u011eME') or currTxtToken.startswith(u'ARANAGME')  :
+            if  currTxtToken.startswith('.') or currTxtToken.startswith('SAZ') or currTxtToken.startswith(u'ARANA\u011eME') or currTxtToken.startswith(u'ARANAGME') :
+#             or tokens[1] == '8':             # skip embellishments. they dont count in duration
                  continue
             
             # start of a new syllalbe
@@ -84,7 +88,7 @@ class SymbTrParser(object):
 
                 if not(currSyllable is None) and not(syllTotalDuration is None):
                 # save last syllable and duration 
-                     currSyllable.duration = syllTotalDuration
+                     currSyllable.setDuration(syllTotalDuration)
                      self.listSyllables.append(currSyllable)
                 
                 # init next syllable. 
@@ -97,7 +101,7 @@ class SymbTrParser(object):
                 syllTotalDuration = syllTotalDuration + currDuration
             
         # store last
-        currSyllable.duration = syllTotalDuration
+        currSyllable.setDuration(syllTotalDuration)
         self.listSyllables.append(currSyllable)
             
             
@@ -190,7 +194,9 @@ class SymbTrParser(object):
         
     def _findSyllableIndex(self, noteNumberQuery):
         '''
-        find which syllable has  given note number. use bunary search
+        find which syllable has  given note number. 
+        used only for begin syllables
+        use bunary search
         '''
         lo = 0
         high = len(self.listSyllables)
@@ -204,9 +210,10 @@ class SymbTrParser(object):
                 lo = mid + 1
             else:
                 return mid
-        # no such number in list 
+       
+        # no syllable with lyrics (case of lyrics starting after auftakt on istrument at begining of section) => return closest following syllable with lyrics  
       
-        return -1
+        return high
              
             
         
