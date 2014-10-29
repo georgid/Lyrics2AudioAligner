@@ -12,7 +12,7 @@ import utils
 import utilsLyrics
 from Adapt import MODEL_NOISE_URI
 import sys
-from utils.Utils import writeListOfListToTextFile, writeListToTextFile,\
+from Utilz import writeListOfListToTextFile, writeListToTextFile,\
     mlf2PhonemesAndTsList, mlf2WordAndTsList
 
 HTK_MLF_WORD_ANNO_SUFFIX = '.wrd.mlf'

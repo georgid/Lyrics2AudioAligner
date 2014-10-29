@@ -48,7 +48,9 @@ class Syllable():
                 self.phonemes.append(Phoneme('sp'))
            
             
-
+        def getPhonemes(self):
+            return self.phonemes
+        
         def getNumPhonemes(self):
             if self.phonemes == None:
                 self.expandToPhonemes()

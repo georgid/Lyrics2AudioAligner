@@ -17,14 +17,20 @@ class Word():
                 wordText = wordText + syllable.text
             self.text = wordText
             
-            
+#             # consequtive number of first phoneme from phonemeNetwork in Lyrics context
+#             self.numFirstPhoneme = -1
+#             
+#         def setNumFirstPhoneme(self, numFirstPhoneme):
+#             self.numFirstPhoneme = numFirstPhoneme
+
+           
         def __str__(self):
                 return self.text.encode('utf-8','replace')
         
         def getNumPhonemes(self):
             numPhonemes = 0
             for syllable in self.syllables:
-                 numPhonemes = numPhonemes + syllable.getNumPhonemes()
+                 numPhonemes += syllable.getNumPhonemes()
             return numPhonemes
             
             

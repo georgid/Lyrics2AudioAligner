@@ -8,6 +8,10 @@ class Phoneme:
     def __init__(self, phonemeID):
         self.ID = phonemeID;
         self.duration = None;
+        self.numFirstState = -1
+            
+    def setNumFirstState(self, numFirstState):
+            self.numFirstState = numFirstState
         
     def setDuration(self, duration):
         self.duration = duration

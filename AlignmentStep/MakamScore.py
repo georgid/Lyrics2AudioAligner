@@ -73,14 +73,18 @@ class MakamScore():
        
         symbTrParser._loadSectionBoundaries(pathToSectionTsvFile)
         
-        wordsAllSections = symbTrParser.syllables2Words()
+        # list of Word object
+        lyricsAllSections = symbTrParser.syllables2Words()
         
         # for each section part
-        for currSectionBoundary,currSectionLyrics in zip(symbTrParser.sectionboundaries, wordsAllSections):
+        for currSectionBoundary,currSectionLyrics in zip(symbTrParser.sectionboundaries, lyricsAllSections):
             tupleSectionNameAndLyrics =  currSectionBoundary[0], currSectionLyrics  
             self.sectionToLyricsMap.append(tupleSectionNameAndLyrics)
             
     def getLyricsForSection(self,sectionNumber):
+        '''
+        convenience getter
+        '''
         #python indexing starts from zero
         sectionNumber = sectionNumber - 1
         return self.sectionToLyricsMap[sectionNumber][1]
@@ -104,26 +108,15 @@ class MakamScore():
         '''
         list of all phonemes. print to file @param outputFileName
         '''    
-        words = self.getLyricsForSection(whichSection)
+        lyrics = self.getLyricsForSection(whichSection)
+    
         
-        listPhonemes =  []
-        phonemeSil = Phoneme("sil"); phonemeSil.setDuration('1')
-        listPhonemes.append(phonemeSil)
-        
-        for word_ in words:
-            for syllable_ in word_.syllables:
-                syllable_.expandToPhonemes()
-                listPhonemes.extend(syllable_.phonemes )
-        
-        listPhonemes.append(phonemeSil)    
-
-        
-        writeListToTextFile(listPhonemes, None,  outputFileName )
-        return listPhonemes
+        writeListToTextFile(lyrics.phonemesNetwork, None,  outputFileName )
+        return lyrics.phonemesNetwork
     
     def _calcPhonemeDurations(self, whichSection):
-        words = self.getLyricsForSection(whichSection)
-        for word_ in words:
+        lyrics = self.getLyricsForSection(whichSection)
+        for word_ in lyrics.listWords:
             for syllable in word_.syllables:
                 syllable.calcPhonemeDurations()
         
@@ -132,11 +125,11 @@ class MakamScore():
         '''
         debug: print syllables 
         '''
-        words = self.getLyricsForSection(whichSection)
         
-        for word_ in words:
-                for syll in word_.syllables:
-                    print syll  
+        lyrics = self.getLyricsForSection(whichSection)
+        lyrics.printSyllables
+        
+     
                
 
 

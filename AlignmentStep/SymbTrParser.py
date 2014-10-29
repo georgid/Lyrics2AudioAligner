@@ -10,6 +10,7 @@ import sys
 from Word import Word
 from Syllable import Syllable, MINIMAL_DURATION_UNIT
 import imp
+from Lyrics import Lyrics
 
 parentDir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0]) ), os.path.pardir)) 
 pathUtils = os.path.join(parentDir, 'utilsLyrics') 
@@ -74,6 +75,10 @@ class SymbTrParser(object):
             if len(tokens) != 12:
                 print "TOKENS ARE 11, no syllable ";  sys.exit()
             
+            # sanity check  MINIMAL_DURATION of embelishments. 
+#             hack: change crazy small notes to min duration. it does not matter a lot
+            if tokens[7] > MINIMAL_DURATION_UNIT and  tokens[1] == '8':
+                tokens[7] = MINIMAL_DURATION_UNIT
 
             currDuration = float(tokens[6]) / float(tokens[7]) * MINIMAL_DURATION_UNIT
             currTxtToken = tokens[11]
@@ -133,7 +138,7 @@ class SymbTrParser(object):
         """
         construct words from syllables for all  sections
         """  
-        wordsAllSections = []
+        lyricsAllSections = []
         words = []
               
         for currSectionBoundary in self.sectionboundaries:
@@ -142,9 +147,9 @@ class SymbTrParser(object):
             words = self.syllable2WordOneSection(currSectionBoundary[1], currSectionBoundary[2])
             
             # store lyrics
-            wordsAllSections.append(words)
+            lyricsAllSections.append(Lyrics(words) )
             
-        return wordsAllSections
+        return lyricsAllSections
           
 
 # begin index does not update, because no change in aranagme. 
@@ -278,5 +283,5 @@ if __name__ == "__main__":
 #     symbTrParser.syllablesToWords()
     
     
-    wordsAllSections = symbTrParser.syllables2Words()
+    lyricsAllSections = symbTrParser.syllables2Words()
     print "DONE. otivam da si miq zybite"

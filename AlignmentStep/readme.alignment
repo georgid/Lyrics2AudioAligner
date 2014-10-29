@@ -1,7 +1,6 @@
 
 MakamScore.parseScoreAndSerialize used for experiments in matlab
 
-Viterbi2 - Viterbi decoding. based on hmm._BaseHMM._viterbiForced2
 
 ---------
 Usage of ALIGNMENT: 

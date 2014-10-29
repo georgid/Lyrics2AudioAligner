@@ -9,15 +9,18 @@ from macpath import splitext
 import os
 import sys
 
-from matplotlib.sphinxext.plot_directive import out_of_date
 
 from Adapt import PATH_TO_OUTPUT, MODEL_NAME, PATH_TO_CLEAN_ADAPTDATA, adapt, \
     MLLR_EXT, MAP_EXT, NUM_MAP_ITERS
 from Aligner import PHRASE_ANNOTATION_EXT, openAlignmentInPraat
 from RecordingSegmenter import RecordingSegmenter
 from doit import PATH_TEST_DATASET
-from evaluation.WordLevelEvaluator import evalPhraseLevelError
-from scipy.odr.odrpack import Model
+
+parentDir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0]) ), os.path.pardir)) 
+pathEvaluation = os.path.join(parentDir, 'Evaluation')
+sys.path.append(pathEvaluation)
+
+from WordLevelEvaluator import evalPhraseLevelError
 import sonicVisTextPhnDir2mlf
 
 

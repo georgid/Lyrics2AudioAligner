@@ -21,9 +21,14 @@ self.audioFile
 MakamScore 
 field sectionLyrics is a map: 
 e.g.
-"nakarat" -> "word1 word2 word3"
+"nakarat" -> Lyrics "word1 word2 word3"
+each Lyrics item  is of object type Lyrics
 
-each word is of object type Word, each Word in its turn contains a list of object type Syllable
+Lyrics
+ is a holder of a list of words: each Word in turn contains a list of object type Syllable
+Each syllable in turn contains a list of Phoneme objects
+
+
 
 
 Phonetizer

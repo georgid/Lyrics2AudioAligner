@@ -7,9 +7,10 @@ Created on Mar 17, 2014
 import os
 import glob
 from utilsLyrics.Tools import getMeanAndStDevError, writeListToTextFile
+
+import MakamScore
 from Adapt import MAP_EXT, NUM_MAP_ITERS, PATH_TO_OUTPUT, MODEL_NAME
 from RecordingSegmenter import RecordingSegmenter
-import MakamScore
 
 
 PATH_TO_HTK_MODEL = '/Volumes/IZOTOPE/adaptation_data_NOT_CLEAN/syllablingDB/hmmdefs.gmmlrmean_map_2'
@@ -45,8 +46,8 @@ PATH_TO_NOTCLEAN_ADAPTDATA = '/tmp/audio/'
 # this one has excluded sections with wrong pitch from melodia
 #PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/test_data_synthesis'
 
-PATH_TEST_DATASET = '/Volumes/IZOTOPE/sertan_sarki'
-    
+PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/turkish-makam-lyrics-2-audio-test-data/'
+   
           
 
 # PATH_TO_OUTPUT_RESULTS = '/tmp/varnam/'
