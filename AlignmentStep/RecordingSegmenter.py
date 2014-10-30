@@ -65,8 +65,6 @@ class RecordingSegmenter(object):
 
 
 
-
-
 ##################################################################################
 
         
@@ -74,7 +72,7 @@ class RecordingSegmenter(object):
         split into chunks using manually annotated sections from @param pathToSectionAnnotations, and align each  
     
     '''
-    def alignOneRecording(self, pathToHtkModel, makamScore, pathToAudioFile, pathToSectionAnnotations, path_TO_OUTPUT):
+    def alignOneRecording(self, pathToHtkModel, makamScore, pathToAudioFile, pathToSectionAnnotations, path_TO_OUTPUT, withSynthesis):
 
         
             makamRecording = MakamRecording(makamScore, pathToAudioFile, pathToSectionAnnotations)
@@ -113,7 +111,7 @@ class RecordingSegmenter(object):
                 
                 
                 
-                outputHTKPhoneAlignedURI = RecordingSegmenter.alignOneChunk(pathToHtkModel, path_TO_OUTPUT, lyrics, currPathToAudioFile, 0)
+                outputHTKPhoneAlignedURI = RecordingSegmenter.alignOneChunk(pathToHtkModel, path_TO_OUTPUT, lyrics, currPathToAudioFile, 0, withSynthesis)
                 basenAudioFile = os.path.splitext(currPathToAudioFile)[0]
                 phraseAnnoURI = basenAudioFile  + PHRASE_ANNOTATION_EXT
                 
@@ -140,13 +138,13 @@ class RecordingSegmenter(object):
     '''
 
     @staticmethod
-    def alignOneChunk( pathToHtkModel, path_TO_OUTPUT, lyrics, currPathToAudioFile, isLyricsFromFile):
+    def alignOneChunk( pathToHtkModel, path_TO_OUTPUT, lyrics, currPathToAudioFile, isLyricsFromFile, withSynthesis):
         
         
         if  not(os.path.isdir(path_TO_OUTPUT)):
             os.mkdir(path_TO_OUTPUT);
         
-        chunkAligner = Aligner(pathToHtkModel, currPathToAudioFile, lyrics, isLyricsFromFile)
+        chunkAligner = Aligner(pathToHtkModel, currPathToAudioFile, lyrics, isLyricsFromFile,  withSynthesis)
     
 
         baseNameAudioFile = os.path.splitext(os.path.basename(chunkAligner.pathToAudioFile))[0]

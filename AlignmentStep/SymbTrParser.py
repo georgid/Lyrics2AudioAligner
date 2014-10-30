@@ -7,7 +7,17 @@ Created on Mar 10, 2014
 '''
 import codecs
 import os
-from utils.Utils import loadTextFile
+import sys
+
+parentDir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0]) ), os.path.pardir)) 
+pathUtils = os.path.join(parentDir, 'utilsLyrics') 
+# pathUtils = '/Users/joro/Documents/Phd/UPF/voxforge/myScripts/utilsLyrics'
+
+# utils_ = imp.load_source('Utils', pathUtils  )
+
+sys.path.append(pathUtils )
+
+from Utilz import  loadTextFile
 
 
 '''

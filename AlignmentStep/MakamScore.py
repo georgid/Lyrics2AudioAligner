@@ -18,6 +18,14 @@ import sys
 # PATH_TEST_DATASET='/Users/joro/Documents/Phd/UPF/turkish-makam-lyrics-2-audio-test-data/'
 # PATH_TEST_DATASET = '/Volumes/IZOTOPE/sertan_sarki/'
 
+
+
+parentDir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0]) ), os.path.pardir)) 
+pathUtils = os.path.join(parentDir, 'utilsLyrics')
+
+sys.path.append(pathUtils )
+
+
 class MakamScore():
     '''
     classdocs
@@ -125,7 +133,13 @@ class MakamScore():
             print  string_for_output + '  \n\n'
         
         
-
+    def getLyricsForSection(self,sectionNumber):
+        '''
+        convenience getter
+        '''
+        #python indexing starts from zero
+        sectionNumber = sectionNumber - 1
+        return self.sectionToLyricsMap[sectionNumber][1]
     
      ##################################################################################
 def main(pathToComposition):

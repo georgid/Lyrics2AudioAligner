@@ -8,8 +8,14 @@ Created on Mar 22, 2014
 
 import codecs
 import sys
-from utils.Utils import *
+import os
 
+parentDir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0]) ), os.path.pardir)) 
+pathUtils = os.path.join(parentDir, 'utilsLyrics')
+
+sys.path.append(pathUtils )
+
+from Utilz import writeListToTextFile
 
 
 '''
@@ -90,7 +96,7 @@ class Phonetizer(object):
     # NOTE: unvoiced fricatives and affricatives are replaced by sp, since they are not synthesized 
     
     # TODO: More carefull distinction between variants. e. g. # disctinction between G and GG
-        METUlookupTable = {
+        METUlookupTableSynthesis = {
                        'a': 'AA',
                        'e': 'E',
                        'i': 'IY',
@@ -121,6 +127,39 @@ class Phonetizer(object):
                        'f': 'fric',
                        'j': 'J'
                        }
+       
+        METUlookupTable = {
+                       'a': 'AA',
+                       'e': 'E',
+                       'i': 'IY',
+                       'I': 'I',
+                       'o': 'O',
+                       'u': 'U',
+                       'O': 'OE',
+                       'U': 'UE',
+                       'b': 'B',
+                       'd': 'D',
+                       'g': 'GG',
+                       'G': '',
+                       'h': 'H',
+                       'k': 'KK',
+                       'l': 'LL',
+                       'm': 'M',
+                       'n': 'NN',
+                       'p': 'P',
+                       'r': 'RR',
+                       's': 'S',
+                       'S': 'SH',
+                       't': 'T',
+                       'v': 'VV',
+                       'y': 'Y',
+                       'z': 'ZH',
+                       'c': 'C',
+                       'C': 'CH',
+                       'f': 'F',
+                       'j': 'J'
+                       }
+        
        
         def __init__(self):
         
@@ -180,13 +219,18 @@ class Phonetizer(object):
             return  listA
         
         @staticmethod
-        def grapheme2Phoneme( METUword):
+        def grapheme2Phoneme( METUword, withSynth):
             
+            if withSynth:
+                lookupTable = Phonetizer.METUlookupTableSynthesis
+            else:
+                    lookupTable = Phonetizer.METUlookupTable
+
             s = list(METUword)
         
             for i in range(len(s)):
-                if s[i] in Phonetizer.METUlookupTable:
-                    s[i] = Phonetizer.METUlookupTable[s[i]]
+                if s[i] in lookupTable:
+                    s[i] = lookupTable[s[i]]
                 else:
                     sys.exit("grapheme {0} not in gpraheme-to-phoneme lookup table".format(s[i]) )                    
                     
@@ -243,7 +287,7 @@ class Phonetizer(object):
                 # converts METU lyrics to phonetic dictinary 
         # @param: inputFileName - one-line file with lyrics
         @staticmethod        
-        def METULyrics2phoneticDict(inputFileName, outputFileName):
+        def METULyrics2phoneticDict(inputFileName, outputFileName, withSynthesis):
             
             pronunciationList = []
             
@@ -262,7 +306,7 @@ class Phonetizer(object):
             for word in uniqWords:
                 
                 # list of METU phonemes for current word
-                phonemeList = Phonetizer.grapheme2Phoneme(word)
+                phonemeList = Phonetizer.grapheme2Phoneme(word, withSynthesis)
                 
                 # create a pronunciation entry
                 wordAndPronunciation = word + "\t"

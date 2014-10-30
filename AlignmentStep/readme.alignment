@@ -1,28 +1,11 @@
-Class Design: 
-
-RecordingSegmenter
- is just a holder of two methods: to align whole recording and to align a single chunk. 
-No class fields. 
-RecordingSegmenter.alignOneRecording() takes as input makamScore object.
-
-
-MakamScore 
-field sectionLyrics is a map: 
-e.g.
-"nakarat" -> "word1 word2 word3"
-
-
-
-Phonetizer
-grapheme2phoneme(word) 
-turkishlyrics2PhoneticDict parses all words and turns them into a HTK-format dictionary. 
-HTK takes the sequence of words (mlf file) and the dict and puts exoands them internally  
-
 
 ---------
 Usage of ALIGNMENT: 
 
+python /Users/joro/Documents/Phd/UPF/voxforge/myScripts/AlignmentStep/doitOneChunk.py /Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/nihavent--sarki--aksak--gel_guzelim--faiz_kapanci/ 3 /Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/ISTANBUL/goekhan/02_Gel_3_zemin
 
+
+------------
 - run forced alignment for whole song (divide in chunks and run for each chunk):
 $GITDIR/AlignmentStep/doit.py <wav> <txtTur_withNewLines> <sectionAnno>
 

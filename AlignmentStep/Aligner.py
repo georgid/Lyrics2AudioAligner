@@ -8,12 +8,16 @@ import subprocess
 
 from Phonetizer import Phonetizer
 import shutil
-import utils
-import utilsLyrics
 from Adapt import MODEL_NOISE_URI
+
 import sys
-from utils.Utils import writeListOfListToTextFile, writeListToTextFile,\
-    mlf2PhonemesAndTsList, mlf2WordAndTsList
+
+parentDir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0]) ), os.path.pardir)) 
+pathUtils = os.path.join(parentDir, 'utilsLyrics')
+sys.path.append(pathUtils )
+
+from Utilz import writeListOfListToTextFile, writeListToTextFile,\
+    mlf2WordAndTsList, mlf2PhonemesAndTsList, writeTextToTextFile
 
 HTK_MLF_WORD_ANNO_SUFFIX = '.wrd.mlf'
 HTK_MLF_ALIGNED_SUFFIX= ".htkAlignedMlf"
@@ -51,7 +55,9 @@ class Aligner():
     '''
 
 
-    def __init__(self, PATH_TO_HTK_MODEL, pathToAudioFile,  lyrics, loadLyricsFromFile=0):
+    def __init__(self, PATH_TO_HTK_MODEL, pathToAudioFile,  lyrics, loadLyricsFromFile=0, withSynthesis=1 ):
+        
+        self.withSynthesis = withSynthesis
         
         self.pathToHtkModel = PATH_TO_HTK_MODEL
         self.pathToAudioFile = pathToAudioFile
@@ -78,7 +84,7 @@ class Aligner():
     
 
     def _createWordMLFandDict(self):
-        #txtTur to METU. txtMETU as persistent file not really needed. For reference stored
+        #txtTur to METU. txtMETU as persistent file not really needed. Kept only for reference 
         
         baseNameAudioFile = os.path.splitext(self.pathToAudioFile)[0]
         
@@ -103,12 +109,12 @@ class Aligner():
         # phonetize
         dictName = '/tmp/lexicon2'
         
-        Phonetizer.METULyrics2phoneticDict(METUBETfileName, dictName)
+        Phonetizer.METULyrics2phoneticDict(METUBETfileName, dictName, self.withSynthesis)
         return (dictName, mlfName, METULyrics )
     
     def _toWordNetwork(self, METULyrics):
         '''
-        creates word network including optional sil and backgr noise at end and beginning
+        creates word network including optional sil and backgr noise at end and beginning    
         '''
         # add sil 
         METULyricsList = METULyrics.split()
@@ -122,9 +128,15 @@ class Aligner():
         METULyricsAndSil.append(METULyricsList[i])
         METULyricsAndSil = " ".join(METULyricsAndSil).strip()
             
+        if (self.withSynthesis):
+            grammar = '({sil|NOISE} '  + METULyricsAndSil + ' {sil|NOISE})'
+        else:
+            grammar = '({sil} '  + METULyricsAndSil + ' {sil})'
         
-        grammar = '({sil|NOISE} '  + METULyricsAndSil + ' {sil|NOISE})'
-        writeListToTextFile(grammar, None, '/tmp/grammar')
+        # the case of synthesis
+
+
+        writeTextToTextFile(grammar, '/tmp/grammar')
         
         HParseCommand = ['/usr/local/bin/HParse', '/tmp/grammar', '/tmp/wordNetw' ]
         pipe= subprocess.Popen(HParseCommand)
@@ -154,7 +166,6 @@ class Aligner():
         wordNetwURI = self._toWordNetwork( METULyrics)
         
         # extract featuues
-         
         mfcFileName = self._extractFeatures(path_TO_OUTPUT)
         
 
@@ -163,6 +174,7 @@ class Aligner():
         pipe = subprocess.Popen([PATH_TO_HVITE, '-l', "'*'", '-A', '-D', '-T', '1', '-b', 'sil', '-C', PATH_TO_CONFIG_FILES + 'config_singing', '-a', \
                                  '-H', self.pathToHtkModel, '-H',  DUMMY_HMM_URI , '-H',  MODEL_NOISE_URI , '-i', '/tmp/phoneme-level.output', '-m', \
                                  '-w', wordNetwURI, '-y', 'lab', dictName, PATH_TO_HMMLIST, mfcFileName], stdout=self.currLogHandle)
+
         
         pipe.wait()      
         if os.path.exists('/tmp/phoneme-level.output'):
@@ -173,10 +185,9 @@ class Aligner():
     align one file
     '''
     @staticmethod
-    def alignOnechunk(pathToHtkModel, pathToAudioFile,   wordAnnoURI, path_TO_OUTPUT, outputHTKPhoneAlignedURI='' ):
+    def alignOnechunk(pathToHtkModel, pathToAudioFile, lyrics,  wordAnnoURI, path_TO_OUTPUT, withSynthesis=1, outputHTKPhoneAlignedURI='' ):
             
-            lyrics = ""
-            aligner = Aligner(pathToHtkModel, pathToAudioFile,  lyrics, 1) 
+            aligner = Aligner(pathToHtkModel, pathToAudioFile,  lyrics, 0, withSynthesis) 
             
             timeShift = 35.81
             timeShift =  0
@@ -197,8 +208,8 @@ class Aligner():
     
             return outputHTKPhoneAlignedURI  
     
-# END OF CLASS
 
+# END OF CLASS
     
 '''
 parse output in HTK's mlf output format ; load into list; 
@@ -208,19 +219,19 @@ and
 - phoneme level
 
 '''    
-def prepareOutputForPraat(baneNameAudioFile, timeShift):
+def _prepareOutputForPraat(baneNameAudioFile, timeShift):
    
 ################ parse mlf and write word-level text file    
     listTsAndWords = mlf2WordAndTsList(baneNameAudioFile + HTK_MLF_ALIGNED_SUFFIX)
     
-    wordAlignedfileName=  mlf2PraatFormat(listTsAndWords, timeShift, baneNameAudioFile, WORD_ALIGNED_SUFFIX)
+    wordAlignedfileName=  _mlf2PraatFormat(listTsAndWords, timeShift, baneNameAudioFile, WORD_ALIGNED_SUFFIX)
 
   
 ########################## same for phoneme-level: 
     
     # with : phoneme-level alignment
     listTsAndPhonemes = mlf2PhonemesAndTsList (baneNameAudioFile + HTK_MLF_ALIGNED_SUFFIX)
-    phonemeAlignedfileName=  mlf2PraatFormat(listTsAndPhonemes, timeShift, baneNameAudioFile, PHONEME_ALIGNED_SUFFIX)
+    phonemeAlignedfileName=  _mlf2PraatFormat(listTsAndPhonemes, timeShift, baneNameAudioFile, PHONEME_ALIGNED_SUFFIX)
     
     
     return wordAlignedfileName, phonemeAlignedfileName
@@ -229,7 +240,7 @@ def prepareOutputForPraat(baneNameAudioFile, timeShift):
 '''
 convenience method
 '''
-def mlf2PraatFormat( listTsAndPhonemes, timeShift, baneNameAudioFile, whichSuffix):
+def _mlf2PraatFormat( listTsAndPhonemes, timeShift, baneNameAudioFile, whichSuffix):
     
     # timeshift
     for index in range(len(listTsAndPhonemes)):
@@ -262,7 +273,7 @@ def openAlignmentInPraat(wordAnnoURI, outputHTKPhoneAlignedURI, timeShift, pathT
     
     # prepare
     outputHTKPhoneAlignedNoExt = os.path.splitext(outputHTKPhoneAlignedURI)[0]
-    wordAlignedfileName, phonemeAlignedfileName = prepareOutputForPraat(outputHTKPhoneAlignedNoExt, timeShift)
+    wordAlignedfileName, phonemeAlignedfileName = _prepareOutputForPraat(outputHTKPhoneAlignedNoExt, timeShift)
      
      
 ########### call praat script to add alignment as a new layer to existing annotation TextGrid

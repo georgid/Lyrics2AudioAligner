@@ -3,23 +3,34 @@ Created on Apr 15, 2014
 With .txtTur file given
 @author: joro
 '''
-from CodeWarrior.Standard_Suite import file
 import glob
 from macpath import splitext
 import os
 import sys
 
-from matplotlib.sphinxext.plot_directive import out_of_date
+
+parentDir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0]) ), os.path.pardir)) 
+
+pathAdapt = os.path.join(parentDir, 'AdaptationStep')
+sys.path.append(pathAdapt)
+
 
 from Adapt import PATH_TO_OUTPUT, MODEL_NAME, PATH_TO_CLEAN_ADAPTDATA, adapt, \
     MLLR_EXT, MAP_EXT, NUM_MAP_ITERS
-from Aligner import PHRASE_ANNOTATION_EXT, openAlignmentInPraat
-from RecordingSegmenter import RecordingSegmenter
-from doit import PATH_TEST_DATASET
-from evaluation.WordLevelEvaluator import evalPhraseLevelError
-from scipy.odr.odrpack import Model
-import sonicVisTextPhnDir2mlf
+from Aligner import PHRASE_ANNOTATION_EXT, openAlignmentInPraat, Aligner
 
+
+pathEvaluation = os.path.join(parentDir, 'Evaluation')
+sys.path.append(pathEvaluation)
+from WordLevelEvaluator import evalAlignmentError
+
+pathAlignmentDur = os.path.join(parentDir, 'AlignmentDuration')
+sys.path.append(pathAlignmentDur)
+from Doit import loadLyrics
+
+pathUtils = os.path.join(parentDir, 'utilsLyrics')
+sys.path.append(pathUtils )
+from Utilz import getMeanAndStDevError
 
  # modelURI from adaptation script
 MODEL_URI = os.path.join(PATH_TO_OUTPUT, MODEL_NAME  + MAP_EXT + str(NUM_MAP_ITERS) )
@@ -27,7 +38,7 @@ MODEL_URI = os.path.join(PATH_TO_OUTPUT, MODEL_NAME  + MAP_EXT + str(NUM_MAP_ITE
 MODEL_URI = os.path.join(PATH_TO_OUTPUT, MODEL_NAME +  MAP_EXT + '3' )
 
 # speech model
-# MODEL_URI = '/Users/joro/Documents/Phd/UPF/METUdata/model_output/multipleGaussians/hmmdefs9/iter9/hmmdefs'
+MODEL_URI = '/Users/joro/Documents/Phd/UPF/METUdata/model_output/multipleGaussians/hmmdefs9/iter9/hmmdefs'
       
 
 
@@ -36,44 +47,49 @@ MODEL_URI = os.path.join(PATH_TO_OUTPUT, MODEL_NAME +  MAP_EXT + '3' )
 NOTE: first run AdaptationStep/Adapt.adapt(). THen URI to model  is constructed directly from there by the global variable. MODEL_NAME
 '''
         
-def doitForOneFile(pathTodata,  audioName):
-        ################### ADAPTATION: ################
+def main(argv):
         
-        pathToAudio =    pathTodata + audioName + '.wav'
+       
+        if len(argv) != 4:
+            print ("usage: {}  <pathToComposition> <whichSection> <URI_recording_no_ext>".format(argv[0]) )
+            sys.exit();
+    
+    
+        URIrecording = '/Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/ISTANBUL/goekhan/02_Gel_3_zemin'
+        URIrecording = argv[3]
+        URIrecordingWav = URIrecording  + '.wav'
+                
+        pathToComposition = '/Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/nihavent--sarki--aksak--gel_guzelim--faiz_kapanci/'
+        pathToComposition = argv[1]
+    
+        whichSection = 3
+        whichSection = int(argv[2])
         
+        lyrics = loadLyrics(pathToComposition, whichSection)
         
-        phraseAnnoURI = pathTodata +  audioName + PHRASE_ANNOTATION_EXT
-        
+        withSynthesis = 0
       
-        outputHTKPhoneAlignedURI = RecordingSegmenter.alignOneChunk(MODEL_URI, '/tmp/audioTur', "", pathToAudio, 1)
-        alignmentErrors  = evalPhraseLevelError(phraseAnnoURI, outputHTKPhoneAlignedURI)
+        URIrecordingAnno = URIrecording + PHRASE_ANNOTATION_EXT
         
-        mean, stDev = getMeanAndStDevError(alignmentErrors)
+        outputHTKPhoneAlignedURI = Aligner.alignOnechunk(MODEL_URI, URIrecordingWav, lyrics,  URIrecordingAnno,  '/tmp/', withSynthesis)
+        
+        alignmentErrors  = evalAlignmentError(URIrecordingAnno, outputHTKPhoneAlignedURI, 1)
+        
+        mean, stDev, median = getMeanAndStDevError(alignmentErrors)
         
 #         print "mean : ", mean, "st dev: " , stDev
         print "(", mean, ",", stDev, ")"
         
         
            ### OPTIONAL : open in praat
-        openAlignmentInPraat(phraseAnnoURI, outputHTKPhoneAlignedURI, 0, pathToAudio)
+        openAlignmentInPraat(URIrecordingAnno, outputHTKPhoneAlignedURI, 0, URIrecordingAnno)
         
         return mean, stDev, alignmentErrors
 
 
 if __name__ == '__main__':
+    main(sys.argv)
     
-    fullURIAudio = sys.argv[1];
-    outputHTKPhoneAlignedURI = RecordingSegmenter.alignOneChunk(MODEL_URI, '/tmp/audioTur', "", fullURIAudio, 1)
-    print outputHTKPhoneAlignedURI;
-    
-    
-    basenAudioFile = os.path.splitext(fullURIAudio)[0]
-    phraseAnnoURI = basenAudioFile  + PHRASE_ANNOTATION_EXT
-                
-                
-    currChunkAlignmentErrors = evalPhraseLevelError(phraseAnnoURI, outputHTKPhoneAlignedURI)
-    print currChunkAlignmentErrors
-
         #########  MALE all ##########################      
 #         PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/test_data_soloVoice_male/' 
 #          
@@ -93,10 +109,10 @@ if __name__ == '__main__':
 #          
 #         totalAlignementError = []
 #          
-# #         mean, stDev, alignmentErrors = doitForOneFile(PATH_TEST_DATASET  , audioName7)
+# #         mean, stDev, alignmentErrors = main(PATH_TEST_DATASET  , audioName7)
 #          
 #         for i in range(7):
-#             mean, stDev, alignmentErrors = doitForOneFile(PATH_TEST_DATASET  , audioNames[i])
+#             mean, stDev, alignmentErrors = main(PATH_TEST_DATASET  , audioNames[i])
 #             totalAlignementError.extend(alignmentErrors)
 #  
 # #         total statistics:    
@@ -113,7 +129,7 @@ if __name__ == '__main__':
 #         totalAlignementError = []
 #         for fileN in glob.glob("*.wav"):
 #             baseName = splitext(fileN)[0]
-#             mean, stDev, alignmentErrors = doitForOneFile(PATH_TEST_DATASET  , baseName)
+#             mean, stDev, alignmentErrors = main(PATH_TEST_DATASET  , baseName)
 #             totalAlignementError.extend(alignmentErrors)
 #         
 #         totalMean, totalStDev =  getMeanAndStDevError(totalAlignementError)  
@@ -131,6 +147,6 @@ if __name__ == '__main__':
 #     
 #         
 #            
-#     error = doitForOneFile(PATH_TEST_DATASET, recordingDir)
+#     error = main(PATH_TEST_DATASET, recordingDir)
 #      
 #     print error
