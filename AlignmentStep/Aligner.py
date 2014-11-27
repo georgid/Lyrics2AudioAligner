@@ -12,8 +12,14 @@ import utils
 import utilsLyrics
 from Adapt import MODEL_NOISE_URI
 import sys
-from Utilz import writeListOfListToTextFile, writeListToTextFile,\
-    mlf2PhonemesAndTsList, mlf2WordAndTsList
+from Utilz import writeListOfListToTextFile, writeListToTextFile
+
+#  evaluation  
+parentDir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0]) ), os.path.pardir)) 
+pathEvaluation = os.path.join(parentDir, 'AlignmentEvaluation')
+sys.path.append(pathEvaluation)
+
+from PraatVisualiser import openAlignmentInPraat
 
 HTK_MLF_WORD_ANNO_SUFFIX = '.wrd.mlf'
 HTK_MLF_ALIGNED_SUFFIX= ".htkAlignedMlf"
@@ -29,8 +35,6 @@ PATH_TO_HVITE= '/Users/joro/Documents/Fhg/htk3.4.BUILT/bin/HVite'
 PATH_TO_CONFIG_FILES= '/Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/input_files/'
 PATH_TO_HMMLIST='/Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/interim_files/monophones1'
 
-PATH_TO_PRAAT = '/Applications/Praat.app/Contents/MacOS/Praat'
-PATH_TO_PRAAT_SCRIPT= '/Users/joro/Documents/Phd/UPF/voxforge/myScripts/praat/loadAlignedResultAndTextGrid.rb'
 
 LYRICS_TXT_EXT = '.txtTur'
 LYRICS_TXT_METUBET_EXT = '.txtMETU'
@@ -199,103 +203,5 @@ class Aligner():
     
 # END OF CLASS
 
-    
-'''
-parse output in HTK's mlf output format ; load into list; 
-serialize into table format easy to load from praat: 
--in word-level 
-and 
-- phoneme level
-
-'''    
-def prepareOutputForPraat(baneNameAudioFile, timeShift):
-   
-################ parse mlf and write word-level text file    
-    listTsAndWords = mlf2WordAndTsList(baneNameAudioFile + HTK_MLF_ALIGNED_SUFFIX)
-    
-    wordAlignedfileName=  mlf2PraatFormat(listTsAndWords, timeShift, baneNameAudioFile, WORD_ALIGNED_SUFFIX)
-
-  
-########################## same for phoneme-level: 
-    
-    # with : phoneme-level alignment
-    listTsAndPhonemes = mlf2PhonemesAndTsList (baneNameAudioFile + HTK_MLF_ALIGNED_SUFFIX)
-    phonemeAlignedfileName=  mlf2PraatFormat(listTsAndPhonemes, timeShift, baneNameAudioFile, PHONEME_ALIGNED_SUFFIX)
-    
-    
-    return wordAlignedfileName, phonemeAlignedfileName
-
-
-'''
-convenience method
-'''
-def mlf2PraatFormat( listTsAndPhonemes, timeShift, baneNameAudioFile, whichSuffix):
-    
-    # timeshift
-    for index in range(len(listTsAndPhonemes)):
-        listTsAndPhonemes[index][0] = listTsAndPhonemes[index][0] + timeShift
-        if (len(listTsAndPhonemes[index]) == 3): 
-            del listTsAndPhonemes[index][1]
-        
-    phonemeAlignedfileName = baneNameAudioFile + whichSuffix
-    
-    writeListOfListToTextFile(listTsAndPhonemes, 'startTs phonemeOrWord\n', phonemeAlignedfileName)
-    logger.debug('phoneme level alignment written to file: ',  phonemeAlignedfileName)
-    return phonemeAlignedfileName
-
-    
-    
-
-  
-                    
-
-    '''
-    call Praat script to: 
-    -open phoneLevel.annotation file  .TextGrid
-    -open the result alignemnt  
-    -add the result as tier in the TextGrid
-    -save the new file as .comparison.TextGrid
-    
-    open Praat to visualize it 
-    '''
-def openAlignmentInPraat(wordAnnoURI, outputHTKPhoneAlignedURI, timeShift, pathToAudioFile):
-    
-    # prepare
-    outputHTKPhoneAlignedNoExt = os.path.splitext(outputHTKPhoneAlignedURI)[0]
-    wordAlignedfileName, phonemeAlignedfileName = prepareOutputForPraat(outputHTKPhoneAlignedNoExt, timeShift)
-     
-     
-########### call praat script to add alignment as a new layer to existing annotation TextGrid
-    alignedResultPath = os.path.dirname(wordAlignedfileName)
-    alignedFileBaseName = os.path.splitext(os.path.basename(wordAlignedfileName))[0]
-    
-    
-    # copy  annotation TExtGrid to path of results
-    
-    dirNameAnnotaion = os.path.dirname(wordAnnoURI)
-    if (dirNameAnnotaion != alignedResultPath):
-        shutil.copy2(wordAnnoURI,alignedResultPath )
-
-    fileNameWordAnno = os.path.splitext(os.path.basename(wordAnnoURI))[0]
-    
-    # in praat script extensions  WORD_ALIGNED_SUFFIX  is added automatically
-    command = [PATH_TO_PRAAT, PATH_TO_PRAAT_SCRIPT, alignedResultPath, fileNameWordAnno,  alignedFileBaseName, WORD_ALIGNED_SUFFIX ]
-    pipe =subprocess.Popen(command)
-    pipe.wait()
-    
-    # same praat script for PHONEME_ALIGNED_SUFFIX
-    command = [ PATH_TO_PRAAT, PATH_TO_PRAAT_SCRIPT, alignedResultPath, fileNameWordAnno,  alignedFileBaseName, PHONEME_ALIGNED_SUFFIX ]
-    pipe =subprocess.Popen(command)
-    pipe.wait()
-    
-    # open comparison.TextGrid in  praat. OPTIONAL
-    comparisonTextGridURI =  os.path.join(alignedResultPath, fileNameWordAnno)  + PHRASE_ANNOTATION_EXT
-    pipe = subprocess.Popen(["open", '-a', PATH_TO_PRAAT, comparisonTextGridURI])
-    pipe.wait()
-    
-    # and audio
-
-    pipe = subprocess.Popen(["open", '-a', PATH_TO_PRAAT, pathToAudioFile])
-    pipe.wait()
-    
+ 
     

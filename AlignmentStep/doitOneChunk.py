@@ -17,10 +17,10 @@ from RecordingSegmenter import RecordingSegmenter
 from doit import PATH_TEST_DATASET
 
 parentDir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0]) ), os.path.pardir)) 
-pathEvaluation = os.path.join(parentDir, 'Evaluation')
+pathEvaluation = os.path.join(parentDir, 'AlignmentEvaluation')
 sys.path.append(pathEvaluation)
 
-from WordLevelEvaluator import evalPhraseLevelError
+from WordLevelEvaluator import evalAlignmentError
 import sonicVisTextPhnDir2mlf
 
 
@@ -49,7 +49,7 @@ def doitForOneFile(pathTodata,  audioName):
         
       
         outputHTKPhoneAlignedURI = RecordingSegmenter.alignOneChunk(MODEL_URI, '/tmp/audioTur', "", pathToAudio, 1)
-        alignmentErrors  = evalPhraseLevelError(phraseAnnoURI, outputHTKPhoneAlignedURI)
+        alignmentErrors  = evalAlignmentError(phraseAnnoURI, outputHTKPhoneAlignedURI)
         
         mean, stDev = getMeanAndStDevError(alignmentErrors)
         
@@ -74,7 +74,7 @@ if __name__ == '__main__':
     phraseAnnoURI = basenAudioFile  + PHRASE_ANNOTATION_EXT
                 
                 
-    currChunkAlignmentErrors = evalPhraseLevelError(phraseAnnoURI, outputHTKPhoneAlignedURI)
+    currChunkAlignmentErrors = evalAlignmentError(phraseAnnoURI, outputHTKPhoneAlignedURI)
     print currChunkAlignmentErrors
 
         #########  MALE all ##########################      
