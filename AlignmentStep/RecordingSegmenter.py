@@ -13,11 +13,16 @@ from MakamRecording import MakamRecording
 import subprocess
 import os
 import glob
-from utils.Utils import  writeListOfListToTextFile, loadTextFile
+from Utilz import  writeListOfListToTextFile, loadTextFile
 from Aligner import Aligner, HTK_MLF_ALIGNED_SUFFIX, PHRASE_ANNOTATION_EXT,\
     openAlignmentInPraat
 import sys
-from evaluation.WordLevelEvaluator import evalAlignmentError
+
+parentDir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0]) ), os.path.pardir)) 
+
+pathEvaluation = os.path.join(parentDir, 'AlignmentEvaluation')
+sys.path.append(pathEvaluation)
+from WordLevelEvaluator import evalAlignmentError
 
 
 

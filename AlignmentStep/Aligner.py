@@ -19,6 +19,11 @@ sys.path.append(pathUtils )
 from Utilz import writeListOfListToTextFile, writeListToTextFile,\
    writeTextToTextFile
 
+#  evaluation  
+pathEvaluation = os.path.join(parentDir, 'AlignmentEvaluation')
+sys.path.append(pathEvaluation)
+from PraatVisualiser import  mlf2WordAndTsList, mlf2PhonemesAndTsList
+
 HTK_MLF_WORD_ANNO_SUFFIX = '.wrd.mlf'
 HTK_MLF_ALIGNED_SUFFIX= ".htkAlignedMlf"
 

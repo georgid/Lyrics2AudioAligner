@@ -26,7 +26,8 @@ from WordLevelEvaluator import evalAlignmentError
 
 pathAlignmentDur = os.path.join(parentDir, 'AlignmentDuration')
 sys.path.append(pathAlignmentDur)
-from doitOneChunk import loadLyrics
+from doitOneChunk import loadLyrics, visualiseInPraat
+from Constants import AUDIO_EXTENSION
 
 pathUtils = os.path.join(parentDir, 'utilsLyrics')
 sys.path.append(pathUtils )
@@ -55,9 +56,9 @@ def main(argv):
             sys.exit();
     
     
-        URIrecording = '/Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/ISTANBUL/goekhan/02_Gel_3_zemin'
-        URIrecording = argv[3]
-        URIrecordingWav = URIrecording  + '.wav'
+        URIrecordingNOExt = '/Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/ISTANBUL/goekhan/02_Gel_3_zemin'
+        URIrecordingNOExt = argv[3]
+        URIrecordingWav = URIrecordingNOExt  + AUDIO_EXTENSION
                 
         pathToComposition = '/Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/nihavent--sarki--aksak--gel_guzelim--faiz_kapanci/'
         pathToComposition = argv[1]
@@ -69,20 +70,21 @@ def main(argv):
         
         withSynthesis = 0
       
-        URIrecordingAnno = URIrecording + PHRASE_ANNOTATION_EXT
+        URIrecordingAnno = URIrecordingNOExt + PHRASE_ANNOTATION_EXT
         
         outputHTKPhoneAlignedURI = Aligner.alignOnechunk(MODEL_URI, URIrecordingWav, lyrics,  URIrecordingAnno,  '/tmp/', withSynthesis)
+        EVALLEVEL = 2
         
-        alignmentErrors  = evalAlignmentError(URIrecordingAnno, outputHTKPhoneAlignedURI, 1)
+        alignmentErrors  = evalAlignmentError(URIrecordingAnno, outputHTKPhoneAlignedURI, EVALLEVEL)
         
         mean, stDev, median = getMeanAndStDevError(alignmentErrors)
         
-#         print "mean : ", mean, "st dev: " , stDev
         print "(", mean, ",", stDev, ")"
         
         
            ### OPTIONAL : open in praat
-        openAlignmentInPraat(URIrecordingAnno, outputHTKPhoneAlignedURI, 0, URIrecordingAnno)
+        visualiseInPraat(URIrecordingNOExt, outputHTKPhoneAlignedURI, True, [])
+
         
         return mean, stDev, alignmentErrors
 
