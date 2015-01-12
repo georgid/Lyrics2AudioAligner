@@ -44,9 +44,9 @@ PATH_TO_NOTCLEAN_ADAPTDATA = '/tmp/audio/'
 # PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/'
 
 # this one has excluded sections with wrong pitch from melodia
-#PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/test_data_synthesis'
+PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/test_data_synthesis'
 
-PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/turkish-makam-lyrics-2-audio-test-data/'
+# PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/turkish-makam-lyrics-2-audio-test-data/'
    
           
 
@@ -116,10 +116,10 @@ if __name__ == '__main__':
         
         compositionName = 'segah--sarki--curcuna--olmaz_ilac--haci_arif_bey'
         recordingDir = '21_Recep_Birgit_-_Olmaz_Ilac_Sine-i_Sad_Pareme'
+#         
         
-        
-        currAlignmentErrors = doitForTestPiece(compositionName, recordingDir)
-        mean, stDev, median = getMeanAndStDevError(currAlignmentErrors)
+#         currAlignmentErrors = doitForTestPiece(compositionName, recordingDir)
+#         mean, stDev, median = getMeanAndStDevError(currAlignmentErrors)
 
 
 

@@ -48,10 +48,7 @@ class MakamRecording:
         
         self.isChunkUsed  = []
         
-        '''
-        assigns a pointer (number) to each section Name from score
-        '''
-        
+              
     
         return
     
@@ -119,7 +116,7 @@ class MakamRecording:
             # WORKAROUND for section mapping. read mapping index from 4th field in .annotations file
             # sanity check: 
             if len(tokens) < 4:
-                sys.exit("last column (mathing to  sections in .tsv) in file .sectionAnno file is missing")
+                sys.exit("last column (matching to  sections in .tsv) in file .sectionAnno file is missing")
             self.sectionIndices.append(int(tokens[3]))
             
         # divide into columns
@@ -143,11 +140,47 @@ class MakamRecording:
                 currEndTs = currEndTs = self.endTs[i].replace(".",'_')
                 filePathDividedAudio = filePathAndExt[0] + '_' + self.sectionNamesSequence[i] + '_from_' + currBeginTs + '_to_' + currEndTs + filePathAndExt[1] 
                 
+                # CHANGE TO RENAME: 
+                if self.sectionNamesSequence[i] != 'aranagme' and self.sectionNamesSequence[i] != 'gazel':
+                    filePathDividedAudio = filePathAndExt[0] + '_' + self.sectionNamesSequence[i] + '_from_' + currBeginTs + '_to_' +  currEndTs + '.TextGrid'
+                    filePathDividedAudio2 = filePathAndExt[0] + '_' + str(self.sectionIndices[i]) + '_' + self.sectionNamesSequence[i] + '_from_' + currBeginTs + '_to_' + currEndTs + '.TextGrid'
+                    if os.path.isfile(filePathDividedAudio):
+                        os.rename(filePathDividedAudio, filePathDividedAudio2)
+                
+                filePathDividedAudio = filePathAndExt[0] + '_' + self.sectionNamesSequence[i] + '_from_' + currBeginTs + '_to_' + currEndTs + '.mfc'
+                filePathDividedAudio2 = filePathAndExt[0] + '_' + str(self.sectionIndices[i]) + '_' + self.sectionNamesSequence[i] + '_from_' + currBeginTs + '_to_' + currEndTs + '.mfc'
+                if os.path.isfile(filePathDividedAudio):
+                    os.rename(filePathDividedAudio, filePathDividedAudio2)
+                
+                filePathDividedAudio = filePathAndExt[0] + '_' + self.sectionNamesSequence[i] + '_from_' + currBeginTs + '_to_' + currEndTs + '.mfc_txt'
+                filePathDividedAudio2 = filePathAndExt[0] + '_' + str(self.sectionIndices[i]) + '_' + self.sectionNamesSequence[i] + '_from_' + currBeginTs + '_to_' + currEndTs + '.mfc_txt'
+                if os.path.isfile(filePathDividedAudio):
+                    os.rename(filePathDividedAudio, filePathDividedAudio2)
+                    
+                filePathDividedAudio = filePathAndExt[0] + '_' + self.sectionNamesSequence[i] + '_from_' + currBeginTs + '_to_' + currEndTs + '.notUsed'
+                filePathDividedAudio2 = filePathAndExt[0] + '_' + str(self.sectionIndices[i]) + '_' + self.sectionNamesSequence[i] + '_from_' + currBeginTs + '_to_' + currEndTs + '.notUsed'
+                if os.path.isfile(filePathDividedAudio):
+                    os.rename(filePathDividedAudio, filePathDividedAudio2)
+                    
+                filePathDividedAudio = filePathAndExt[0] + '_' + self.sectionNamesSequence[i] + '_from_' + currBeginTs + '_to_' + currEndTs + '.txtMETU'
+                filePathDividedAudio2 = filePathAndExt[0] + '_' + str(self.sectionIndices[i]) + '_' + self.sectionNamesSequence[i] + '_from_' + currBeginTs + '_to_' + currEndTs + '.txtMETU'
+                if os.path.isfile(filePathDividedAudio):
+                    os.rename(filePathDividedAudio, filePathDividedAudio2)    
+                    
+            
+                filePathDividedAudioOld = filePathAndExt[0] + '_' + self.sectionNamesSequence[i] + '_from_' + currBeginTs + '_to_' + currEndTs + '.wav'
+                filePathDividedAudio = filePathAndExt[0] + '_' + str(self.sectionIndices[i]) + '_' + self.sectionNamesSequence[i] + '_from_' + currBeginTs + '_to_' + currEndTs + '.wav'
+                if os.path.isfile(filePathDividedAudioOld):
+                    os.rename(filePathDividedAudioOld, filePathDividedAudio)
+                # END CHANGE TO RENAME
+                
+                
+                
                 self.pathToDividedAudioFiles.append(filePathDividedAudio)
                 # make sure  sox (sox.sourceforge.net) is installed and call it  here with subprocess
-                sectionDuration = float(self.endTs[i])-float(self.beginTs[i])
-                pipe = subprocess.Popen([pathToSox, self.pathToAudiofile, filePathDividedAudio, 'trim', self.beginTs[i], str(sectionDuration)   ])
-                pipe.wait()
+#                 sectionDuration = float(self.endTs[i])-float(self.beginTs[i])
+#                 pipe = subprocess.Popen([pathToSox, self.pathToAudiofile, filePathDividedAudio, 'trim', self.beginTs[i], str(sectionDuration)   ])
+#                 pipe.wait()
             return
     '''
     if given wav file does not exists, assumes same file with .mp3 ext exists and converts it to wav

@@ -4,6 +4,7 @@
 	<comment></comment>
 	<projects>
 		<project>AdaptationStep</project>
+		<project>AlignmentEvaluation</project>
 		<project>HMM</project>
 		<project>htk2s3</project>
 		<project>utilsLyrics</project>

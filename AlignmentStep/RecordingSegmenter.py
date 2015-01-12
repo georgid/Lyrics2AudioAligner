@@ -15,7 +15,7 @@ import os
 import glob
 from Utilz import  writeListOfListToTextFile, loadTextFile
 from Aligner import Aligner, HTK_MLF_ALIGNED_SUFFIX, PHRASE_ANNOTATION_EXT,\
-    openAlignmentInPraat
+    openTextGridInPraat
 import sys
 
 parentDir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0]) ), os.path.pardir)) 
@@ -95,6 +95,8 @@ class RecordingSegmenter(object):
             # prepare eval metric:
             numParts = 0;
             listAllAlignmnetErrors = []
+            return listAllAlignmnetErrors
+ 
             
             for whichChunk in range(len(makamRecording.sectionIndices)):
                 sectionIndex =  makamRecording.sectionIndices[whichChunk]
@@ -129,7 +131,9 @@ class RecordingSegmenter(object):
                 
                 ### OPTIONAL : open in praat
                 praseAnno = os.path.splitext(currPathToAudioFile)[0] + PHRASE_ANNOTATION_EXT
-                openAlignmentInPraat(praseAnno, outputHTKPhoneAlignedURI, 0, currPathToAudioFile)
+                # open in Praat
+                openTextGridInPraat(outputHTKPhoneAlignedURI, praseAnno, currPathToAudioFile)
+                
                 
                 numParts +=1
                 # numPArts not needed for now

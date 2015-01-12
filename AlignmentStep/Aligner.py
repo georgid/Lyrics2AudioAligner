@@ -8,18 +8,15 @@ import subprocess
 
 from Phonetizer import Phonetizer
 import shutil
-import utils
-import utilsLyrics
 from Adapt import MODEL_NOISE_URI
+
 import sys
-from Utilz import writeListOfListToTextFile, writeListToTextFile
 
-#  evaluation  
 parentDir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0]) ), os.path.pardir)) 
-pathEvaluation = os.path.join(parentDir, 'AlignmentEvaluation')
-sys.path.append(pathEvaluation)
+pathUtils = os.path.join(parentDir, 'utilsLyrics')
+sys.path.append(pathUtils )
 
-from PraatVisualiser import openAlignmentInPraat
+from Utilz import writeListOfListToTextFile, writeListToTextFile, writeTextToTextFile
 
 HTK_MLF_WORD_ANNO_SUFFIX = '.wrd.mlf'
 HTK_MLF_ALIGNED_SUFFIX= ".htkAlignedMlf"
@@ -35,6 +32,8 @@ PATH_TO_HVITE= '/Users/joro/Documents/Fhg/htk3.4.BUILT/bin/HVite'
 PATH_TO_CONFIG_FILES= '/Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/input_files/'
 PATH_TO_HMMLIST='/Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/interim_files/monophones1'
 
+PATH_TO_PRAAT = '/Applications/Praat.app/Contents/MacOS/Praat'
+PATH_TO_PRAAT_SCRIPT= '/Users/joro/Documents/Phd/UPF/voxforge/myScripts/praat/loadAlignedResultAndTextGrid.rb'
 
 LYRICS_TXT_EXT = '.txtTur'
 LYRICS_TXT_METUBET_EXT = '.txtMETU'
@@ -55,7 +54,9 @@ class Aligner():
     '''
 
 
-    def __init__(self, PATH_TO_HTK_MODEL, pathToAudioFile,  lyrics, loadLyricsFromFile=0):
+    def __init__(self, PATH_TO_HTK_MODEL, pathToAudioFile,  lyrics, loadLyricsFromFile=0, withSynthesis=1 ):
+        
+        self.withSynthesis = withSynthesis
         
         self.pathToHtkModel = PATH_TO_HTK_MODEL
         self.pathToAudioFile = pathToAudioFile
@@ -82,7 +83,7 @@ class Aligner():
     
 
     def _createWordMLFandDict(self):
-        #txtTur to METU. txtMETU as persistent file not really needed. For reference stored
+        #txtTur to METU. txtMETU as persistent file not really needed. Kept only for reference 
         
         baseNameAudioFile = os.path.splitext(self.pathToAudioFile)[0]
         
@@ -107,12 +108,12 @@ class Aligner():
         # phonetize
         dictName = '/tmp/lexicon2'
         
-        Phonetizer.METULyrics2phoneticDict(METUBETfileName, dictName)
+        Phonetizer.METULyrics2phoneticDict(METUBETfileName, dictName, self.withSynthesis)
         return (dictName, mlfName, METULyrics )
     
     def _toWordNetwork(self, METULyrics):
         '''
-        creates word network including optional sil and backgr noise at end and beginning
+        creates word network including optional sil and backgr noise at end and beginning    
         '''
         # add sil 
         METULyricsList = METULyrics.split()
@@ -126,9 +127,15 @@ class Aligner():
         METULyricsAndSil.append(METULyricsList[i])
         METULyricsAndSil = " ".join(METULyricsAndSil).strip()
             
+        if (self.withSynthesis):
+            grammar = '({sil|NOISE} '  + METULyricsAndSil + ' {sil|NOISE})'
+        else:
+            grammar = '({sil} '  + METULyricsAndSil + ' {sil})'
         
-        grammar = '({sil|NOISE} '  + METULyricsAndSil + ' {sil|NOISE})'
-        writeListToTextFile(grammar, None, '/tmp/grammar')
+        # the case of synthesis
+
+
+        writeTextToTextFile(grammar, '/tmp/grammar')
         
         HParseCommand = ['/usr/local/bin/HParse', '/tmp/grammar', '/tmp/wordNetw' ]
         pipe= subprocess.Popen(HParseCommand)
@@ -158,7 +165,6 @@ class Aligner():
         wordNetwURI = self._toWordNetwork( METULyrics)
         
         # extract featuues
-         
         mfcFileName = self._extractFeatures(path_TO_OUTPUT)
         
 
@@ -167,6 +173,7 @@ class Aligner():
         pipe = subprocess.Popen([PATH_TO_HVITE, '-l', "'*'", '-A', '-D', '-T', '1', '-b', 'sil', '-C', PATH_TO_CONFIG_FILES + 'config_singing', '-a', \
                                  '-H', self.pathToHtkModel, '-H',  DUMMY_HMM_URI , '-H',  MODEL_NOISE_URI , '-i', '/tmp/phoneme-level.output', '-m', \
                                  '-w', wordNetwURI, '-y', 'lab', dictName, PATH_TO_HMMLIST, mfcFileName], stdout=self.currLogHandle)
+
         
         pipe.wait()      
         if os.path.exists('/tmp/phoneme-level.output'):
@@ -177,10 +184,9 @@ class Aligner():
     align one file
     '''
     @staticmethod
-    def alignOnechunk(pathToHtkModel, pathToAudioFile,   wordAnnoURI, path_TO_OUTPUT, outputHTKPhoneAlignedURI='' ):
+    def alignOnechunk(pathToHtkModel, pathToAudioFile, lyrics,  wordAnnoURI, path_TO_OUTPUT, withSynthesis=1, outputHTKPhoneAlignedURI='' ):
             
-            lyrics = ""
-            aligner = Aligner(pathToHtkModel, pathToAudioFile,  lyrics, 1) 
+            aligner = Aligner(pathToHtkModel, pathToAudioFile,  lyrics, 0, withSynthesis) 
             
             timeShift = 35.81
             timeShift =  0
@@ -201,7 +207,105 @@ class Aligner():
     
             return outputHTKPhoneAlignedURI  
     
-# END OF CLASS
 
- 
+# END OF CLASS
+    
+'''
+parse output in HTK's mlf output format ; load into list; 
+serialize into table format easy to load from praat: 
+-in word-level 
+and 
+- phoneme level
+
+'''    
+def _prepareOutputForPraat(baneNameAudioFile, timeShift):
+   
+################ parse mlf and write word-level text file    
+    listTsAndWords = mlf2WordAndTsList(baneNameAudioFile + HTK_MLF_ALIGNED_SUFFIX)
+    
+    wordAlignedfileName=  _mlf2PraatFormat(listTsAndWords, timeShift, baneNameAudioFile, WORD_ALIGNED_SUFFIX)
+
+  
+########################## same for phoneme-level: 
+    
+    # with : phoneme-level alignment
+    listTsAndPhonemes = mlf2PhonemesAndTsList (baneNameAudioFile + HTK_MLF_ALIGNED_SUFFIX)
+    phonemeAlignedfileName=  _mlf2PraatFormat(listTsAndPhonemes, timeShift, baneNameAudioFile, PHONEME_ALIGNED_SUFFIX)
+    
+    
+    return wordAlignedfileName, phonemeAlignedfileName
+
+
+'''
+convenience method
+'''
+def _mlf2PraatFormat( listTsAndPhonemes, timeShift, baneNameAudioFile, whichSuffix):
+    
+    # timeshift
+    for index in range(len(listTsAndPhonemes)):
+        listTsAndPhonemes[index][0] = listTsAndPhonemes[index][0] + timeShift
+        if (len(listTsAndPhonemes[index]) == 3): 
+            del listTsAndPhonemes[index][1]
+        
+    phonemeAlignedfileName = baneNameAudioFile + whichSuffix
+    
+    writeListOfListToTextFile(listTsAndPhonemes, 'startTs phonemeOrWord\n', phonemeAlignedfileName)
+    logger.debug('phoneme level alignment written to file: ',  phonemeAlignedfileName)
+    return phonemeAlignedfileName
+
+    
+    
+
+  
+                    
+
+    '''
+    call Praat script to: 
+    -open phoneLevel.annotation file  .TextGrid
+    -open the result alignemnt  
+    -add the result as tier in the TextGrid
+    -save the new file as .comparison.TextGrid
+    
+    open Praat to visualize it 
+    '''
+def openAlignmentInPraat(wordAnnoURI, outputHTKPhoneAlignedURI, timeShift, pathToAudioFile):
+    
+    # prepare
+    outputHTKPhoneAlignedNoExt = os.path.splitext(outputHTKPhoneAlignedURI)[0]
+    wordAlignedfileName, phonemeAlignedfileName = _prepareOutputForPraat(outputHTKPhoneAlignedNoExt, timeShift)
+     
+     
+########### call praat script to add alignment as a new layer to existing annotation TextGrid
+    alignedResultPath = os.path.dirname(wordAlignedfileName)
+    alignedFileBaseName = os.path.splitext(os.path.basename(wordAlignedfileName))[0]
+    
+    
+    # copy  annotation TExtGrid to path of results
+    
+    dirNameAnnotaion = os.path.dirname(wordAnnoURI)
+    if (dirNameAnnotaion != alignedResultPath):
+        shutil.copy2(wordAnnoURI,alignedResultPath )
+
+    fileNameWordAnno = os.path.splitext(os.path.basename(wordAnnoURI))[0]
+    
+    # in praat script extensions  WORD_ALIGNED_SUFFIX  is added automatically
+    command = [PATH_TO_PRAAT, PATH_TO_PRAAT_SCRIPT, alignedResultPath, fileNameWordAnno,  alignedFileBaseName, WORD_ALIGNED_SUFFIX ]
+    pipe =subprocess.Popen(command)
+    pipe.wait()
+    
+    # same praat script for PHONEME_ALIGNED_SUFFIX
+    command = [ PATH_TO_PRAAT, PATH_TO_PRAAT_SCRIPT, alignedResultPath, fileNameWordAnno,  alignedFileBaseName, PHONEME_ALIGNED_SUFFIX ]
+    pipe =subprocess.Popen(command)
+    pipe.wait()
+    
+    # open comparison.TextGrid in  praat. OPTIONAL
+    comparisonTextGridURI =  os.path.join(alignedResultPath, fileNameWordAnno)  + PHRASE_ANNOTATION_EXT
+    pipe = subprocess.Popen(["open", '-a', PATH_TO_PRAAT, comparisonTextGridURI])
+    pipe.wait()
+    
+    # and audio
+
+    pipe = subprocess.Popen(["open", '-a', PATH_TO_PRAAT, pathToAudioFile])
+    pipe.wait()
+    
     
