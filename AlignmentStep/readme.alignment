@@ -3,6 +3,8 @@
 Usage of ALIGNMENT: 
 
 python /Users/joro/Documents/Phd/UPF/voxforge/myScripts/AlignmentStep/doitOneChunk.py /Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/nihavent--sarki--aksak--gel_guzelim--faiz_kapanci/ 3 /Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/ISTANBUL/goekhan/02_Gel_3_zemin
+or 
+python /Users/joro/Documents/Phd/UPF/voxforge/myScripts/AlignmentStep/doitOneChunk.py /Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/nihavent--sarki--aksak--gel_guzelim--faiz_kapanci/ 3 /Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/ISTANBUL/goekhan/02_Gel_3_zemin
 
 
 ------------

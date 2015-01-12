@@ -20,13 +20,13 @@ from Adapt import PATH_TO_OUTPUT, MODEL_NAME, PATH_TO_CLEAN_ADAPTDATA, adapt, \
 from Aligner import PHRASE_ANNOTATION_EXT, openAlignmentInPraat, Aligner
 
 
-pathEvaluation = os.path.join(parentDir, 'Evaluation')
+pathEvaluation = os.path.join(parentDir, 'AlignmentEvaluation')
 sys.path.append(pathEvaluation)
 from WordLevelEvaluator import evalAlignmentError
 
 pathAlignmentDur = os.path.join(parentDir, 'AlignmentDuration')
 sys.path.append(pathAlignmentDur)
-from Doit import loadLyrics
+from doitOneChunk import loadLyrics
 
 pathUtils = os.path.join(parentDir, 'utilsLyrics')
 sys.path.append(pathUtils )
