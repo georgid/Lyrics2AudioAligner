@@ -25,7 +25,8 @@ sys.path.append(pathEvaluation)
 from WordLevelEvaluator import evalAlignmentError
 
 pathAlignmentDur = os.path.join(parentDir, 'AlignmentDuration')
-sys.path.append(pathAlignmentDur)
+if not pathAlignmentDur in sys.path:
+    sys.path.append(pathAlignmentDur)
 from doitOneChunk import loadLyrics, visualiseInPraat
 from Constants import AUDIO_EXTENSION
 
@@ -68,7 +69,7 @@ def main(argv):
         
         lyrics = loadLyrics(pathToComposition, whichSection)
         
-        withSynthesis = 0
+        withSynthesis = 1
       
         URIrecordingAnno = URIrecordingNOExt + PHRASE_ANNOTATION_EXT
         

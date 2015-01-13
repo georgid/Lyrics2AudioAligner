@@ -6,9 +6,8 @@ Created on Mar 17, 2014
 import os
 import subprocess
 
-from Phonetizer import Phonetizer
+from PhonetizerOld import PhonetizerOld
 import shutil
-from Adapt import MODEL_NOISE_URI
 
 import sys
 
@@ -47,6 +46,7 @@ PHRASE_ANNOTATION_EXT = '.TextGrid'
 
 # only to satisfy HTK 
 DUMMY_HMM_URI = '/Users/joro/Documents/Phd/UPF/METUdata/model_output/multipleGaussians/DUMMY'
+MODEL_NOISE_URI  = '/Users/joro/Documents/Phd/UPF/METUdata//model_output/multipleGaussians/NOISE//hmmdefs49/iter1/hmmdefs'
 
 
 import logging
@@ -96,9 +96,9 @@ class Aligner():
         METUBETfileName = baseNameAudioFile + LYRICS_TXT_METUBET_EXT
         
         if (self.loadLyricsFromFile == 1):
-            METULyrics = Phonetizer.turkishScriptLyrics2METUScriptLyricsFile(baseNameAudioFile + LYRICS_TXT_EXT, METUBETfileName)
+            METULyrics = PhonetizerOld.turkishScriptLyrics2METUScriptLyricsFile(baseNameAudioFile + LYRICS_TXT_EXT, METUBETfileName)
         else:
-            METULyrics = Phonetizer.turkishScriptLyrics2METUScriptLyrics(self.lyrics, METUBETfileName)
+            METULyrics = PhonetizerOld.turkishScriptLyrics2METUScriptLyrics(self.lyrics, METUBETfileName)
     # create Word-level mlf:
         baneN = os.path.basename(self.pathToAudioFile)
         baneN = os.path.splitext(baneN)[0]
@@ -114,7 +114,7 @@ class Aligner():
         # phonetize
         dictName = '/tmp/lexicon2'
         
-        Phonetizer.METULyrics2phoneticDict(METUBETfileName, dictName, self.withSynthesis)
+        PhonetizerOld.METULyrics2phoneticDict(METUBETfileName, dictName, self.withSynthesis)
         return (dictName, mlfName, METULyrics )
     
     def _toWordNetwork(self, METULyrics):
@@ -209,7 +209,7 @@ class Aligner():
                 print ("no htkAligned results file!")
                 sys.exit()
             
-            openAlignmentInPraat(wordAnnoURI, outputHTKPhoneAlignedURI, timeShift, pathToAudioFile)
+#             openAlignmentInPraat(wordAnnoURI, outputHTKPhoneAlignedURI, timeShift, pathToAudioFile)
     
             return outputHTKPhoneAlignedURI  
     

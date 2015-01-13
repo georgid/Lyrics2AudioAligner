@@ -23,7 +23,7 @@ Converts the turkish script into METUbet letters.
 Then the METUBet is phonetized into METUBet phonemes.
  
 '''
-class Phonetizer(object):
+class PhonetizerOld(object):
     
      
      
@@ -169,8 +169,7 @@ class Phonetizer(object):
     
 
 
-
-        # converts non-unicode chars into METU-defined chars. 
+ # converts non-unicode chars into METU-defined chars. 
         # here METU paper    
         @staticmethod
         def turkishScriptWord2METUScriptWord(turkishWord): 
@@ -179,13 +178,13 @@ class Phonetizer(object):
             s = list(turkishWord)
         
             # combine two-char Diaresis
-            combinedList = Phonetizer.combineDiaresisChars(s)
+            combinedList = PhonetizerOld.combineDiaresisChars(s)
                  
             
             # convert to METU
             for i in range(len(combinedList)):
-                if combinedList[i] in Phonetizer.lookupTable:
-                    combinedList[i] = Phonetizer.lookupTable[combinedList[i]]
+                if combinedList[i] in PhonetizerOld.lookupTable:
+                    combinedList[i] = PhonetizerOld.lookupTable[combinedList[i]]
                 else:
                     combinedList[i] = combinedList[i].lower()
                     
@@ -222,9 +221,9 @@ class Phonetizer(object):
         def grapheme2Phoneme( METUword, withSynth):
             
             if withSynth:
-                lookupTable = Phonetizer.METUlookupTableSynthesis
+                lookupTable = PhonetizerOld.METUlookupTableSynthesis
             else:
-                    lookupTable = Phonetizer.METUlookupTable
+                    lookupTable = PhonetizerOld.METUlookupTable
 
             s = list(METUword)
         
@@ -254,7 +253,7 @@ class Phonetizer(object):
             list = lyrics.split()
         #     wordSequence =  wordList.split()
             for i in range(len(list)):
-                list[i] = Phonetizer.turkishScriptWord2METUScriptWord(list[i])
+                list[i] = PhonetizerOld.turkishScriptWord2METUScriptWord(list[i])
             
         
             processedLyrics = " ".join(list).strip()
@@ -276,7 +275,7 @@ class Phonetizer(object):
             lyrics = inputFileHandle.read()
             lyrics = lyrics.replace('\n', ' ')
             
-            METUlyrics = Phonetizer.turkishScriptLyrics2METUScriptLyrics(lyrics, outputFileName)
+            METUlyrics = PhonetizerOld.turkishScriptLyrics2METUScriptLyrics(lyrics, outputFileName)
         
             inputFileHandle.close()
             
@@ -306,7 +305,7 @@ class Phonetizer(object):
             for word in uniqWords:
                 
                 # list of METU phonemes for current word
-                phonemeList = Phonetizer.grapheme2Phoneme(word, withSynthesis)
+                phonemeList = PhonetizerOld.grapheme2Phoneme(word, withSynthesis)
                 
                 # create a pronunciation entry
                 wordAndPronunciation = word + "\t"
@@ -330,5 +329,4 @@ class Phonetizer(object):
                     
             inputFileHandle.close()
             return
-
         
