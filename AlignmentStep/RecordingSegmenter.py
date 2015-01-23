@@ -8,7 +8,7 @@ Created on Mar 3, 2014
 
 '''
 
-from MakamScore import MakamScore
+from MakamScore import MakamScore, loadLyrics
 from MakamRecording import MakamRecording 
 import subprocess
 import os
@@ -25,6 +25,9 @@ sys.path.append(pathEvaluation)
 from WordLevelEvaluator import evalAlignmentError
 
 
+# this one has excluded sections with wrong pitch from melodia
+PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/turkish-makam-lyrics-2-audio-test-data/'
+# PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/turkish-makam-lyrics-2-audio-test-data-synthesis/'
 
 # 
 # COMPOSITION_NAME = 'nihavent--sarki--aksak--koklasam_saclarini--artaki_candan'
@@ -41,6 +44,7 @@ from WordLevelEvaluator import evalAlignmentError
 # RECORDING_DIR = '3-12_Nerelerde_Kaldin'
 
 OUTPUT_PATH = '/tmp/testAudio'
+MODEL_URI = '/Users/joro/Documents/Phd/UPF/METUdata/model_output/multipleGaussians/hmmdefs9/iter9/hmmdefs'
 
 class RecordingSegmenter(object):
    
@@ -68,18 +72,7 @@ class RecordingSegmenter(object):
             return makamScore              
 
 
-
-
-##################################################################################
-
-        
-    ''' align one recording from symbTr
-        split into chunks using manually annotated sections from @param pathToSectionAnnotations, and align each  
-    
-    '''
-    def alignOneRecording(self, pathToHtkModel, makamScore, pathToAudioFile, pathToSectionAnnotations, path_TO_OUTPUT, withSynthesis):
-
-        
+    def segment(self, makamScore, pathToAudioFile, pathToSectionAnnotations):
             makamRecording = MakamRecording(makamScore, pathToAudioFile, pathToSectionAnnotations)
             
             # convert to wav 
@@ -89,7 +82,18 @@ class RecordingSegmenter(object):
             makamRecording.divideAudio()
             
             makamRecording.markUsedChunks()
-            
+            return makamRecording
+
+##################################################################################
+
+        
+    ''' align one recording from symbTr
+        split into chunks using manually annotated sections from @param pathToSectionAnnotations, and align each  
+    
+    '''
+    def alignOneRecording(self, pathToHtkModel, makamRecording, path_TO_OUTPUT, withSynthesis):
+
+        
             # prepare eval metric:
             numParts = 0;
             listAllAlignmnetErrors = []
@@ -164,12 +168,43 @@ class RecordingSegmenter(object):
         
         return outputHTKPhoneAlignedURI
         
+def doitForTestPiece(compositionName, recordingDir, withSynthesis=0):
+    
+        
+   
+    ####### prepare composition! ############
+        
+        pathToComposition = os.path.join(PATH_TEST_DATASET, compositionName)
+        makamScore = loadLyrics(pathToComposition, whichSection=1)
 
+                
+                    # TODO: issue 14
+        
+        ###########        ----- align one recording
+        
+        pathToRecording = os.path.join(pathToComposition, recordingDir)
+         
+        os.chdir(pathToRecording)
+#         pathToSectionAnnotations = os.path.join(pathToRecording, glob.glob('*.sectionAnno.txt')[0]) #             pathToAudio =  os.path.join(pathToRecording, glob.glob('*.wav')[0])
+        pathToSectionAnnotations = os.path.join(pathToRecording, glob.glob('*.sectionAnno.json')[0]) 
+        pathToAudio = os.path.join(pathToRecording, recordingDir) + '.wav'
+        
+        # TODO: issue 14
+        recordingSegmenter = RecordingSegmenter()
+        makamRecording= recordingSegmenter.segment(makamScore, pathToAudio, pathToSectionAnnotations)
+        
+        alignmentErrors = []
+#         alignmentErrors = recordingSegmenter.alignOneRecording(MODEL_URI, makamRecording, OUTPUT_PATH, withSynthesis)
+        
+        return alignmentErrors
 
 if __name__ == '__main__':
        
-      
-       print 'in recording segmenter main method'
+    print 'in recording segmenter main method'
+    compositionName = 'ussak--sarki--aksak--bu_aksam_gun--tatyos_efendi/'
+    recordingDir = 'Sakin--Gec--Kalma'
+    doitForTestPiece(compositionName, recordingDir, withSynthesis=0)
+    
 #         ----
         
 #         # align all recrodings

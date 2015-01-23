@@ -2,12 +2,14 @@
 ---------
 Usage of ALIGNMENT: 
 
-python /Users/joro/Documents/Phd/UPF/voxforge/myScripts/AlignmentStep/doitOneChunk.py /Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/nihavent--sarki--aksak--gel_guzelim--faiz_kapanci/ 3 /Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/ISTANBUL/goekhan/02_Gel_3_zemin
+FOR ONE CHUNK:
+python /Users/joro/Documents/Phd/UPF/voxforge/myScripts/AlignmentStep/doitOne.py /Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/nihavent--sarki--aksak--gel_guzelim--faiz_kapanci/ 3 /Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/ISTANBUL/goekhan/02_Gel_3_zemin
 or 
-python /Users/joro/Documents/Phd/UPF/voxforge/myScripts/AlignmentStep/doitOneChunk.py /Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/nihavent--sarki--aksak--gel_guzelim--faiz_kapanci/ 3 /Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/ISTANBUL/goekhan/02_Gel_3_zemin
+python /Users/joro/Documents/Phd/UPF/voxforge/myScripts/AlignmentStep/doitOne.py /Users/joro/Documents/Phd/UPF/turkish-makam-lyrics-2-audio-test-data/ussak--sarki--duyek--aksam_oldu_huzunlendim--semahat_ozdenses/ 1 /Users/joro/Documents/Phd/UPF/turkish-makam-lyrics-2-audio-test-data-synthesis/ussak--sarki--duyek--aksam_oldu_huzunlendim--semahat_ozdenses/06_Semahat_Ozdenses_-_Aksam_Oldu_Huzunlendim/06_Semahat_Ozdenses_-_Aksam_Oldu_Huzunlendim_1_zemin_from_62_393939_to_77_827796
+-----------
 
+FOR ONE RECORDING: see doit.py and put breakpoint
 
-------------
 - run forced alignment for whole song (divide in chunks and run for each chunk):
 $GITDIR/AlignmentStep/doit.py <wav> <txtTur_withNewLines> <sectionAnno>
 
@@ -15,7 +17,7 @@ $GITDIR/AlignmentStep/doit.py <wav> <txtTur_withNewLines> <sectionAnno>
 
 - run forced alignment for one chunk only: 
 
-$GITDIR/AlignmentStep/doitOneChunk.py
+$GITDIR/AlignmentStep/doitOne.py
 
 	The basic function is:
  	RecordingSegmenter.alignOneChunk( pathToHtkModel, path_TO_OUTPUT, lyrics, currPathToAudioFile, isLyricsFromFile)

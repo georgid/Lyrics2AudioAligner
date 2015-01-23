@@ -21,7 +21,18 @@ LYRICS_TXT_EXT = '.txtTur'
 PHRASE_ANNOTATION_EXT = '.TextGrid'
 
 if __name__ == '__main__':
-
+    
+    if len(argv) != 3  :
+            print ("usage: {}  <pathToFiles>  <nameAudioFile> <extensionAligned>".format(argv[0]) )
+            sys.exit();
+    
+    if not os.path.exists(PATH_TO_PRAAT):
+        logging.warning("Praat not found at given path {}, skipping opening Praat ..\n")
+        return
+    command = [PATH_TO_PRAAT, PATH_TO_PRAAT_SCRIPT, alignedResultPath, fileNameWordAnno, alignedFileBaseName, alignedSuffix, '"' + alignedSuffix + '"']
+    pipe = subprocess.Popen(command)
+    pipe.wait()
+    
     
     command = [ PATH_TO_PRAAT, PATH_TO_PRAAT_SCRIPT, sys.argv[1], sys.argv[2],  sys.argv[2], WORD_ALIGNED_SUFFIX ]
     pipe = subprocess.Popen(command)

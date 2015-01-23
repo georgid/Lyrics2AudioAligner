@@ -82,7 +82,6 @@ def main(argv):
         
         print "(", mean, ",", stDev, ")"
         
-        
            ### OPTIONAL : open in praat
         visualiseInPraat(URIrecordingNOExt, outputHTKPhoneAlignedURI, True, [])
 

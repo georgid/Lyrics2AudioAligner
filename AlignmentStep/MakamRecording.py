@@ -11,6 +11,8 @@ import os
 from genericpath import isfile
 import sys
 from aetools import Error
+from Utilz import loadTextFile, matchSections
+import json
 
 pathToSox = "/usr/local/bin/sox"
     
@@ -97,37 +99,49 @@ class MakamRecording:
        ##################################################################################
       
     ## loads timestamps from file .sectionAnno
-    def _loadsectionTimeStamps(self, pathToLinkedSectionsFile):
+    def _loadsectionTimeStamps(self, URILinkedSectionsFile):
         
-        # U means cross-platform  end-line character
-        sectionsFileHandle = open(pathToLinkedSectionsFile, 'rU')
+        if not os.path.isfile(URILinkedSectionsFile):
+                sys.exit("no file {}".format(URILinkedSectionsFile))
         
-        # skip first line
-#         next(sectionsFileHandle)
-        
-        for line in sectionsFileHandle:
-            tokens =  line.split()
-    
-            if tokens[2] == 'gazel':
-                continue
-                     
-            self.beginTs.append(tokens[0])
-    
-            self.endTs.append(tokens[1])
-            self.sectionNamesSequence.append(tokens[2])
+        ext = os.path.splitext(os.path.basename(URILinkedSectionsFile))[1] 
+        if ext == '.txt':
+            lines = loadTextFile(URILinkedSectionsFile)
             
-            # WORKAROUND for section mapping. read mapping index from 4th field in .annotations file
-            # sanity check: 
-            if len(tokens) < 4:
-                sys.exit("last column (mathing to  sections in .tsv) in file .sectionAnno file is missing")
-            self.sectionIndices.append(int(tokens[3]))
-            
-        # divide into columns
+            for line in lines:
+                tokens =  line.split()
         
-        sectionsFileHandle.close()
+                if tokens[2] == 'gazel':
+                    continue
+                         
+                self.beginTs.append(tokens[0])
+                self.endTs.append(tokens[1])
+                self.sectionNamesSequence.append(tokens[2])
+                
+                # WORKAROUND for section mapping. read mapping index from 4th field in .annotations file
+                # sanity check: 
+                if len(tokens) < 4:
+                    sys.exit("last column (mathcing to  sections in .tsv) in file .sectionAnno file is missing")
+                self.sectionIndices.append(int(tokens[3]))
+                    ######################
+        elif ext == '.json':
+                
+                b = open (URILinkedSectionsFile)
+                sectionLinks = json.load(b)
+                b.close()
+                
+                sectionAnnos = sectionLinks['annotations']
+                for sectionAnno in sectionAnnos:
+                    self.beginTs.append(str(sectionAnno['time'][0]))
+                    self.endTs.append(str(sectionAnno['time'][1]))
+                    self.sectionNamesSequence.append( str(sectionAnno['name']) )
+                # match automatically section names from sectionLinks to scoreSections 
+                indices = []
+                s1 = []
+                for s in self.makamScore.sectionToLyricsMap:
+                    s1.append(s[0])
+                self.sectionIndices = matchSections(s1, self.sectionNamesSequence, indices)        
         
-        return
-    
        ##################################################################################
   
         
@@ -141,7 +155,7 @@ class MakamRecording:
                 
                 
                 currEndTs = currEndTs = self.endTs[i].replace(".",'_')
-                filePathDividedAudio = filePathAndExt[0] + '_' + self.sectionNamesSequence[i] + '_from_' + currBeginTs + '_to_' + currEndTs + filePathAndExt[1] 
+                filePathDividedAudio = filePathAndExt[0] + '_' + str(self.sectionIndices[i]) + '_' + self.sectionNamesSequence[i] + '_from_' + currBeginTs + '_to_' + currEndTs + filePathAndExt[1] 
                 
                 self.pathToDividedAudioFiles.append(filePathDividedAudio)
                 # make sure  sox (sox.sourceforge.net) is installed and call it  here with subprocess

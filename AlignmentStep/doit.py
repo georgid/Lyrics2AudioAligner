@@ -8,7 +8,9 @@ import os
 import glob
 from utilsLyrics.Tools import getMeanAndStDevError, writeListToTextFile
 from Adapt import MAP_EXT, NUM_MAP_ITERS, PATH_TO_OUTPUT, MODEL_NAME
-from RecordingSegmenter import RecordingSegmenter
+from RecordingSegmenter import RecordingSegmenter, doitForTestPiece
+from MakamScore import loadLyrics
+from MakamRecording import MakamRecording
 
 
 PATH_TO_HTK_MODEL = '/Volumes/IZOTOPE/adaptation_data_NOT_CLEAN/syllablingDB/hmmdefs.gmmlrmean_map_2'
@@ -21,9 +23,7 @@ PATH_TO_HTK_MODEL ='/Users/joro/Documents/Phd/UPF/METUdata//model_output/adapted
 MODEL_URI = os.path.join(PATH_TO_OUTPUT, MODEL_NAME +  MAP_EXT + str(NUM_MAP_ITERS) )
 
 
-
    
-MODEL_URI = '/Users/joro/Documents/Phd/UPF/METUdata/model_output/multipleGaussians/hmmdefs9/iter9/hmmdefs'
 
 
 # PATH_TO_HTK_MODEL = '/Users/joro/Documents/Phd/UPF/METUdata//model_output/adapted/multipleGauss/hmm4/HTS_japan_female.gmmlrmean_map_2'
@@ -41,12 +41,9 @@ PATH_TO_NOTCLEAN_ADAPTDATA = '/tmp/audio/'
   
 # PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/adaptation_data_soloVoice/'
 
-# this one has excluded sections with wrong pitch from melodia
-#PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/test_data_synthesis'
 
-PATH_TEST_DATASET = '/Volumes/IZOTOPE/sertan_sarki'
-    
-          
+
+
 
 # PATH_TO_OUTPUT_RESULTS = '/tmp/varnam/'
 PATH_TO_OUTPUT_RESULTS = '/tmp/audioTur/'
@@ -58,42 +55,6 @@ whole recording from test symbtr corpus
 most important method recordingSegmenter.alignOneRecording  
 '''
     
-def doitForTestPiece(compositionName, recordingDir, withSynthesis):
-    
-        
-   
-    ####### prepare composition! ############
-        
-        pathToComposition = os.path.join(PATH_TEST_DATASET, compositionName)
-        os.chdir(pathToComposition)
-        pathToSymbTrTxt = os.path.join(pathToComposition, glob.glob("*.txt")[0])
-        pathToSectionTsv = os.path.join(pathToComposition, glob.glob("*.sections.tsv")[0])
-        
-                    # TODO: issue 14
-        recordingSegmenter = RecordingSegmenter()
-        makamScore =  recordingSegmenter.loadMakamScore(pathToSymbTrTxt, pathToSectionTsv)
-        print "makam score loaded"
-        
-        ###########        ----- align one recording
-        
-        pathToRecording = os.path.join(pathToComposition, recordingDir)
-        print pathToRecording
-         
-        os.chdir(pathToRecording)
-        pathToSectionAnnotations = os.path.join(pathToRecording, glob.glob('*.sectionAnno.txt')[0]) #             pathToAudio =  os.path.join(pathToRecording, glob.glob('*.wav')[0])
-        pathToAudio = os.path.join(pathToRecording, recordingDir) + '.wav'
-        
-        # TODO: issue 14
-        alignmentErrors = recordingSegmenter.alignOneRecording(MODEL_URI, makamScore, pathToAudio, pathToSectionAnnotations, PATH_TO_OUTPUT_RESULTS, withSynthesis)
-        
-#         mean, stDev, median = getMeanAndStDevError(alignmentErrors)
-#         
-#         print "(", mean, ",", stDev,"," , median ,  ")"
-        
-#         print("total error for song {0} is {1}".format(recordingDir,alignmentErrors ))
-        
-        return alignmentErrors
-
 
 if __name__ == '__main__':
 
@@ -120,8 +81,15 @@ if __name__ == '__main__':
         compositionName = 'segah--sarki--curcuna--olmaz_ilac--haci_arif_bey'
         recordingDir = '21_Recep_Birgit_-_Olmaz_Ilac_Sine-i_Sad_Pareme'
         
+        compositionName ='muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_ozisik'
+        recordingDir = '1-05_Ruzgar_Soyluyor_Simdi_O_Yerlerde'
         
-        currAlignmentErrors = doitForTestPiece(compositionName, recordingDir)
+        compositionName = 'muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_ozisik_short'
+        
+        
+        withSynthesis = 0
+        
+        currAlignmentErrors = doitForTestPiece(compositionName, recordingDir, withSynthesis)
         mean, stDev, median = getMeanAndStDevError(currAlignmentErrors)
 
 

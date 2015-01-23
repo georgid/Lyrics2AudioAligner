@@ -71,7 +71,7 @@ class MakamScore():
     def _loadSectionsAndLyricsFromSymbTr(self, pathToSymbTrFile, pathToSectionTsvFile):
         symbTrParser = SymbTrParser(pathToSymbTrFile, pathToSectionTsvFile)
        
-        symbTrParser.syllablesToWords()
+        symbTrParser.syllablesToLyrics()
         
         # for each section part
         for currSectionBoundary,currSectionLyrics in zip(symbTrParser.sectionboundaries, symbTrParser.sectionLyrics):
@@ -142,26 +142,29 @@ class MakamScore():
         return self.sectionToLyricsMap[sectionNumber][1]
     
      ##################################################################################
-def main(pathToComposition):
-        
-        os.chdir(pathToComposition)
-        pathTotxt = os.path.join(pathToComposition, glob.glob("*.txt")[0])
-        pathToSectionTsv =  os.path.join(pathToComposition, glob.glob("*.tsv")[0])
-        makamScore = MakamScore(pathTotxt, pathToSectionTsv )
-#         
-        makamScore.printSectionsAndLyrics()
-        
-#         makamScore.serializeLyricsToFile()
+
+
+def loadLyrics(pathToComposition, whichSection):
+
+#     expand phoneme list from transcript
+    os.chdir(pathToComposition)
+    pathTotxt = os.path.join(pathToComposition, glob.glob("*.txt")[0])
+#     pathToSectionTsv = os.path.join(pathToComposition, glob.glob("*.sections.txt")[0])
+    pathToSectionTsv =  os.path.join(pathToComposition, glob.glob("*sections.json")[0])
+    makamScore = MakamScore(pathTotxt, pathToSectionTsv )
+    
+    # phoneme IDs
+    lyrics = makamScore.getLyricsForSection(whichSection)
+    return makamScore 
         
        
 if __name__ == '__main__':
 
         # only for unit testing purposes
-        
         print "in Makam Score"
         
         if len(sys.argv) != 2:
-            print ("usage: {} URI_symbtTr.txt".format(sys.argv[0]) )
+            print ("usage: {} <path to composition> ".format(sys.argv[0]) )
             sys.exit();
         
-        main(sys.argv[1])
+        lyrics, makamScore = loadLyrics(sys.argv[1], whichSection=1)
