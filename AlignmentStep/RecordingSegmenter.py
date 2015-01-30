@@ -13,7 +13,7 @@ from MakamRecording import MakamRecording
 import subprocess
 import os
 import glob
-from Utilz import  writeListOfListToTextFile, loadTextFile
+from Utilz import  writeListOfListToTextFile, loadTextFile, findFileByExtensions
 from Aligner import Aligner, HTK_MLF_ALIGNED_SUFFIX, PHRASE_ANNOTATION_EXT,\
     openAlignmentInPraat
 import sys
@@ -186,7 +186,11 @@ def doitForTestPiece(compositionName, recordingDir, withSynthesis=0):
          
         os.chdir(pathToRecording)
 #         pathToSectionAnnotations = os.path.join(pathToRecording, glob.glob('*.sectionAnno.txt')[0]) #             pathToAudio =  os.path.join(pathToRecording, glob.glob('*.wav')[0])
-        pathToSectionAnnotations = os.path.join(pathToRecording, glob.glob('*.sectionAnno.json')[0]) 
+        
+        listExtensions = ["sectionAnno.txt", "sectionAnno.tsv", "sectionAnno.json"]
+        sectionAnnoFile = findFileByExtensions(pathToRecording, listExtensions)
+        pathToSectionAnnotations = os.path.join(pathToRecording, sectionAnnoFile) 
+        
         pathToAudio = os.path.join(pathToRecording, recordingDir) + '.wav'
         
         # TODO: issue 14
@@ -198,18 +202,39 @@ def doitForTestPiece(compositionName, recordingDir, withSynthesis=0):
         
         return alignmentErrors
 
+def doit(argv):
+        
+        if len(argv) != 4  :
+           sys.exit ("usage: {}  <recordingURI.wav> <sectionAnnoPath> <scorePath>".format(argv[0]) )
+        recordingURI = argv[1]
+        sectionAnnoPath = argv[2]
+        scorePath = argv[3]
+        
+        makamScore = loadLyrics(scorePath, whichSection=1)
+
+        os.chdir(sectionAnnoPath)
+        
+        listExtensions = ["sectionAnno.txt", "sectionAnno.tsv", "sectionAnno.json"]
+        sectionAnnoFile = findFileByExtensions(sectionAnnoPath, listExtensions)
+        pathToSectionAnnotations = os.path.join(sectionAnnoPath, sectionAnnoFile) 
+
+
+        recordingSegmenter = RecordingSegmenter()
+        makamRecording= recordingSegmenter.segment(makamScore, recordingURI, pathToSectionAnnotations)
+
 if __name__ == '__main__':
        
     print 'in recording segmenter main method'
     compositionName = 'ussak--sarki--aksak--bu_aksam_gun--tatyos_efendi/'
     recordingDir = 'Sakin--Gec--Kalma'
-    doitForTestPiece(compositionName, recordingDir, withSynthesis=0)
+    
+    compositionName = 'nihavent--sarki--curcuna--kimseye_etmem--kemani_sarkis_efendi/'
+    recordingDir = 'Melihat_Gulses'
+    
+    
+#     doitForTestPiece(compositionName, recordingDir, withSynthesis=0)
+    doit(sys.argv)
     
 #         ----
         
-#         # align all recrodings
-#         recrodingDirs = os.walk(".").next()[1]
-#         
-#         for recordingDir in recrodingDirs:
-#             
-#             recordingSegmenter.alignRecording(recordingDir, makamScore)
+#

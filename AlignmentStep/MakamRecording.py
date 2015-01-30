@@ -19,7 +19,7 @@ pathToSox = "/usr/local/bin/sox"
 class MakamRecording:
 
     '''
-    classdocs
+    Logic to handle reading of audio section annotations, dividing into sections
     '''
     '''
     The size of self.sectionNames, self.beginTs, self.endTs, self.sectionIndices should be same
@@ -105,7 +105,7 @@ class MakamRecording:
                 sys.exit("no file {}".format(URILinkedSectionsFile))
         
         ext = os.path.splitext(os.path.basename(URILinkedSectionsFile))[1] 
-        if ext == '.txt':
+        if ext == '.txt' or ext=='.tsv':
             lines = loadTextFile(URILinkedSectionsFile)
             
             for line in lines:
@@ -120,9 +120,9 @@ class MakamRecording:
                 
                 # WORKAROUND for section mapping. read mapping index from 4th field in .annotations file
                 # sanity check: 
-                if len(tokens) < 4:
-                    sys.exit("last column (mathcing to  sections in .tsv) in file .sectionAnno file is missing")
-                self.sectionIndices.append(int(tokens[3]))
+                if len(tokens) == 4:
+                    self.sectionIndices.append(int(tokens[3]))
+                    return
                     ######################
         elif ext == '.json':
                 
@@ -135,13 +135,15 @@ class MakamRecording:
                     self.beginTs.append(str(sectionAnno['time'][0]))
                     self.endTs.append(str(sectionAnno['time'][1]))
                     self.sectionNamesSequence.append( str(sectionAnno['name']) )
-                # match automatically section names from sectionLinks to scoreSections 
-                indices = []
-                s1 = []
-                for s in self.makamScore.sectionToLyricsMap:
-                    s1.append(s[0])
-                self.sectionIndices = matchSections(s1, self.sectionNamesSequence, indices)        
-        
+        else: 
+            sys.exit("section annotation file {} has not know file extension.".format(URILinkedSectionsFile) )       
+        # match automatically section names from sectionLinks to scoreSections 
+        indices = []
+        s1 = []
+        for s in self.makamScore.sectionToLyricsMap:
+            s1.append(s[0])
+        self.sectionIndices = matchSections(s1, self.sectionNamesSequence, indices)        
+
        ##################################################################################
   
         
@@ -149,6 +151,8 @@ class MakamRecording:
     def divideAudio(self):
             
             for i in range(len(self.sectionNamesSequence)):
+                if self.sectionNamesSequence[i] == 'aranagme':
+                    continue
                 
                 filePathAndExt = os.path.splitext(self.pathToAudiofile)
                 currBeginTs = self.beginTs[i].replace(".",'_')

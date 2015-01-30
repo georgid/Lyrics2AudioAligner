@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 '''
-Created on Mar 17, 2014
 
+
+# TO SEGMENT  A SONG INTO CHUNKS rather use REcordingSegmenter.main()
+THIS is rather messy file
 @author: joro
 '''
 import os

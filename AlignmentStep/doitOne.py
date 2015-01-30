@@ -83,7 +83,8 @@ def main(argv):
         print "(", mean, ",", stDev, ")"
         
            ### OPTIONAL : open in praat
-        visualiseInPraat(URIrecordingNOExt, outputHTKPhoneAlignedURI, True, [])
+        withDuration = False
+        visualiseInPraat(URIrecordingNOExt, withDuration, outputHTKPhoneAlignedURI , [])
 
         
         return mean, stDev, alignmentErrors

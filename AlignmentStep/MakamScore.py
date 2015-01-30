@@ -11,6 +11,7 @@ import codecs
 import glob
 from SymbTrParser import SymbTrParser
 import sys
+from Utilz import findFileByExtensions
 # 
 # COMPOSITION_NAME = 'muhayyerkurdi--sarki--duyek--ruzgar_soyluyor--sekip_ayhan_ozisik'
 # COMPOSITION_NAME = 'huseyni--sarki--turkaksagi--hicran_oku--sevki_bey'
@@ -149,8 +150,11 @@ def loadLyrics(pathToComposition, whichSection):
 #     expand phoneme list from transcript
     os.chdir(pathToComposition)
     pathTotxt = os.path.join(pathToComposition, glob.glob("*.txt")[0])
-#     pathToSectionTsv = os.path.join(pathToComposition, glob.glob("*.sections.txt")[0])
-    pathToSectionTsv =  os.path.join(pathToComposition, glob.glob("*sections.json")[0])
+    
+    listExtensions = ["sections.txt", "sections.tsv", "sections.json"]
+    sectionFile = findFileByExtensions(pathToComposition, listExtensions)
+        
+    pathToSectionTsv = os.path.join(pathToComposition, sectionFile)
     makamScore = MakamScore(pathTotxt, pathToSectionTsv )
     
     # phoneme IDs
