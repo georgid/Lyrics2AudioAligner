@@ -188,8 +188,8 @@ def doitForTestPiece(compositionName, recordingDir, withSynthesis=0):
 #         pathToSectionAnnotations = os.path.join(pathToRecording, glob.glob('*.sectionAnno.txt')[0]) #             pathToAudio =  os.path.join(pathToRecording, glob.glob('*.wav')[0])
         
         listExtensions = ["sectionAnno.txt", "sectionAnno.tsv", "sectionAnno.json"]
-        sectionAnnoFile = findFileByExtensions(pathToRecording, listExtensions)
-        pathToSectionAnnotations = os.path.join(pathToRecording, sectionAnnoFile) 
+        sectionAnnoFiles = findFileByExtensions(pathToRecording, listExtensions)
+        pathToSectionAnnotations = os.path.join(pathToRecording, sectionAnnoFiles[0]) 
         
         pathToAudio = os.path.join(pathToRecording, recordingDir) + '.wav'
         
@@ -215,8 +215,8 @@ def doit(argv):
         os.chdir(sectionAnnoPath)
         
         listExtensions = ["sectionAnno.txt", "sectionAnno.tsv", "sectionAnno.json"]
-        sectionAnnoFile = findFileByExtensions(sectionAnnoPath, listExtensions)
-        pathToSectionAnnotations = os.path.join(sectionAnnoPath, sectionAnnoFile) 
+        sectionAnnoFiles = findFileByExtensions(sectionAnnoPath, listExtensions)
+        pathToSectionAnnotations = os.path.join(sectionAnnoPath, sectionAnnoFiles[0]) 
 
 
         recordingSegmenter = RecordingSegmenter()
@@ -225,12 +225,12 @@ def doit(argv):
 if __name__ == '__main__':
        
     print 'in recording segmenter main method'
-    compositionName = 'ussak--sarki--aksak--bu_aksam_gun--tatyos_efendi/'
-    recordingDir = 'Sakin--Gec--Kalma'
-    
-    compositionName = 'nihavent--sarki--curcuna--kimseye_etmem--kemani_sarkis_efendi/'
-    recordingDir = 'Melihat_Gulses'
-    
+#     compositionName = 'ussak--sarki--aksak--bu_aksam_gun--tatyos_efendi/'
+#     recordingDir = 'Sakin--Gec--Kalma'
+#     
+#     compositionName = 'nihavent--sarki--curcuna--kimseye_etmem--kemani_sarkis_efendi/'
+#     recordingDir = 'Melihat_Gulses'
+#     
     
 #     doitForTestPiece(compositionName, recordingDir, withSynthesis=0)
     doit(sys.argv)

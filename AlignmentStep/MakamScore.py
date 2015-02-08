@@ -152,8 +152,9 @@ def loadLyrics(pathToComposition, whichSection):
     pathTotxt = os.path.join(pathToComposition, glob.glob("*.txt")[0])
     
     listExtensions = ["sections.txt", "sections.tsv", "sections.json"]
-    sectionFile = findFileByExtensions(pathToComposition, listExtensions)
-        
+    sectionFiles = findFileByExtensions(pathToComposition, listExtensions)
+    sectionFile = sectionFiles[0]
+
     pathToSectionTsv = os.path.join(pathToComposition, sectionFile)
     makamScore = MakamScore(pathTotxt, pathToSectionTsv )
     

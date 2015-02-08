@@ -58,43 +58,6 @@ class MakamRecording:
         return
     
 
-    ##################################################################################
-
-    ''' 
-    @deprecated: 
-    Handles the Division into sections. If 4 section names given for MakamScore, assumes the forth (nakarat) is melodic repetition of second but with different lyrics (2nakarat)  
-    
-#     '''
-#     def assignSectionLyrics(self):
-#         
-#        # TODO: write cheker for score 
-#         
-#         flagMeyan = False
-# 
-#        # check section names and get lyrics from score. use index to map to Ts index
-#         for index in range(len(self.sectionNamesSequence)):
-#             
-#             
-#             currSectionName = self.sectionNamesSequence[index]
-#             # remove 2 or 3 suffix
-#             if str(currSectionName).endswith('2') or str(currSectionName).endswith('3'):
-#                 currSectionName = currSectionName[0:-1]
-#             # if meyan is gone, put 2 to signify  it is second nakarat (with different lyrics). Assumption: there is no third verse and third nakarat
-#             if flagMeyan and currSectionName==MakamScore.sectionNamesSequence[1] and len(MakamScore.sectionNamesSequence)==4 :
-#                 currSectionName='2' + currSectionName    
-#                 
-#             if currSectionName in MakamScore.sectionNamesSequence:
-#                 self.sectionIndices[index] =   self.makamScore.sectionLyricsDict[currSectionName]
-#                 if currSectionName == MakamScore.sectionNamesSequence[2]:
-#                     flagMeyan = True
-#             else:
-#                 print "unknown section name: %s " ,  (currSectionName)
-#                 self.sectionIndices[index] = ""
-#                 
-#             
-#         return
-            
-        
         
        ##################################################################################
       
@@ -111,8 +74,6 @@ class MakamRecording:
             for line in lines:
                 tokens =  line.split()
         
-                if tokens[2] == 'gazel':
-                    continue
                          
                 self.beginTs.append(tokens[0])
                 self.endTs.append(tokens[1])
@@ -120,10 +81,10 @@ class MakamRecording:
                 
                 # WORKAROUND for section mapping. read mapping index from 4th field in .annotations file
                 # sanity check: 
-                if len(tokens) == 4:
-                    self.sectionIndices.append(int(tokens[3]))
-                    return
-                    ######################
+#                 if len(tokens) == 4:
+#                     self.sectionIndices.append(int(tokens[3]))
+                    
+                    #####################
         elif ext == '.json':
                 
                 b = open (URILinkedSectionsFile)
@@ -137,12 +98,17 @@ class MakamRecording:
                     self.sectionNamesSequence.append( str(sectionAnno['name']) )
         else: 
             sys.exit("section annotation file {} has not know file extension.".format(URILinkedSectionsFile) )       
+        
         # match automatically section names from sectionLinks to scoreSections 
         indices = []
         s1 = []
         for s in self.makamScore.sectionToLyricsMap:
             s1.append(s[0])
-        self.sectionIndices = matchSections(s1, self.sectionNamesSequence, indices)        
+        self.sectionIndices = matchSections(s1, self.sectionNamesSequence, indices) 
+        
+        if len(self.sectionIndices) != len(self.sectionNamesSequence):
+            sys.exit("number of sections and number of matched sections not same!")
+       
 
        ##################################################################################
   
@@ -151,7 +117,8 @@ class MakamRecording:
     def divideAudio(self):
             
             for i in range(len(self.sectionNamesSequence)):
-                if self.sectionNamesSequence[i] == 'aranagme':
+                if self.sectionNamesSequence[i] == 'aranagme' or  self.sectionNamesSequence[i] == 'taksim' or \
+                self.sectionNamesSequence[i] == 'gazel' or self.sectionNamesSequence[i] == 'unsure':
                     continue
                 
                 filePathAndExt = os.path.splitext(self.pathToAudiofile)
@@ -190,10 +157,23 @@ class MakamRecording:
             if isfile( os.path.splitext(pathToDividedAudioFile)[0] +  ".notUsed"):
                 self.isChunkUsed[index] = 0
         
-        
+def doit(argv):
+        '''
+        not finished. testing purpose 
+        '''
+        if len(argv) != 4  :
+           sys.exit ("usage: {}  <recordingURI.wav> <sectionAnnoPath> <scorePath>".format(argv[0]) )
+        recordingURI = argv[1]
+        sectionAnnoPath = argv[2]
+        scorePath = argv[3]
+         
+#         makamRecording = MakamRecording(makamScore, pathToAudioFile, pathToSectionAnnotations)
+
+               
     
 if __name__ == '__main__':
         # only for unit testing purposes
         print "in Makam Recording"
+        doit(sys.argv)
  
         

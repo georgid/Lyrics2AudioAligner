@@ -86,7 +86,7 @@ class PhonetizerOld(object):
       '-' : '',
       "\'": '',
       "\," : '',
-      "_":''
+      '_' : ' '
      
     }
        
@@ -251,12 +251,13 @@ class PhonetizerOld(object):
             
             lyrics = lyrics.replace('\n', ' ')
             list = lyrics.split()
-        #     wordSequence =  wordList.split()
+            METUWordsList = []
             for i in range(len(list)):
-                list[i] = PhonetizerOld.turkishScriptWord2METUScriptWord(list[i])
-            
+                if list[i] != '_SAZ_':
+                    METUscriptWord = PhonetizerOld.turkishScriptWord2METUScriptWord(list[i])
+                    METUWordsList.append(METUscriptWord)
         
-            processedLyrics = " ".join(list).strip()
+            processedLyrics = " ".join(METUWordsList).strip()
         
             outputFileHandle = open(outputFileName, 'w')
             outputFileHandle.write(processedLyrics)

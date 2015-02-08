@@ -56,7 +56,7 @@ logger = logging.getLogger(__name__)
 
 class Aligner():
     '''
-    classdocs
+    ALigns a given audio chunk to given lyrics 
     '''
 
 
@@ -175,7 +175,7 @@ class Aligner():
         
 
 #         # Align with hHVite
-                # Align with hHVite
+        logger.info("aligning audio {}".format(self.pathToAudioFile))
         pipe = subprocess.Popen([PATH_TO_HVITE, '-l', "'*'", '-A', '-D', '-T', '1', '-b', 'sil', '-C', PATH_TO_CONFIG_FILES + 'config_singing', '-a', \
                                  '-H', self.pathToHtkModel, '-H',  DUMMY_HMM_URI , '-H',  MODEL_NOISE_URI , '-i', '/tmp/phoneme-level.output', '-m', \
                                  '-w', wordNetwURI, '-y', 'lab', dictName, PATH_TO_HMMLIST, mfcFileName], stdout=self.currLogHandle)
