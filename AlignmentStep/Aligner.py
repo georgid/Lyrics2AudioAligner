@@ -11,7 +11,7 @@ import shutil
 
 import sys
 
-parentDir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0]) ), os.path.pardir)) 
+parentDir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__) ), os.path.pardir)) 
 pathUtils = os.path.join(parentDir, 'utilsLyrics')
 sys.path.append(pathUtils )
 
@@ -32,10 +32,13 @@ PHONEME_ALIGNED_SUFFIX= ".phonemeAligned"
 
 
 PATH_TO_ALIGNMENT_TOOL = os.path.abspath('doForceAligment.sh')
+
+# change these paths
 PATH_TO_HCOPY= '/usr/local/bin/HCopy'
 PATH_TO_HVITE= '/Users/joro/Documents/Fhg/htk3.4.BUILT/bin/HVite'
-PATH_TO_CONFIG_FILES= '/Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/input_files/'
-PATH_TO_HMMLIST='/Users/joro/Documents/Phd/UPF/voxforge/auto/scripts/interim_files/monophones1'
+
+PATH_TO_CONFIG_FILES= os.path.abspath('input_files/')
+PATH_TO_HMMLIST = os.path.abspath('model/monophones1')
 
 PATH_TO_PRAAT = '/Applications/Praat.app/Contents/MacOS/Praat'
 PATH_TO_PRAAT_SCRIPT= '/Users/joro/Documents/Phd/UPF/voxforge/myScripts/praat/loadAlignedResultAndTextGrid.rb'
@@ -45,8 +48,12 @@ LYRICS_TXT_METUBET_EXT = '.txtMETU'
 PHRASE_ANNOTATION_EXT = '.TextGrid'
 
 # only to satisfy HTK 
-DUMMY_HMM_URI = '/Users/joro/Documents/Phd/UPF/METUdata/model_output/multipleGaussians/DUMMY'
-MODEL_NOISE_URI  = '/Users/joro/Documents/Phd/UPF/METUdata//model_output/multipleGaussians/NOISE//hmmdefs49/iter1/hmmdefs'
+# DUMMY_HMM_URI = '/Users/joro/Documents/Phd/UPF/METUdata/model_output/multipleGaussians/DUMMY'
+# MODEL_NOISE_URI  = '/Users/joro/Documents/Phd/UPF/METUdata//model_output/multipleGaussians/NOISE//hmmdefs49/iter1/hmmdefs'
+
+DUMMY_HMM_URI = os.path.abspath('model/DUMMY')
+MODEL_NOISE_URI = os.path.abspath('model/hmmdefsNOISE')
+
 
 
 import logging
@@ -98,6 +105,7 @@ class Aligner():
         if (self.loadLyricsFromFile == 1):
             METULyrics = PhonetizerOld.turkishScriptLyrics2METUScriptLyricsFile(baseNameAudioFile + LYRICS_TXT_EXT, METUBETfileName)
         else:
+            # TODO: change this step
             METULyrics = PhonetizerOld.turkishScriptLyrics2METUScriptLyrics(self.lyrics, METUBETfileName)
     # create Word-level mlf:
         baneN = os.path.basename(self.pathToAudioFile)
@@ -108,7 +116,9 @@ class Aligner():
         
         # prompts2mlf
         mlfName = '/tmp/tmp' + HTK_MLF_WORD_ANNO_SUFFIX
-        pipe = subprocess.Popen(['/usr/bin/perl', '/Users/joro/Documents/Phd/UPF/voxforge/HTK_scripts/prompts2mlf', mlfName, '/tmp/prompts'])
+        prompts2mlf =  os.path.abspath('prompts2mlf')
+        
+        pipe = subprocess.Popen(['/usr/bin/perl', prompts2mlf,  mlfName, '/tmp/prompts'])
         pipe.wait()
 
         # phonetize

@@ -32,7 +32,7 @@ from _SymbTrParserBase import _SymbTrParserBase
 Parses lyrics from symbTr v 1.0. Sections from tsv file
 TODO: take only section names from tsv file. parse sections from symbTr double spaces 
 '''
-class SymbTrParser(_SymbTrParserBase):
+class SymbTrParserOld(_SymbTrParserBase):
   
     
     def __init__(self, pathToSymbTrFile, pathToSectionFile):
@@ -108,5 +108,5 @@ if __name__ == "__main__":
     pathTxt=  '/Users/joro/Documents/Phd/UPF/turkish-makam-lyrics-2-audio-test-data/nihavent--sarki--aksak--bakmiyor_cesm-i--haci_arif_bey/nihavent--sarki--aksak--bakmiyor_cesm-i--haci_arif_bey.txt'
     pathTsv= '/Users/joro/Documents/Phd/UPF/turkish-makam-lyrics-2-audio-test-data/nihavent--sarki--aksak--bakmiyor_cesm-i--haci_arif_bey/nihavent--sarki--aksak--bakmiyor_cesm-i--haci_arif_bey.sections.tsv'
      
-    symbTrParser = SymbTrParser(pathTxt, pathTsv)
+    symbTrParser = SymbTrParserOld(pathTxt, pathTsv)
     symbTrParser.syllablesToLyrics()

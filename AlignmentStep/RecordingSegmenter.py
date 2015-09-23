@@ -26,8 +26,9 @@ from WordLevelEvaluator import evalAlignmentError
 
 
 # this one has excluded sections with wrong pitch from melodia
-PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/turkish-makam-lyrics-2-audio-test-data/'
-# PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/turkish-makam-lyrics-2-audio-test-data-synthesis/'
+# PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/turkish-makam-lyrics-2-audio-test-data/'
+
+PATH_TEST_DATASET = '/Users/joro/Documents/Phd/UPF/turkish-makam-lyrics-2-audio-test-data-synthesis/'
 
 # 
 # COMPOSITION_NAME = 'nihavent--sarki--aksak--koklasam_saclarini--artaki_candan'
@@ -187,7 +188,7 @@ def doitForTestPiece(compositionName, recordingDir, withSynthesis=0):
         os.chdir(pathToRecording)
 #         pathToSectionAnnotations = os.path.join(pathToRecording, glob.glob('*.sectionAnno.txt')[0]) #             pathToAudio =  os.path.join(pathToRecording, glob.glob('*.wav')[0])
         
-        listExtensions = ["sectionAnno.txt", "sectionAnno.tsv", "sectionAnno.json"]
+        listExtensions = ["sectionAnno.json", "sectionAnno.txt", "sectionAnno.tsv" ]
         sectionAnnoFiles = findFileByExtensions(pathToRecording, listExtensions)
         pathToSectionAnnotations = os.path.join(pathToRecording, sectionAnnoFiles[0]) 
         
@@ -214,7 +215,7 @@ def doit(argv):
 
         os.chdir(sectionAnnoPath)
         
-        listExtensions = ["sectionAnno.txt", "sectionAnno.tsv", "sectionAnno.json"]
+        listExtensions = ["sectionAnno.json", "sectionAnno.txt", "sectionAnno.tsv"]
         sectionAnnoFiles = findFileByExtensions(sectionAnnoPath, listExtensions)
         pathToSectionAnnotations = os.path.join(sectionAnnoPath, sectionAnnoFiles[0]) 
 
@@ -231,6 +232,10 @@ if __name__ == '__main__':
 #     compositionName = 'nihavent--sarki--curcuna--kimseye_etmem--kemani_sarkis_efendi/'
 #     recordingDir = 'Melihat_Gulses'
 #     
+
+    compositionName = 'rast--sarki--curcuna--nihansin_dideden--haci_faik_bey/'
+    recordingDir = 'Nurten_Demirkol'
+
     
 #     doitForTestPiece(compositionName, recordingDir, withSynthesis=0)
     doit(sys.argv)

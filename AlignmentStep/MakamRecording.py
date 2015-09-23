@@ -44,6 +44,7 @@ class MakamRecording:
         # section names ordered as played in a recording
         self.sectionNamesSequence = []
         
+        # indices to section numbers as in makamScore from sections.tsv file
         self.sectionIndices = []
         
         self._loadsectionTimeStamps( pathToLinkedSectionsFile)
@@ -75,8 +76,8 @@ class MakamRecording:
                 tokens =  line.split()
         
                          
-                self.beginTs.append(tokens[0])
-                self.endTs.append(tokens[1])
+                self.beginTs.append(float(tokens[0]))
+                self.endTs.append(float(tokens[1]))
                 self.sectionNamesSequence.append(tokens[2])
                 
                 # WORKAROUND for section mapping. read mapping index from 4th field in .annotations file
@@ -93,8 +94,19 @@ class MakamRecording:
                 
                 sectionAnnos = sectionLinks['annotations']
                 for sectionAnno in sectionAnnos:
-                    self.beginTs.append(str(sectionAnno['time'][0]))
-                    self.endTs.append(str(sectionAnno['time'][1]))
+                    
+                    beginTimeStr = str(sectionAnno['time'][0])
+                    beginTimeStr = beginTimeStr.replace("[","")
+                    beginTimeStr = beginTimeStr.replace("]","")
+                    
+                        
+                    endTimeStr = str(sectionAnno['time'][1])
+                    endTimeStr = endTimeStr.replace("[","")
+                    endTimeStr = endTimeStr.replace("]","")
+                    
+                    
+                    self.beginTs.append(float(beginTimeStr))
+                    self.endTs.append(float(endTimeStr))
                     self.sectionNamesSequence.append( str(sectionAnno['name']) )
         else: 
             sys.exit("section annotation file {} has not know file extension.".format(URILinkedSectionsFile) )       

@@ -9,7 +9,7 @@ import os
 import codecs
 
 import glob
-from SymbTrParser import SymbTrParser
+from SymbTrParserOld import SymbTrParserOld
 import sys
 from Utilz import findFileByExtensions
 # 
@@ -70,7 +70,7 @@ class MakamScore():
     groups together section names and lyrics 
     '''
     def _loadSectionsAndLyricsFromSymbTr(self, pathToSymbTrFile, pathToSectionTsvFile):
-        symbTrParser = SymbTrParser(pathToSymbTrFile, pathToSectionTsvFile)
+        symbTrParser = SymbTrParserOld(pathToSymbTrFile, pathToSectionTsvFile)
        
         symbTrParser.syllablesToLyrics()
         
@@ -151,7 +151,7 @@ def loadLyrics(pathToComposition, whichSection):
     os.chdir(pathToComposition)
     pathTotxt = os.path.join(pathToComposition, glob.glob("*.txt")[0])
     
-    listExtensions = ["sections.txt", "sections.tsv", "sections.json"]
+    listExtensions = ["sections.json", "sections.txt", "sections.tsv"]
     sectionFiles = findFileByExtensions(pathToComposition, listExtensions)
     sectionFile = sectionFiles[0]
 

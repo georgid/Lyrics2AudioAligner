@@ -1,0 +1,12 @@
+
+
+
+
+
+
+
+
+PhonetizerOld: 
+
+turkishlyrics2PhoneticDict - parses all words and turns them into a HTK-format dictionary. 
+HTK takes the sequence of words (mlf file) and the dict and  expands them internally  
