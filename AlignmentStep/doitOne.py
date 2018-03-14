@@ -22,7 +22,7 @@ from Aligner import PHRASE_ANNOTATION_EXT, openAlignmentInPraat, Aligner
 
 pathEvaluation = os.path.join(parentDir, 'AlignmentEvaluation')
 sys.path.append(pathEvaluation)
-from WordLevelEvaluator import evalAlignmentError
+from ErrorEvaluator import evalAlignmentError
 
 pathAlignmentDur = os.path.join(parentDir, 'AlignmentDuration')
 if not pathAlignmentDur in sys.path:

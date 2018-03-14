@@ -22,7 +22,7 @@ parentDir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(sys.ar
 
 pathEvaluation = os.path.join(parentDir, 'AlignmentEvaluation')
 sys.path.append(pathEvaluation)
-from WordLevelEvaluator import evalAlignmentError
+from ErrorEvaluator import evalAlignmentError
 
 
 # this one has excluded sections with wrong pitch from melodia
